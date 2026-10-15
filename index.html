@@ -3,14 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Synapse Trivia</title>
 <style>
 :root {
   --bg: #0f1115;
   --surface: #181b21;
   --surface-2: #20242c;
+  --surface-3: #2a2f3a;
   --ink: #e8e6e3;
   --ink-faint: #8a8580;
+  --ink-dim: #5a5550;
   --border: #2a2f38;
   --accent: #58a6ff;
   --accent-warm: #c75b39;
@@ -19,6 +24,7 @@
   --warning: #f59e0b;
   --shadow: 0 2px 12px rgba(0,0,0,0.45);
   --radius: 14px;
+  --radius-sm: 10px;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-serif: Georgia, "Times New Roman", serif;
 }
@@ -28,8 +34,10 @@
     --bg: #f6f4f0;
     --surface: #ffffff;
     --surface-2: #f0ece6;
+    --surface-3: #e8e2da;
     --ink: #1a1a1a;
     --ink-faint: #6b6560;
+    --ink-dim: #9a9590;
     --border: #ddd8d0;
     --accent: #2563eb;
     --accent-warm: #c75b39;
@@ -40,7 +48,7 @@
   }
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; margin: 0; font-family: var(--font-sans); background: var(--bg); color: var(--ink); overflow: hidden; }
 #app { max-width: 640px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; position: relative; }
 .screen { display: none; flex-direction: column; height: 100vh; overflow: hidden; padding: 16px; }
@@ -52,17 +60,24 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .game-header .meta { font-size: 13px; color: var(--ink-faint); font-weight: 500; }
 .header-actions { display: flex; gap: 8px; }
 .icon-btn {
-  width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border);
+  width: 36px; height: 36px; border-radius: var(--radius-sm); border: 1px solid var(--border);
   background: var(--surface); color: var(--ink); font-size: 16px; cursor: pointer;
   display: flex; align-items: center; justify-content: center; transition: transform .12s;
 }
 .icon-btn:active { transform: scale(0.92); }
 
 /* Landing */
-.landing-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 20px; }
+.landing-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 16px; }
 .landing-body .logo { font-size: 56px; line-height: 1; }
 .landing-body h2 { font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
 .landing-body p { font-size: 15px; color: var(--ink-faint); max-width: 320px; margin: 0; line-height: 1.5; }
+.landing-streak-bar {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+  padding: 6px 14px; font-size: 14px; font-weight: 700; color: var(--ink);
+}
+.landing-streak-bar .fire { font-size: 18px; }
+.landing-streak-bar .broken { opacity: 0.4; filter: grayscale(1); }
 .btn-primary {
   width: 100%; max-width: 280px; padding: 14px 20px; border-radius: var(--radius); border: none;
   background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
@@ -78,21 +93,28 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .btn-primary:disabled, .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* Stats bar */
-.stats-bar { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 4px; }
+.stats-bar { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 .stat-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--ink-faint); }
 .stat-chip b { color: var(--ink); margin-left: 3px; }
+
+/* Daily lock notice */
+.daily-locked {
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 16px; max-width: 280px; width: 100%; font-size: 13px; color: var(--ink-faint);
+}
+.daily-locked b { color: var(--ink); }
 
 /* Question */
 .question-stage { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
 .question-tracker { font-size: 12px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
-.question-text { font-size: 20px; font-weight: 700; line-height: 1.35; margin: 0 0 20px; }
+.question-text { font-size: 20px; font-weight: 700; line-height: 1.35; margin: 0 0 16px; }
 .question-text .category-tag {
   display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
   padding: 3px 8px; border-radius: 6px; background: var(--surface-2); color: var(--accent); margin-bottom: 10px;
 }
 
 /* Options */
-.options-grid { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; margin-bottom: 16px; }
+.options-grid { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; margin-bottom: 12px; }
 .option-btn {
   display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; border-radius: var(--radius);
   border: 1px solid var(--border); background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 600;
@@ -106,10 +128,18 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .option-btn.correct { border-color: var(--correct); background: rgba(16,185,129,0.08); }
 .option-btn.wrong { border-color: var(--wrong); background: rgba(244,63,94,0.08); animation: shake 0.4s ease-in-out; }
 .option-btn.dimmed { opacity: 0.35; pointer-events: none; }
+.option-btn.timeout { border-color: var(--warning); background: rgba(245,158,11,0.08); }
 
 @keyframes shake {
   0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)}
 }
+
+/* Per-question timer */
+.q-timer-wrap { margin-bottom: 12px; }
+.q-timer-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.q-timer-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .1s linear; }
+.q-timer-fill.urgent { background: var(--warning); }
+.q-timer-fill.danger { background: var(--wrong); }
 
 /* Feedback strip */
 .feedback-strip {
@@ -119,30 +149,54 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .feedback-strip.show { opacity: 1; transform: translateY(0); }
 .feedback-strip.correct { border-color: var(--correct); }
 .feedback-strip.wrong { border-color: var(--wrong); }
+.feedback-strip.timeout { border-color: var(--warning); }
 .feedback-strip .fb-result { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
 .feedback-strip .fb-insight { font-size: 13px; color: var(--ink-faint); line-height: 1.45; font-style: italic; font-family: var(--font-serif); }
 
-/* Hearts */
-.hearts-bar { display: flex; gap: 6px; justify-content: center; margin-bottom: 10px; }
-.heart { font-size: 20px; transition: transform .3s, opacity .3s; }
-.heart.lost { opacity: 0.25; transform: scale(0.8); filter: grayscale(1); }
-
-/* Timer */
-.timer-bar { height: 3px; background: var(--border); border-radius: 2px; margin-bottom: 12px; overflow: hidden; flex-shrink: 0; }
-.timer-bar .timer-fill { height: 100%; background: var(--accent); width: 0%; transition: width 1s linear; }
-
 /* Share / results */
-.results-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 16px; min-height: 0; overflow-y: auto; }
+.results-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 14px; min-height: 0; overflow-y: auto; padding-bottom: 16px; }
 .results-score { font-size: 48px; font-weight: 800; line-height: 1; }
 .results-label { font-size: 15px; color: var(--ink-faint); font-weight: 500; }
-.share-grid { display: flex; flex-direction: column; gap: 4px; font-size: 18px; line-height: 1; }
-.share-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; background: var(--surface-2); padding: 12px; border-radius: 10px; border: 1px solid var(--border); max-width: 320px; width: 100%; word-break: break-word; text-align: left; }
 
-/* Endless stats overlay */
-.endless-stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 8px; }
-.endless-stat { text-align: center; }
-.endless-stat .val { font-size: 22px; font-weight: 800; display: block; }
-.endless-stat .lbl { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+/* Visual share grid */
+.share-visual {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; max-width: 260px; width: 100%;
+}
+.share-cell { aspect-ratio: 1; border-radius: 6px; }
+.share-cell.correct { background: var(--correct); }
+.share-cell.wrong { background: var(--wrong); }
+.share-cell.empty { background: var(--surface-3); }
+
+.share-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
+  background: var(--surface-2); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  max-width: 320px; width: 100%; word-break: break-word; text-align: left;
+}
+
+/* Category mastery */
+.mastery-grid {
+  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
+  max-width: 320px; width: 100%;
+}
+.mastery-chip {
+  display: flex; align-items: center; gap: 4px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+  padding: 5px 12px; font-size: 12px; font-weight: 600;
+}
+.mastery-chip .m-icon { font-size: 13px; }
+
+/* Confetti canvas */
+#confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
+
+/* Perfect celebration */
+.perfect-flash { animation: perfectPulse .6s ease; }
+@keyframes perfectPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
 
 /* Toasts */
 #toast-host { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 100; pointer-events: none; }
@@ -156,6 +210,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 </style>
 </head>
 <body>
+<canvas id="confetti-canvas"></canvas>
 <div id="app">
 
   <!-- LANDING -->
@@ -164,10 +219,24 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
     <div class="landing-body">
       <div class="logo">🧠</div>
       <h2>Synapse Trivia</h2>
-      <p>10 questions. No ads. No coins. Just pure knowledge.</p>
-      <div class="stats-bar" id="landing-stats"></div>
+      <p>10 questions. Same set for everyone. Once per day.</p>
+
+      <!-- Streak display -->
+      <div class="landing-streak-bar" id="streak-bar" style="display:none;">
+        <span class="fire" id="streak-fire">🔥</span>
+        <span id="streak-text"></span>
+      </div>
+
       <button class="btn-primary" id="btn-daily">▶ Play Daily 10</button>
-      <button class="btn-secondary" id="btn-endless">♾️ Endless Gauntlet</button>
+
+      <div class="daily-locked" id="daily-lock" style="display:none;">
+        <b>Daily 10 completed!</b><br>
+        Come back tomorrow for a new set.
+      </div>
+
+      <div class="stats-bar" id="landing-stats"></div>
+
+      <button class="btn-secondary" id="btn-practice">🎯 Practice Mode</button>
     </div>
   </div>
 
@@ -180,16 +249,21 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
         <button class="icon-btn" id="btn-close" aria-label="Quit">✕</button>
       </div>
     </div>
-    <div id="hearts-bar" class="hearts-bar" style="display:none;"></div>
-    <div class="timer-bar" id="timer-bar" style="display:none;"><div class="timer-fill" id="timer-fill"></div></div>
+
+    <div class="q-timer-wrap">
+      <div class="q-timer-bar"><div class="q-timer-fill" id="q-timer-fill"></div></div>
+    </div>
+
     <div class="question-stage">
       <div class="question-tracker" id="q-tracker">Question 1 / 10</div>
       <div class="question-text" id="q-text">Loading...</div>
     </div>
+
     <div id="feedback-strip" class="feedback-strip">
       <div class="fb-result" id="fb-result"></div>
       <div class="fb-insight" id="fb-insight"></div>
     </div>
+
     <div class="options-grid" id="options-grid"></div>
   </div>
 
@@ -199,11 +273,17 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
     <div class="results-body">
       <div class="results-score" id="result-score">8/10</div>
       <div class="results-label" id="result-label">Great job!</div>
-      <div class="endless-stats" id="endless-stats" style="display:none;"></div>
-      <div class="share-grid" id="share-grid"></div>
+
+      <!-- Mastery -->
+      <div class="mastery-grid" id="mastery-grid"></div>
+
+      <!-- Visual share grid -->
+      <div class="share-visual" id="share-visual"></div>
+
       <div class="share-text" id="share-text"></div>
-      <button class="btn-primary" id="btn-copy">📋 Copy Results</button>
-      <button class="btn-secondary" id="btn-again">Play Again</button>
+
+      <button class="btn-primary" id="btn-share">📤 Share Score</button>
+      <button class="btn-secondary" id="btn-copy">📋 Copy Text</button>
       <button class="btn-secondary" id="btn-home">🏠 Home</button>
     </div>
   </div>
@@ -213,13 +293,13 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
 <script>
 /* ================================================================
-   SYNAPSE TRIVIA — Single-file prototype
+   SYNAPSE TRIVIA — Curated daily trivia
    ================================================================ */
 
-// ---- Audio Engine ----
+// ---- Audio Engine (muted by default) ----
 class AudioEngine {
   constructor() {
-    this.ctx = null; this.master = null; this.enabled = true;
+    this.ctx = null; this.master = null; this.enabled = false; // muted by default
   }
   init() {
     if (this.ctx) return;
@@ -227,7 +307,7 @@ class AudioEngine {
     if (!AC) return;
     this.ctx = new AC();
     this.master = this.ctx.createGain();
-    this.master.gain.value = 0.2;
+    this.master.gain.value = 0.15;
     this.master.connect(this.ctx.destination);
   }
   _tone(freq, type, dur, fade=true) {
@@ -236,14 +316,14 @@ class AudioEngine {
     const g = this.ctx.createGain();
     o.type = type;
     o.frequency.setValueAtTime(freq, this.ctx.currentTime);
-    g.gain.setValueAtTime(0.25, this.ctx.currentTime);
+    g.gain.setValueAtTime(0.2, this.ctx.currentTime);
     if (fade) g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
     o.connect(g); g.connect(this.master);
     o.start(); o.stop(this.ctx.currentTime + dur);
   }
   click() { this.init(); this._tone(880, 'sine', 0.05); }
   correct() { this.init(); [523.25,659.25,783.99].forEach((f,i)=>setTimeout(()=>this._tone(f,'sine',0.35),i*60)); }
-  wrong() { this.init(); const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(180,this.ctx.currentTime); o.frequency.linearRampToValueAtTime(90,this.ctx.currentTime+0.22); g.gain.setValueAtTime(0.15,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+0.25); o.connect(g); g.connect(this.master); o.start(); o.stop(this.ctx.currentTime+0.28); }
+  wrong() { this.init(); const o=this.ctx.createOscillator(),g=this.ctx.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(180,this.ctx.currentTime); o.frequency.linearRampToValueAtTime(90,this.ctx.currentTime+0.22); g.gain.setValueAtTime(0.12,this.ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,this.ctx.currentTime+0.25); o.connect(g); g.connect(this.master); o.start(); o.stop(this.ctx.currentTime+0.28); }
 }
 const audio = new AudioEngine();
 
@@ -267,58 +347,251 @@ function seededShuffle(arr, seed) {
   return a;
 }
 
-// ---- Curated Question Bank ----
+// ---- Curated Question Bank (200 questions) ----
 const QUESTIONS = [
-  { id:"q1", category:"Science", difficulty:"medium", question:"What is the only planet in our solar system that rotates clockwise?", options:["Venus","Mars","Jupiter","Saturn"], correctIndex:0, didYouKnow:"Venus spins in the opposite direction to most planets, so the Sun rises in the west." },
-  { id:"q2", category:"History", difficulty:"easy", question:"In which year did the Berlin Wall fall?", options:["1987","1989","1991","1993"], correctIndex:1, didYouKnow:"The fall began on November 9, 1989, after a mistaken announcement by a East German official." },
-  { id:"q3", category:"Geography", difficulty:"medium", question:"Which country has the most time zones?", options:["Russia","USA","France","China"], correctIndex:2, didYouKnow:"France has 12 time zones thanks to its overseas territories scattered across the globe." },
-  { id:"q4", category:"Literature", difficulty:"hard", question:"Who wrote the epic poem 'Paradise Lost'?", options:["John Donne","John Milton","Alexander Pope","William Blake"], correctIndex:1, didYouKnow:"Milton was completely blind when he dictated the 10,000-line poem to assistants." },
-  { id:"q5", category:"Pop Culture", difficulty:"easy", question:"Which artist released the album '1989' in 2014?", options:["Katy Perry","Adele","Taylor Swift","Lady Gaga"], correctIndex:2, didYouKnow:"The album marked her official shift from country to synth-pop and won Album of the Year." },
-  { id:"q6", category:"Science", difficulty:"hard", question:"What is the smallest unit of matter that retains the properties of an element?", options:["Electron","Proton","Atom","Quark"], correctIndex:2, didYouKnow:"The word atom comes from the Greek atomos, meaning indivisible — though we now know it can be split." },
-  { id:"q7", category:"History", difficulty:"medium", question:"The ancient city of Petra is located in which modern-day country?", options:["Egypt","Jordan","Syria","Lebanon"], correctIndex:1, didYouKnow:"Petra was carved directly into rose-red sandstone cliffs by the Nabataeans over 2,000 years ago." },
-  { id:"q8", category:"Geography", difficulty:"easy", question:"What is the capital of Australia?", options:["Sydney","Melbourne","Canberra","Brisbane"], correctIndex:2, didYouKnow:"Canberra was purpose-built as a compromise between rivals Sydney and Melbourne in 1913." },
-  { id:"q9", category:"Literature", difficulty:"medium", question:"In '1984', what is the name of the totalitarian regime's leader?", options:["Big Brother","The Party","O'Brien","Goldstein"], correctIndex:0, didYouKnow:"George Orwell never confirms whether Big Brother is a real person or simply a propaganda construct." },
-  { id:"q10", category:"General", difficulty:"medium", question:"How many bones are in the adult human body?", options:["186","206","216","256"], correctIndex:1, didYouKnow:"Babies are born with about 270 bones — many fuse together during growth, which is why adults have fewer." },
-  { id:"q11", category:"Science", difficulty:"easy", question:"What gas do plants absorb from the atmosphere?", options:["Oxygen","Carbon Dioxide","Nitrogen","Hydrogen"], correctIndex:1, didYouKnow:"A single mature tree can absorb about 22kg of CO₂ from the atmosphere every year." },
-  { id:"q12", category:"History", difficulty:"hard", question:"The Battle of Hastings took place in which year?", options:["1042","1066","1087","1100"], correctIndex:1, didYouKnow:"William the Conqueror's victory in 1066 transformed the English language, adding thousands of French words." },
-  { id:"q13", category:"Geography", difficulty:"hard", question:"Lake Baikal, the world's deepest lake, is located in which country?", options:["Canada","Russia","Mongolia","Kazakhstan"], correctIndex:1, didYouKnow:"Baikal holds roughly 20% of the world's unfrozen freshwater and is over 25 million years old." },
-  { id:"q14", category:"Pop Culture", difficulty:"medium", question:"Which film won the first Academy Award for Best Animated Feature?", options:["Toy Story 2","Shrek","Monsters, Inc.","Finding Nemo"], correctIndex:1, didYouKnow:"Shrek beat Monsters, Inc. and Jimmy Neutron at the 2002 Oscars to take the inaugural award." },
-  { id:"q15", category:"General", difficulty:"easy", question:"What is the chemical symbol for gold?", options:["Go","Gd","Au","Ag"], correctIndex:2, didYouKnow:"Au comes from the Latin aurum, meaning shining dawn — the same root as the word aura." },
+  // SCIENCE (40)
+  { id:"s1", category:"Science", difficulty:"easy", question:"What gas do plants absorb from the atmosphere?", options:["Oxygen","Carbon Dioxide","Nitrogen","Hydrogen"], correctIndex:1, didYouKnow:"A single mature tree can absorb about 22kg of CO₂ from the atmosphere every year." },
+  { id:"s2", category:"Science", difficulty:"hard", question:"What is the smallest unit of matter that retains the properties of an element?", options:["Electron","Proton","Atom","Quark"], correctIndex:2, didYouKnow:"The word atom comes from the Greek atomos, meaning indivisible — though we now know it can be split." },
+  { id:"s3", category:"Science", difficulty:"medium", question:"What is the only planet in our solar system that rotates clockwise?", options:["Venus","Mars","Jupiter","Saturn"], correctIndex:0, didYouKnow:"Venus spins in the opposite direction to most planets, so the Sun rises in the west." },
+  { id:"s4", category:"Science", difficulty:"easy", question:"What is the chemical symbol for gold?", options:["Go","Gd","Au","Ag"], correctIndex:2, didYouKnow:"Au comes from the Latin aurum, meaning shining dawn — the same root as the word aura." },
+  { id:"s5", category:"Science", difficulty:"medium", question:"How many bones are in the adult human body?", options:["186","206","216","256"], correctIndex:1, didYouKnow:"Babies are born with about 270 bones — many fuse together during growth." },
+  { id:"s6", category:"Science", difficulty:"easy", question:"What is the speed of light approximately?", options:["300,000 km/s","150,000 km/s","500,000 km/s","1,000,000 km/s"], correctIndex:0, didYouKnow:"Light takes just over 8 minutes to travel from the Sun to Earth." },
+  { id:"s7", category:"Science", difficulty:"medium", question:"What particle has a negative charge?", options:["Proton","Neutron","Electron","Photon"], correctIndex:2, didYouKnow:"Electrons were discovered by J.J. Thomson in 1897 using a cathode ray tube." },
+  { id:"s8", category:"Science", difficulty:"hard", question:"What is the hardest natural substance on Earth?", options:["Iron","Diamond","Titanium","Quartz"], correctIndex:1, didYouKnow:"Diamonds are rated 10 on the Mohs scale of mineral hardness." },
+  { id:"s9", category:"Science", difficulty:"easy", question:"What planet is known as the Red Planet?", options:["Venus","Mars","Jupiter","Mercury"], correctIndex:1, didYouKnow:"Mars appears red due to iron oxide (rust) on its surface." },
+  { id:"s10", category:"Science", difficulty:"medium", question:"What is the largest organ in the human body?", options:["Liver","Brain","Skin","Heart"], correctIndex:2, didYouKnow:"The skin accounts for about 15% of your total body weight." },
+  { id:"s11", category:"Science", difficulty:"hard", question:"What is the powerhouse of the cell?", options:["Nucleus","Mitochondria","Ribosome","Golgi apparatus"], correctIndex:1, didYouKnow:"Mitochondria have their own DNA, inherited only from your mother." },
+  { id:"s12", category:"Science", difficulty:"easy", question:"What do bees collect from flowers?", options:["Nectar","Sap","Pollen","Water"], correctIndex:0, didYouKnow:"Bees also collect pollen, which they use as a protein source for their larvae." },
+  { id:"s13", category:"Science", difficulty:"medium", question:"What element has the atomic number 1?", options:["Helium","Oxygen","Hydrogen","Carbon"], correctIndex:2, didYouKnow:"Hydrogen makes up about 75% of the universe's elemental mass." },
+  { id:"s14", category:"Science", difficulty:"hard", question:"What is the process by which plants make their own food?", options:["Respiration","Photosynthesis","Fermentation","Digestion"], correctIndex:1, didYouKnow:"Photosynthesis converts light energy into chemical energy stored in glucose." },
+  { id:"s15", category:"Science", difficulty:"easy", question:"What force keeps us on the ground?", options:["Magnetism","Gravity","Friction","Inertia"], correctIndex:1, didYouKnow:"Gravity is about 1/6 as strong on the Moon as it is on Earth." },
+  { id:"s16", category:"Science", difficulty:"medium", question:"What is the boiling point of water at sea level?", options:["90°C","100°C","110°C","120°C"], correctIndex:1, didYouKnow:"Water boils at lower temperatures at higher altitudes due to lower air pressure." },
+  { id:"s17", category:"Science", difficulty:"hard", question:"What is the study of fungi called?", options:["Botany","Mycology","Zoology","Entomology"], correctIndex:1, didYouKnow:"The largest living organism on Earth is a honey fungus in Oregon, spanning 2,385 acres." },
+  { id:"s18", category:"Science", difficulty:"easy", question:"What do we call the center of an atom?", options:["Electron","Proton","Neutron","Nucleus"], correctIndex:3, didYouKnow:"The nucleus contains over 99.9% of an atom's mass but occupies almost none of its volume." },
+  { id:"s19", category:"Science", difficulty:"medium", question:"Which blood type is the universal donor?", options:["A+","B+","AB-","O-"], correctIndex:3, didYouKnow:"O-negative blood can be given to patients of any blood type in emergencies." },
+  { id:"s20", category:"Science", difficulty:"hard", question:"What is the second most abundant element in the Earth's crust?", options:["Oxygen","Silicon","Aluminum","Iron"], correctIndex:1, didYouKnow:"Silicon makes up about 28% of the Earth's crust by mass." },
+  { id:"s21", category:"Science", difficulty:"easy", question:"What planet has the most moons?", options:["Jupiter","Saturn","Uranus","Neptune"], correctIndex:1, didYouKnow:"Saturn has over 140 confirmed moons, surpassing Jupiter in recent counts." },
+  { id:"s22", category:"Science", difficulty:"medium", question:"What part of the eye controls how much light enters?", options:["Retina","Cornea","Iris","Lens"], correctIndex:2, didYouKnow:"The iris gets its name from the Greek word for rainbow due to its variety of colors." },
+  { id:"s23", category:"Science", difficulty:"hard", question:"What is the name of the boundary around a black hole beyond which nothing can escape?", options:["Singularity","Event Horizon","Accretion Disk","Photon Sphere"], correctIndex:1, didYouKnow:"The event horizon is not a physical surface — it is a mathematical boundary." },
+  { id:"s24", category:"Science", difficulty:"easy", question:"What do you call water in its solid state?", options:["Steam","Ice","Vapor","Frost"], correctIndex:1, didYouKnow:"Ice is less dense than liquid water, which is why it floats." },
+  { id:"s25", category:"Science", difficulty:"medium", question:"Which planet has the Great Red Spot?", options:["Mars","Jupiter","Saturn","Neptune"], correctIndex:1, didYouKnow:"The Great Red Spot is a giant storm that has been raging for at least 400 years." },
+  { id:"s26", category:"Science", difficulty:"hard", question:"What is the speed of sound in air approximately?", options:["150 m/s","343 m/s","500 m/s","1,000 m/s"], correctIndex:1, didYouKnow:"Sound travels about 4.3 times faster through water than through air." },
+  { id:"s27", category:"Science", difficulty:"easy", question:"What does DNA stand for?", options:["Dynamic Nucleic Acid","Deoxyribonucleic Acid","Dioxygen Nuclear Acid","Double Nucleotide Acid"], correctIndex:1, didYouKnow:"If you stretched out all the DNA in your body, it would reach the Sun and back about 60 times." },
+  { id:"s28", category:"Science", difficulty:"medium", question:"What is the main gas in Earth's atmosphere?", options:["Oxygen","Carbon Dioxide","Nitrogen","Argon"], correctIndex:2, didYouKnow:"Nitrogen makes up about 78% of Earth's atmosphere by volume." },
+  { id:"s29", category:"Science", difficulty:"hard", question:"What subatomic particle is found in the nucleus and has no charge?", options:["Proton","Electron","Neutron","Positron"], correctIndex:2, didYouKnow:"Neutrons were discovered by James Chadwick in 1932." },
+  { id:"s30", category:"Science", difficulty:"easy", question:"What is the closest star to Earth?", options:["Proxima Centauri","Alpha Centauri","Sirius","The Sun"], correctIndex:3, didYouKnow:"Light from the Sun takes about 8 minutes and 20 seconds to reach Earth." },
+  { id:"s31", category:"Science", difficulty:"medium", question:"What is the most common type of rock on Earth's surface?", options:["Igneous","Sedimentary","Metamorphic","Basalt"], correctIndex:1, didYouKnow:"Sedimentary rocks cover about 75% of Earth's surface." },
+  { id:"s32", category:"Science", difficulty:"hard", question:"What is the name of the theory that the universe began from a singularity?", options:["Steady State","Big Bang","String Theory","Quantum Mechanics"], correctIndex:1, didYouKnow:"The term Big Bang was originally coined by Fred Hoyle as a dismissive term." },
+  { id:"s33", category:"Science", difficulty:"easy", question:"What do caterpillars turn into?", options:["Spiders","Beetles","Butterflies","Bees"], correctIndex:2, didYouKnow:"The process is called metamorphosis and involves the caterpillar dissolving into soup before reforming." },
+  { id:"s34", category:"Science", difficulty:"medium", question:"Which vitamin is produced when skin is exposed to sunlight?", options:["Vitamin A","Vitamin C","Vitamin D","Vitamin E"], correctIndex:2, didYouKnow:"Your body can synthesize Vitamin D in as little as 10-30 minutes of midday sun exposure." },
+  { id:"s35", category:"Science", difficulty:"hard", question:"What is the half-life of Carbon-14?", options:["2,730 years","5,730 years","10,000 years","50,000 years"], correctIndex:1, didYouKnow:"Carbon-14 dating can reliably date organic materials up to about 50,000 years old." },
+  { id:"s36", category:"Science", difficulty:"easy", question:"What is the chemical formula for water?", options:["CO₂","H₂O","NaCl","O₂"], correctIndex:1, didYouKnow:"Water is the only substance that exists naturally in all three states on Earth's surface." },
+  { id:"s37", category:"Science", difficulty:"medium", question:"What planet is closest to the Sun?", options:["Venus","Earth","Mercury","Mars"], correctIndex:2, didYouKnow:"Mercury has no atmosphere to retain heat, so temperatures swing from 430°C to -180°C." },
+  { id:"s38", category:"Science", difficulty:"hard", question:"What is the name of the protein that carries oxygen in blood?", options:["Insulin","Keratin","Hemoglobin","Collagen"], correctIndex:2, didYouKnow:"Hemoglobin contains iron, which gives blood its red color." },
+  { id:"s39", category:"Science", difficulty:"easy", question:"What causes earthquakes?", options:["Volcanoes","Tectonic plates moving","Wind","Meteorites"], correctIndex:1, didYouKnow:"The Pacific Ring of Fire is the most seismically active region on Earth." },
+  { id:"s40", category:"Science", difficulty:"medium", question:"What is the largest planet in our solar system?", options:["Saturn","Jupiter","Neptune","Uranus"], correctIndex:1, didYouKnow:"Jupiter is so large that over 1,300 Earths could fit inside it." },
+
+  // HISTORY (40)
+  { id:"h1", category:"History", difficulty:"easy", question:"In which year did the Berlin Wall fall?", options:["1987","1989","1991","1993"], correctIndex:1, didYouKnow:"The fall began on November 9, 1989, after a mistaken announcement by an East German official." },
+  { id:"h2", category:"History", difficulty:"hard", question:"The Battle of Hastings took place in which year?", options:["1042","1066","1087","1100"], correctIndex:1, didYouKnow:"William the Conqueror's victory in 1066 transformed the English language, adding thousands of French words." },
+  { id:"h3", category:"History", difficulty:"medium", question:"The ancient city of Petra is located in which modern-day country?", options:["Egypt","Jordan","Syria","Lebanon"], correctIndex:1, didYouKnow:"Petra was carved directly into rose-red sandstone cliffs by the Nabataeans over 2,000 years ago." },
+  { id:"h4", category:"History", difficulty:"easy", question:"Who was the first President of the United States?", options:["Thomas Jefferson","John Adams","George Washington","Benjamin Franklin"], correctIndex:2, didYouKnow:"Washington was unanimously elected by the Electoral College in both 1788 and 1792." },
+  { id:"h5", category:"History", difficulty:"medium", question:"In which year did World War II end?", options:["1943","1944","1945","1946"], correctIndex:2, didYouKnow:"Germany surrendered on May 8, 1945; Japan surrendered on September 2, 1945." },
+  { id:"h6", category:"History", difficulty:"hard", question:"Who was the longest-reigning British monarch before Elizabeth II?", options:["Victoria","George III","Henry VIII","Edward VII"], correctIndex:0, didYouKnow:"Queen Victoria reigned for 63 years and 216 days, from 1837 to 1901." },
+  { id:"h7", category:"History", difficulty:"easy", question:"Which empire built the Colosseum?", options:["Greek","Roman","Ottoman","Persian"], correctIndex:1, didYouKnow:"The Colosseum could seat an estimated 50,000 to 80,000 spectators." },
+  { id:"h8", category:"History", difficulty:"medium", question:"The French Revolution began in which year?", options:["1776","1789","1799","1804"], correctIndex:1, didYouKnow:"The storming of the Bastille on July 14, 1789, is celebrated as France's national day." },
+  { id:"h9", category:"History", difficulty:"hard", question:"Who wrote The Art of War?", options:["Confucius","Sun Tzu","Laozi","Mencius"], correctIndex:1, didYouKnow:"The Art of War dates to roughly the 5th century BC and is still studied in military academies worldwide." },
+  { id:"h10", category:"History", difficulty:"easy", question:"Which ship sank on its maiden voyage in 1912?", options:["Lusitania","Titanic","Britannic","Olympic"], correctIndex:1, didYouKnow:"The Titanic was equipped with only enough lifeboats for about half the people on board." },
+  { id:"h11", category:"History", difficulty:"medium", question:"The Magna Carta was signed in which year?", options:["1066","1215","1415","1492"], correctIndex:1, didYouKnow:"The Magna Carta established the principle that everyone, including the king, was subject to the law." },
+  { id:"h12", category:"History", difficulty:"hard", question:"Who was the first human to travel into space?", options:["Neil Armstrong","Buzz Aldrin","Yuri Gagarin","John Glenn"], correctIndex:2, didYouKnow:"Gagarin's 108-minute flight on April 12, 1961, made him an international hero." },
+  { id:"h13", category:"History", difficulty:"easy", question:"Which ancient wonder of the world still stands today?", options:["Colossus of Rhodes","Lighthouse of Alexandria","Great Pyramid of Giza","Hanging Gardens"], correctIndex:2, didYouKnow:"The Great Pyramid was the tallest man-made structure in the world for over 3,800 years." },
+  { id:"h14", category:"History", difficulty:"medium", question:"The Renaissance began in which country?", options:["France","England","Italy","Germany"], correctIndex:2, didYouKnow:"Florence is widely considered the birthplace of the Renaissance, starting in the 14th century." },
+  { id:"h15", category:"History", difficulty:"hard", question:"Who was the first female Prime Minister of the United Kingdom?", options:["Queen Elizabeth II","Margaret Thatcher","Theresa May","Angela Merkel"], correctIndex:1, didYouKnow:"Thatcher served from 1979 to 1990 and was nicknamed the Iron Lady." },
+  { id:"h16", category:"History", difficulty:"easy", question:"Who discovered America in 1492?", options:["Marco Polo","Christopher Columbus","Vasco da Gama","Ferdinand Magellan"], correctIndex:1, didYouKnow:"Columbus never actually reached mainland North America — he landed in the Caribbean." },
+  { id:"h17", category:"History", difficulty:"medium", question:"The Cold War was primarily between which two superpowers?", options:["USA and China","USA and USSR","UK and France","Germany and Japan"], correctIndex:1, didYouKnow:"The term Cold War was first used by George Orwell in 1945." },
+  { id:"h18", category:"History", difficulty:"hard", question:"Which treaty ended World War I?", options:["Treaty of Paris","Treaty of Tordesillas","Treaty of Versailles","Treaty of Utrecht"], correctIndex:2, didYouKnow:"The treaty imposed heavy reparations on Germany, contributing to economic instability in the 1920s." },
+  { id:"h19", category:"History", difficulty:"easy", question:"Which civilization built Machu Picchu?", options:["Aztec","Maya","Inca","Olmec"], correctIndex:2, didYouKnow:"Machu Picchu was built in the 15th century and rediscovered by Hiram Bingham in 1911." },
+  { id:"h20", category:"History", difficulty:"medium", question:"In which year did the atomic bombings of Hiroshima and Nagasaki occur?", options:["1943","1944","1945","1946"], correctIndex:2, didYouKnow:"Hiroshima was bombed on August 6; Nagasaki on August 9, 1945." },
+  { id:"h21", category:"History", difficulty:"hard", question:"Who was the first Emperor of China?", options:["Confucius","Qin Shi Huang","Kublai Khan","Sun Yat-sen"], correctIndex:1, didYouKnow:"Qin Shi Huang commissioned the Terracotta Army to protect him in the afterlife." },
+  { id:"h22", category:"History", difficulty:"easy", question:"Which war was fought between the North and South in the United States?", options:["Revolutionary War","Civil War","World War I","War of 1812"], correctIndex:1, didYouKnow:"The Civil War lasted from 1861 to 1865 and resulted in the abolition of slavery." },
+  { id:"h23", category:"History", difficulty:"medium", question:"The Rosetta Stone was key to deciphering which ancient writing system?", options:["Cuneiform","Hieroglyphics","Sanskrit","Linear B"], correctIndex:1, didYouKnow:"The stone contained the same text in three scripts: hieroglyphic, demotic, and Greek." },
+  { id:"h24", category:"History", difficulty:"hard", question:"Who was the last Tsar of Russia?", options:["Peter the Great","Ivan the Terrible","Nicholas II","Alexander II"], correctIndex:2, didYouKnow:"Nicholas II and his family were executed by Bolsheviks in July 1918." },
+  { id:"h25", category:"History", difficulty:"easy", question:"In what year did man first land on the Moon?", options:["1967","1969","1971","1973"], correctIndex:1, didYouKnow:"Neil Armstrong stepped onto the lunar surface on July 20, 1969." },
+  { id:"h26", category:"History", difficulty:"medium", question:"Which pharaoh commissioned the Great Pyramid of Giza?", options:["Tutankhamun","Ramses II","Khufu","Akhenaten"], correctIndex:2, didYouKnow:"Khufu reigned around 2589–2566 BC, during Egypt's Old Kingdom period." },
+  { id:"h27", category:"History", difficulty:"hard", question:"The Opium Wars were fought between Britain and which country?", options:["India","Japan","China","Thailand"], correctIndex:2, didYouKnow:"The wars forced China to open ports to British trade and cede Hong Kong." },
+  { id:"h28", category:"History", difficulty:"easy", question:"Who painted the Mona Lisa?", options:["Michelangelo","Leonardo da Vinci","Raphael","Donatello"], correctIndex:1, didYouKnow:"Leonardo carried the Mona Lisa with him for years and never delivered it to the commissioner." },
+  { id:"h29", category:"History", difficulty:"medium", question:"The Silk Road primarily connected which two regions?", options:["Europe and Africa","Europe and Asia","Asia and Australia","Africa and Asia"], correctIndex:1, didYouKnow:"The Silk Road was not a single road but a network of trade routes spanning 4,000 miles." },
+  { id:"h30", category:"History", difficulty:"hard", question:"Who was the first Holy Roman Emperor?", options:["Charlemagne","Otto I","Frederick Barbarossa","Henry IV"], correctIndex:0, didYouKnow:"Charlemagne was crowned on Christmas Day, 800 AD, by Pope Leo III." },
+  { id:"h31", category:"History", difficulty:"easy", question:"Which country gifted the Statue of Liberty to the USA?", options:["United Kingdom","Germany","France","Spain"], correctIndex:2, didYouKnow:"The statue was designed by Frédéric Auguste Bartholdi and its internal structure by Gustave Eiffel." },
+  { id:"h32", category:"History", difficulty:"medium", question:"The Black Death peaked in Europe during which century?", options:["12th","13th","14th","15th"], correctIndex:2, didYouKnow:"The plague killed an estimated 30-60% of Europe's population between 1347 and 1351." },
+  { id:"h33", category:"History", difficulty:"hard", question:"Which battle marked the turning point in the Pacific Theater of WWII?", options:["Pearl Harbor","Midway","Iwo Jima","Okinawa"], correctIndex:1, didYouKnow:"The Battle of Midway in June 1942 sank four Japanese aircraft carriers." },
+  { id:"h34", category:"History", difficulty:"easy", question:"Who was the leader of Nazi Germany during WWII?", options:["Stalin","Mussolini","Hitler","Hirohito"], correctIndex:2, didYouKnow:"Hitler became Chancellor of Germany on January 30, 1933." },
+  { id:"h35", category:"History", difficulty:"medium", question:"The Declaration of Independence was adopted in which year?", options:["1774","1775","1776","1777"], correctIndex:2, didYouKnow:"Most delegates signed the document on August 2, 1776, not July 4." },
+  { id:"h36", category:"History", difficulty:"hard", question:"Which civilization invented paper?", options:["Egyptians","Greeks","Chinese","Romans"], correctIndex:2, didYouKnow:"Cai Lun is traditionally credited with inventing paper in China around 105 AD." },
+  { id:"h37", category:"History", difficulty:"easy", question:"What was the name of the ship that brought the Pilgrims to America?", options:["Mayflower","Santa Maria","Beagle","Endeavour"], correctIndex:0, didYouKnow:"The Mayflower carried 102 passengers and arrived at Plymouth in November 1620." },
+  { id:"h38", category:"History", difficulty:"medium", question:"The Crusades were fought primarily between Christians and which other group?", options:["Buddhists","Hindus","Muslims","Jews"], correctIndex:2, didYouKnow:"There were nine major Crusades between 1095 and 1291." },
+  { id:"h39", category:"History", difficulty:"hard", question:"Who was the founder of the Mongol Empire?", options:["Kublai Khan","Genghis Khan","Timur","Attila"], correctIndex:1, didYouKnow:"At its peak, the Mongol Empire was the largest contiguous land empire in history." },
+  { id:"h40", category:"History", difficulty:"easy", question:"What ancient civilization is known for its pyramids and mummies?", options:["Roman","Greek","Egyptian","Persian"], correctIndex:2, didYouKnow:"The Egyptian pyramids were built as tombs for pharaohs during the Old and Middle Kingdoms." },
+
+  // GEOGRAPHY (40)
+  { id:"g1", category:"Geography", difficulty:"medium", question:"Which country has the most time zones?", options:["Russia","USA","France","China"], correctIndex:2, didYouKnow:"France has 12 time zones thanks to its overseas territories scattered across the globe." },
+  { id:"g2", category:"Geography", difficulty:"easy", question:"What is the capital of Australia?", options:["Sydney","Melbourne","Canberra","Brisbane"], correctIndex:2, didYouKnow:"Canberra was purpose-built as a compromise between rivals Sydney and Melbourne in 1913." },
+  { id:"g3", category:"Geography", difficulty:"hard", question:"Lake Baikal, the world's deepest lake, is located in which country?", options:["Canada","Russia","Mongolia","Kazakhstan"], correctIndex:1, didYouKnow:"Baikal holds roughly 20% of the world's unfrozen freshwater and is over 25 million years old." },
+  { id:"g4", category:"Geography", difficulty:"easy", question:"What is the largest ocean on Earth?", options:["Atlantic","Indian","Arctic","Pacific"], correctIndex:3, didYouKnow:"The Pacific Ocean covers more area than all land on Earth combined." },
+  { id:"g5", category:"Geography", difficulty:"medium", question:"Which country has the longest coastline in the world?", options:["USA","Australia","Canada","Russia"], correctIndex:2, didYouKnow:"Canada's coastline is over 202,000 km long — the equivalent of circling the Earth five times." },
+  { id:"g6", category:"Geography", difficulty:"hard", question:"What is the smallest country in the world by area?", options:["Monaco","San Marino","Vatican City","Liechtenstein"], correctIndex:2, didYouKnow:"Vatican City is only 0.44 km², smaller than many city parks." },
+  { id:"g7", category:"Geography", difficulty:"easy", question:"Which continent is the Sahara Desert located on?", options:["Asia","Africa","Australia","South America"], correctIndex:1, didYouKnow:"The Sahara is about the size of the United States and covers 11 countries." },
+  { id:"g8", category:"Geography", difficulty:"medium", question:"The Amazon River is primarily in which country?", options:["Argentina","Peru","Brazil","Colombia"], correctIndex:2, didYouKnow:"The Amazon discharges more water than the next seven largest rivers combined." },
+  { id:"g9", category:"Geography", difficulty:"hard", question:"Mount Kilimanjaro is located in which country?", options:["Kenya","Uganda","Tanzania","Ethiopia"], correctIndex:2, didYouKnow:"Kilimanjaro is Africa's highest peak at 5,895 meters and is actually a dormant volcano." },
+  { id:"g10", category:"Geography", difficulty:"easy", question:"What is the capital of Japan?", options:["Osaka","Kyoto","Tokyo","Hiroshima"], correctIndex:2, didYouKnow:"Tokyo was originally a small fishing village called Edo before becoming Japan's political center." },
+  { id:"g11", category:"Geography", difficulty:"medium", question:"Which US state has the most active volcanoes?", options:["California","Hawaii","Alaska","Washington"], correctIndex:2, didYouKnow:"Alaska has over 130 volcanoes and volcanic fields, with more than 50 having erupted in historical times." },
+  { id:"g12", category:"Geography", difficulty:"hard", question:"What is the driest place on Earth?", options:["Sahara Desert","Death Valley","Atacama Desert","Antarctica"], correctIndex:3, didYouKnow:"Some parts of Antarctica's Dry Valleys haven't seen rain for millions of years." },
+  { id:"g13", category:"Geography", difficulty:"easy", question:"Which country is shaped like a boot?", options:["Spain","Greece","Italy","Portugal"], correctIndex:2, didYouKnow:"Italy's boot shape extends about 1,200 km from the Alps to Sicily." },
+  { id:"g14", category:"Geography", difficulty:"medium", question:"The Great Barrier Reef is off the coast of which country?", options:["New Zealand","Indonesia","Australia","Philippines"], correctIndex:2, didYouKnow:"The reef is the largest living structure on Earth, visible from space." },
+  { id:"g15", category:"Geography", difficulty:"hard", question:"What is the deepest point in the ocean?", options:["Java Trench","Puerto Rico Trench","Mariana Trench","Philippine Trench"], correctIndex:2, didYouKnow:"The Challenger Deep in the Mariana Trench reaches about 10,984 meters below sea level." },
+  { id:"g16", category:"Geography", difficulty:"easy", question:"What is the tallest mountain in the world?", options:["K2","Mount Kilimanjaro","Mount Everest","Denali"], correctIndex:2, didYouKnow:"Everest grows about 4 mm per year due to tectonic plate movement." },
+  { id:"g17", category:"Geography", difficulty:"medium", question:"Which European city is built on 118 islands?", options:["Amsterdam","Venice","Stockholm","Copenhagen"], correctIndex:1, didYouKnow:"Venice has over 400 bridges connecting its islands." },
+  { id:"g18", category:"Geography", difficulty:"hard", question:"What is the largest desert in the world?", options:["Sahara","Arabian","Gobi","Antarctica"], correctIndex:3, didYouKnow:"A desert is defined by low precipitation, not heat. Antarctica is the driest and largest desert." },
+  { id:"g19", category:"Geography", difficulty:"easy", question:"Which country is home to the Eiffel Tower?", options:["Italy","Spain","Germany","France"], correctIndex:3, didYouKnow:"The Eiffel Tower was built for the 1889 World's Fair and was meant to be temporary." },
+  { id:"g20", category:"Geography", difficulty:"medium", question:"The River Nile flows primarily through which continent?", options:["Asia","Africa","South America","Europe"], correctIndex:1, didYouKnow:"The Nile is generally considered the world's longest river at about 6,650 km." },
+  { id:"g21", category:"Geography", difficulty:"hard", question:"What is the most densely populated country in the world?", options:["India","Bangladesh","Singapore","Monaco"], correctIndex:3, didYouKnow:"Monaco has about 20,000 people per square kilometer." },
+  { id:"g22", category:"Geography", difficulty:"easy", question:"Which country is known as the Land of the Rising Sun?", options:["China","Thailand","Japan","South Korea"], correctIndex:2, didYouKnow:"Nippon, the Japanese name for Japan, literally means origin of the sun." },
+  { id:"g23", category:"Geography", difficulty:"medium", question:"What is the largest island in the world?", options:["Australia","Madagascar","Greenland","New Guinea"], correctIndex:2, didYouKnow:"Greenland is about three times the size of Texas but has a population of only 56,000." },
+  { id:"g24", category:"Geography", difficulty:"hard", question:"Which African country was never colonized by a European power?", options:["Kenya","Nigeria","Ethiopia","Ghana"], correctIndex:2, didYouKnow:"Ethiopia defeated Italy at the Battle of Adwa in 1896, securing its independence." },
+  { id:"g25", category:"Geography", difficulty:"easy", question:"What is the capital of France?", options:["Lyon","Marseille","Paris","Nice"], correctIndex:2, didYouKnow:"Paris has been the capital since 508 AD, making it one of Europe's oldest capitals." },
+  { id:"g26", category:"Geography", difficulty:"medium", question:"The Dead Sea is bordered by which two countries?", options:["Egypt and Israel","Jordan and Israel","Syria and Lebanon","Turkey and Greece"], correctIndex:1, didYouKnow:"The Dead Sea's surface is about 430 meters below sea level — the lowest land elevation on Earth." },
+  { id:"g27", category:"Geography", difficulty:"hard", question:"Which sea has no coastline?", options:["Red Sea","Caspian Sea","Black Sea","Mediterranean Sea"], correctIndex:1, didYouKnow:"The Caspian Sea is technically a lake, but it's so large it's classified as a sea." },
+  { id:"g28", category:"Geography", difficulty:"easy", question:"Which country has the Great Wall?", options:["Japan","India","China","South Korea"], correctIndex:2, didYouKnow:"The Great Wall is not a single continuous wall but a series of fortifications built over centuries." },
+  { id:"g29", category:"Geography", difficulty:"medium", question:"What is the southernmost capital city in the world?", options:["Sydney","Buenos Aires","Wellington","Cape Town"], correctIndex:2, didYouKnow:"Wellington, New Zealand sits at about 41°S latitude." },
+  { id:"g30", category:"Geography", difficulty:"hard", question:"Which country has the most active volcanoes?", options:["Japan","Indonesia","USA","Iceland"], correctIndex:1, didYouKnow:"Indonesia sits on the Pacific Ring of Fire and has over 120 active volcanoes." },
+  { id:"g31", category:"Geography", difficulty:"easy", question:"What is the largest continent by area?", options:["Africa","North America","Asia","Europe"], correctIndex:2, didYouKnow:"Asia covers about 30% of Earth's total land area." },
+  { id:"g32", category:"Geography", difficulty:"medium", question:"The Panama Canal connects which two oceans?", options:["Atlantic and Indian","Atlantic and Pacific","Pacific and Indian","Arctic and Atlantic"], correctIndex:1, didYouKnow:"The canal saves ships about 8,000 miles compared to sailing around South America." },
+  { id:"g33", category:"Geography", difficulty:"hard", question:"What is the flattest country on Earth?", options:["Netherlands","Denmark","Maldives","Bangladesh"], correctIndex:2, didYouKnow:"The Maldives' highest natural point is just 2.4 meters above sea level." },
+  { id:"g34", category:"Geography", difficulty:"easy", question:"Which US state is known as the Sunshine State?", options:["California","Texas","Florida","Arizona"], correctIndex:2, didYouKnow:"Florida averages 237 days of sunshine per year." },
+  { id:"g35", category:"Geography", difficulty:"medium", question:"What is the longest river in Europe?", options:["Danube","Rhine","Volga","Thames"], correctIndex:2, didYouKnow:"The Volga flows entirely within Russia and is about 3,531 km long." },
+  { id:"g36", category:"Geography", difficulty:"hard", question:"Which country has the most UNESCO World Heritage Sites?", options:["Spain","China","Italy","France"], correctIndex:2, didYouKnow:"Italy has 59 UNESCO sites, including the historic centers of Rome, Florence, and Venice." },
+  { id:"g37", category:"Geography", difficulty:"easy", question:"What is the capital of Canada?", options:["Toronto","Vancouver","Montreal","Ottawa"], correctIndex:3, didYouKnow:"Ottawa was chosen as capital in 1857 by Queen Victoria herself." },
+  { id:"g38", category:"Geography", difficulty:"medium", question:"The Matterhorn is located on the border of which two countries?", options:["France and Italy","Switzerland and Italy","Austria and Germany","France and Switzerland"], correctIndex:1, didYouKnow:"The Matterhorn is one of the deadliest peaks in the Alps, with over 500 climbers having died on it." },
+  { id:"g39", category:"Geography", difficulty:"hard", question:"What is the least visited country in the world?", options:["Nauru","Tuvalu","San Marino","Liechtenstein"], correctIndex:1, didYouKnow:"Tuvalu receives fewer than 2,000 tourists per year and is threatened by rising sea levels." },
+  { id:"g40", category:"Geography", difficulty:"easy", question:"Which ocean surrounds Antarctica?", options:["Arctic Ocean","Indian Ocean","Southern Ocean","Pacific Ocean"], correctIndex:2, didYouKnow:"The Southern Ocean was officially recognized as the fifth ocean by the IHO in 2000." },
+
+  // POP CULTURE (40)
+  { id:"p1", category:"Pop Culture", difficulty:"easy", question:"Which artist released the album '1989' in 2014?", options:["Katy Perry","Adele","Taylor Swift","Lady Gaga"], correctIndex:2, didYouKnow:"The album marked her official shift from country to synth-pop and won Album of the Year." },
+  { id:"p2", category:"Pop Culture", difficulty:"medium", question:"Which film won the first Academy Award for Best Animated Feature?", options:["Toy Story 2","Shrek","Monsters, Inc.","Finding Nemo"], correctIndex:1, didYouKnow:"Shrek beat Monsters, Inc. and Jimmy Neutron at the 2002 Oscars to take the inaugural award." },
+  { id:"p3", category:"Pop Culture", difficulty:"easy", question:"What is the name of the fictional wizard school in Harry Potter?", options:["Beauxbatons","Durmstrang","Hogwarts","Ilvermorny"], correctIndex:2, didYouKnow:"Hogwarts' motto is Draco Dormiens Nunquam Titillandus — Never tickle a sleeping dragon." },
+  { id:"p4", category:"Pop Culture", difficulty:"medium", question:"Which band performed the song 'Bohemian Rhapsody'?", options:["The Beatles","Led Zeppelin","Queen","Pink Floyd"], correctIndex:2, didYouKnow:"Bohemian Rhapsody was the most expensive single ever made at the time of its 1975 release." },
+  { id:"p5", category:"Pop Culture", difficulty:"hard", question:"What was the first video game to feature Mario?", options:["Super Mario Bros.","Mario Kart","Donkey Kong","The Legend of Zelda"], correctIndex:2, didYouKnow:"Mario was originally called Jumpman and was a carpenter, not a plumber." },
+  { id:"p6", category:"Pop Culture", difficulty:"easy", question:"What is the name of Batman's butler?", options:["Jarvis","Pennyworth","Crane","Fox"], correctIndex:1, didYouKnow:"Alfred Pennyworth has been Batman's loyal butler since his first appearance in 1943." },
+  { id:"p7", category:"Pop Culture", difficulty:"medium", question:"Which TV show features the characters Eleven, Mike, and Dustin?", options:["The Boys","Stranger Things","Euphoria","Wednesday"], correctIndex:1, didYouKnow:"Stranger Things is set in the fictional town of Hawkins, Indiana, in the 1980s." },
+  { id:"p8", category:"Pop Culture", difficulty:"hard", question:"Who composed the film score for The Lion King (1994)?", options:["John Williams","Alan Menken","Hans Zimmer","Danny Elfman"], correctIndex:2, didYouKnow:"Zimmer won an Oscar for the score, which incorporated African choral music and rhythms." },
+  { id:"p9", category:"Pop Culture", difficulty:"easy", question:"What is the name of the snowman in Frozen?", options:["Olaf","Sven","Kristoff","Hans"], correctIndex:0, didYouKnow:"Olaf's song In Summer was almost cut from the film but became one of its most popular numbers." },
+  { id:"p10", category:"Pop Culture", difficulty:"medium", question:"Which Marvel character wields the hammer Mjolnir?", options:["Iron Man","Captain America","Thor","Hulk"], correctIndex:2, didYouKnow:"The inscription on Mjolnir reads: Whosoever holds this hammer, if he be worthy, shall possess the power of Thor." },
+  { id:"p11", category:"Pop Culture", difficulty:"hard", question:"What is the highest-grossing film of all time (not adjusted for inflation)?", options:["Titanic","Avengers: Endgame","Avatar","Star Wars: The Force Awakens"], correctIndex:1, didYouKnow:"Avengers: Endgame surpassed Avatar in 2019, earning about $2.798 billion worldwide." },
+  { id:"p12", category:"Pop Culture", difficulty:"easy", question:"Who is the main character in The Simpsons?", options:["Bart","Lisa","Marge","Homer"], correctIndex:3, didYouKnow:"Homer's iconic D'oh! was added to the Oxford English Dictionary in 2001." },
+  { id:"p13", category:"Pop Culture", difficulty:"medium", question:"Which artist painted the Mona Lisa?", options:["Michelangelo","Leonardo da Vinci","Raphael","Donatello"], correctIndex:1, didYouKnow:"Leonardo carried the Mona Lisa with him for years and never delivered it to the commissioner." },
+  { id:"p14", category:"Pop Culture", difficulty:"hard", question:"What was the first feature-length animated film?", options:["Bambi","Snow White and the Seven Dwarfs","Pinocchio","Fantasia"], correctIndex:1, didYouKnow:"Snow White (1937) took three years to make and was nicknamed Disney's Folly before becoming a smash hit." },
+  { id:"p15", category:"Pop Culture", difficulty:"easy", question:"What is the name of the Jedi master who trains Luke Skywalker?", options:["Obi-Wan Kenobi","Yoda","Mace Windu","Qui-Gon Jinn"], correctIndex:1, didYouKnow:"Yoda was originally going to be played by a monkey in a mask before puppetry was chosen." },
+  { id:"p16", category:"Pop Culture", difficulty:"medium", question:"Which band was Freddie Mercury the lead singer of?", options:["The Beatles","Queen","The Rolling Stones","The Who"], correctIndex:1, didYouKnow:"Mercury was born Farrokh Bulsara in Zanzibar and changed his name legally in 1970." },
+  { id:"p17", category:"Pop Culture", difficulty:"hard", question:"What was the first video uploaded to YouTube?", options:["Charlie Bit My Finger","Me at the zoo","Evolution of Dance","Gangnam Style"], correctIndex:1, didYouKnow:"Me at the zoo was uploaded by co-founder Jawed Karim on April 23, 2005." },
+  { id:"p18", category:"Pop Culture", difficulty:"easy", question:"What is Superman's weakness?", options:["Gold","Silver","Kryptonite","Diamond"], correctIndex:2, didYouKnow:"Kryptonite was created for the 1940s Superman radio serial before appearing in comics." },
+  { id:"p19", category:"Pop Culture", difficulty:"medium", question:"Which TV show is set in the fictional towns of Stars Hollow?", options:["Friends","Gilmore Girls","The O.C.","Dawson's Creek"], correctIndex:1, didYouKnow:"Stars Hollow was inspired by the real town of Washington Depot, Connecticut." },
+  { id:"p20", category:"Pop Culture", difficulty:"hard", question:"Who wrote the music for The Phantom of the Opera?", options:["Tim Rice","Stephen Sondheim","Andrew Lloyd Webber","Claude-Michel Schönberg"], correctIndex:2, didYouKnow:"The Phantom of the Opera is the longest-running show in Broadway history." },
+  { id:"p21", category:"Pop Culture", difficulty:"easy", question:"What is the name of Pikachu's evolved form?", options:["Raichu","Pichu","Charizard","Jolteon"], correctIndex:0, didYouKnow:"Pikachu was originally going to have a second evolution called Gorochu, but it was scrapped." },
+  { id:"p22", category:"Pop Culture", difficulty:"medium", question:"Which actor played Tony Stark / Iron Man in the MCU?", options:["Chris Evans","Chris Hemsworth","Robert Downey Jr.","Mark Ruffalo"], correctIndex:2, didYouKnow:"Downey Jr. was considered a risky casting choice due to his past struggles with addiction." },
+  { id:"p23", category:"Pop Culture", difficulty:"hard", question:"What is the longest-running TV game show in the US?", options:["Wheel of Fortune","The Price Is Right","Jeopardy!","Family Feud"], correctIndex:1, didYouKnow:"The Price Is Right has been on air since 1972, making it over 50 years old." },
+  { id:"p24", category:"Pop Culture", difficulty:"easy", question:"What is the name of the sponge who lives in a pineapple under the sea?", options:["Patrick","Squidward","SpongeBob","Mr. Krabs"], correctIndex:2, didYouKnow:"SpongeBob SquarePants premiered in 1999 and has become one of the longest-running American animated series." },
+  { id:"p25", category:"Pop Culture", difficulty:"medium", question:"Which director is known for films like Pulp Fiction and Kill Bill?", options:["Martin Scorsese","Steven Spielberg","Quentin Tarantino","Christopher Nolan"], correctIndex:2, didYouKnow:"Tarantino worked at a video rental store before becoming a director, which heavily influenced his film knowledge." },
+  { id:"p26", category:"Pop Culture", difficulty:"hard", question:"What was the first music video played on MTV?", options:["Thriller","Video Killed the Radio Star","Bohemian Rhapsody","Like a Virgin"], correctIndex:1, didYouKnow:"MTV launched on August 1, 1981, with the Buggles' song as its first video." },
+  { id:"p27", category:"Pop Culture", difficulty:"easy", question:"What is the name of the main character in The Legend of Zelda?", options:["Zelda","Link","Ganon","Sheik"], correctIndex:1, didYouKnow:"Despite the game's title, Zelda is the princess — Link is the hero." },
+  { id:"p28", category:"Pop Culture", difficulty:"medium", question:"Which singer is known as the Queen of Pop?", options:["Whitney Houston","Mariah Carey","Madonna","Britney Spears"], correctIndex:2, didYouKnow:"Madonna has sold over 300 million records worldwide, making her the best-selling female recording artist." },
+  { id:"p29", category:"Pop Culture", difficulty:"hard", question:"What was the first Pixar feature film?", options:["A Bug's Life","Toy Story","Monsters, Inc.","Finding Nemo"], correctIndex:1, didYouKnow:"Toy Story (1995) was the first entirely computer-animated feature film." },
+  { id:"p30", category:"Pop Culture", difficulty:"easy", question:"Who lives at 221B Baker Street?", options:["Hercule Poirot","Sherlock Holmes","James Bond","Miss Marple"], correctIndex:1, didYouKnow:"221B Baker Street is now a real Sherlock Holmes museum in London." },
+  { id:"p31", category:"Pop Culture", difficulty:"medium", question:"Which K-pop group released the song Dynamite?", options:["BLACKPINK","TWICE","BTS","EXO"], correctIndex:2, didYouKnow:"Dynamite was BTS's first all-English single and spent three weeks at #1 on the Billboard Hot 100." },
+  { id:"p32", category:"Pop Culture", difficulty:"hard", question:"What is the longest-running Broadway musical?", options:["Cats","Les Misérables","The Phantom of the Opera","Chicago"], correctIndex:2, didYouKnow:"Phantom ran for 35 years on Broadway, closing in April 2023 after 13,981 performances." },
+  { id:"p33", category:"Pop Culture", difficulty:"easy", question:"What color is the Hulk?", options:["Red","Blue","Green","Purple"], correctIndex:2, didYouKnow:"The Hulk was originally gray in his first comic appearance, but color printing issues made him green." },
+  { id:"p34", category:"Pop Culture", difficulty:"medium", question:"Which TV show features the characters Ted, Marshall, and Barney?", options:["Friends","Seinfeld","How I Met Your Mother","The Big Bang Theory"], correctIndex:2, didYouKnow:"The show's finale was so controversial that an alternate ending was released on DVD." },
+  { id:"p35", category:"Pop Culture", difficulty:"hard", question:"Who composed the music for the film Inception?", options:["John Williams","Hans Zimmer","James Newton Howard","Alexandre Desplat"], correctIndex:1, didYouKnow:"Zimmer used a slowed-down version of Edith Piaf's Non, Je Ne Regrette Rien as a key musical motif." },
+  { id:"p36", category:"Pop Culture", difficulty:"easy", question:"What is the name of Mickey Mouse's pet dog?", options:["Goofy","Pluto","Odie","Scooby"], correctIndex:1, didYouKnow:"Goofy is also a dog in the Disney universe, but he walks upright and wears clothes — Pluto does not." },
+  { id:"p37", category:"Pop Culture", difficulty:"medium", question:"Which actress played Katniss Everdeen in The Hunger Games?", options:["Emma Watson","Kristen Stewart","Jennifer Lawrence","Shailene Woodley"], correctIndex:2, didYouKnow:"Lawrence almost turned down the role because she was worried about the level of fame it would bring." },
+  { id:"p38", category:"Pop Culture", difficulty:"hard", question:"What is the best-selling video game of all time?", options:["Grand Theft Auto V","Tetris","Minecraft","Wii Sports"], correctIndex:2, didYouKnow:"Minecraft has sold over 300 million copies across all platforms." },
+  { id:"p39", category:"Pop Culture", difficulty:"easy", question:"What is the name of the dragon in The Hobbit?", options:["Smaug","Drogon","Toothless","Falkor"], correctIndex:0, didYouKnow:"Smaug was voiced by Benedict Cumberbatch in Peter Jackson's film adaptation." },
+  { id:"p40", category:"Pop Culture", difficulty:"medium", question:"Which band wrote the song Hotel California?", options:["The Beatles","The Eagles","Fleetwood Mac","The Doors"], correctIndex:1, didYouKnow:"The song's iconic guitar solo was a trade-off between Don Felder and Joe Walsh, playing simultaneously." },
+
+  // LITERATURE (40)
+  { id:"l1", category:"Literature", difficulty:"hard", question:"Who wrote the epic poem 'Paradise Lost'?", options:["John Donne","John Milton","Alexander Pope","William Blake"], correctIndex:1, didYouKnow:"Milton was completely blind when he dictated the 10,000-line poem to assistants." },
+  { id:"l2", category:"Literature", difficulty:"medium", question:"In '1984', what is the name of the totalitarian regime's leader?", options:["Big Brother","The Party","O'Brien","Goldstein"], correctIndex:0, didYouKnow:"George Orwell never confirms whether Big Brother is a real person or simply a propaganda construct." },
+  { id:"l3", category:"Literature", difficulty:"easy", question:"Who wrote 'Romeo and Juliet'?", options:["Christopher Marlowe","Ben Jonson","William Shakespeare","John Milton"], correctIndex:2, didYouKnow:"Shakespeare wrote Romeo and Juliet around 1594–1596, early in his career." },
+  { id:"l4", category:"Literature", difficulty:"medium", question:"What is the first book of the Bible?", options:["Exodus","Genesis","Leviticus","Numbers"], correctIndex:1, didYouKnow:"Genesis covers the creation of the world, the Fall, and the early patriarchs." },
+  { id:"l5", category:"Literature", difficulty:"hard", question:"Which novel begins with the line 'Call me Ishmael'?", options:["Moby-Dick","The Great Gatsby","Crime and Punishment","Heart of Darkness"], correctIndex:0, didYouKnow:"Moby-Dick was a commercial failure during Melville's lifetime and only gained recognition decades later." },
+  { id:"l6", category:"Literature", difficulty:"easy", question:"Who wrote the Harry Potter series?", options:["J.R.R. Tolkien","C.S. Lewis","J.K. Rowling","Suzanne Collins"], correctIndex:2, didYouKnow:"Rowling came up with the idea for Harry Potter on a delayed train from Manchester to London in 1990." },
+  { id:"l7", category:"Literature", difficulty:"medium", question:"In 'The Great Gatsby', what is Gatsby's real first name?", options:["James","John","Jay","Jack"], correctIndex:2, didYouKnow:"His full original name was James Gatz before he reinvented himself." },
+  { id:"l8", category:"Literature", difficulty:"hard", question:"Who wrote 'One Hundred Years of Solitude'?", options:["Pablo Neruda","Gabriel García Márquez","Jorge Luis Borges","Mario Vargas Llosa"], correctIndex:1, didYouKnow:"The novel is considered the cornerstone of magical realism and has sold over 50 million copies." },
+  { id:"l9", category:"Literature", difficulty:"easy", question:"What is the name of the lion in 'The Chronicles of Narnia'?", options:["Aslan","Simba","Mufasa","Caspian"], correctIndex:0, didYouKnow:"Aslan is Turkish for lion and represents a Christ-like figure in the series." },
+  { id:"l10", category:"Literature", difficulty:"medium", question:"Who wrote 'Pride and Prejudice'?", options:["Charlotte Brontë","Emily Brontë","Jane Austen","Mary Shelley"], correctIndex:2, didYouKnow:"Austen originally titled the novel First Impressions before revising it." },
+  { id:"l11", category:"Literature", difficulty:"hard", question:"In 'The Odyssey', who is the protagonist trying to return home to?", options:["Helen","Penelope","Calypso","Athena"], correctIndex:1, didYouKnow:"Odysseus' journey home to Ithaca took ten years after the Trojan War." },
+  { id:"l12", category:"Literature", difficulty:"easy", question:"Who wrote 'The Cat in the Hat'?", options:["Roald Dahl","Dr. Seuss","Maurice Sendak","Shel Silverstein"], correctIndex:1, didYouKnow:"Dr. Seuss wrote The Cat in the Hat using only 236 different words in response to a literacy challenge." },
+  { id:"l13", category:"Literature", difficulty:"medium", question:"What is the name of Sherlock Holmes' nemesis?", options:["Irene Adler","Moriarty","Lestrade","Watson"], correctIndex:1, didYouKnow:"Moriarty appeared in only two Sherlock Holmes stories but became his defining adversary." },
+  { id:"l14", category:"Literature", difficulty:"hard", question:"Who wrote 'The Brothers Karamazov'?", options:["Leo Tolstoy","Fyodor Dostoevsky","Anton Chekhov","Ivan Turgenev"], correctIndex:1, didYouKnow:"Dostoevsky considered The Brothers Karamazov his magnum opus." },
+  { id:"l15", category:"Literature", difficulty:"easy", question:"What is the name of the ring in 'The Lord of the Rings'?", options:["The One Ring","The Ring of Power","The Precious","The Master Ring"], correctIndex:0, didYouKnow:"The inscription on the ring is in the Black Speech of Mordor and reads: One Ring to rule them all." },
+  { id:"l16", category:"Literature", difficulty:"medium", question:"Who wrote 'To Kill a Mockingbird'?", options:["Ernest Hemingway","John Steinbeck","Harper Lee","Flannery O'Connor"], correctIndex:2, didYouKnow:"Lee based the character of Dill on her childhood friend Truman Capote." },
+  { id:"l17", category:"Literature", difficulty:"hard", question:"In 'Don Quixote', what is the name of his horse?", options:["Bucephalus","Pegasus","Rocinante","Shadowfax"], correctIndex:2, didYouKnow:"Rocinante's name roughly translates to formerly a hack, now the foremost." },
+  { id:"l18", category:"Literature", difficulty:"easy", question:"Who wrote 'Alice's Adventures in Wonderland'?", options:["Lewis Carroll","J.M. Barrie","Roald Dahl","A.A. Milne"], correctIndex:0, didYouKnow:"Lewis Carroll was the pen name of Charles Lutwidge Dodgson, a mathematician at Oxford." },
+  { id:"l19", category:"Literature", difficulty:"medium", question:"What is the name of the monster in 'Frankenstein'?", options:["Frankenstein","The Creature","Adam","Dracula"], correctIndex:1, didYouKnow:"The creature is never given a name in the novel — Frankenstein is the scientist who created him." },
+  { id:"l20", category:"Literature", difficulty:"hard", question:"Who wrote 'Lolita'?", options:["Ernest Hemingway","F. Scott Fitzgerald","Vladimir Nabokov","John Updike"], correctIndex:2, didYouKnow:"Nabokov wrote Lolita in English and later translated it into Russian himself." },
+  { id:"l21", category:"Literature", difficulty:"easy", question:"What animal is Winnie-the-Pooh's best friend?", options:["Tigger","Piglet","Eeyore","Rabbit"], correctIndex:1, didYouKnow:"The real Winnie was a black bear at the London Zoo that author A.A. Milne's son loved." },
+  { id:"l22", category:"Literature", difficulty:"medium", question:"Who wrote 'The Catcher in the Rye'?", options:["John Steinbeck","J.D. Salinger","Kurt Vonnegut","Jack Kerouac"], correctIndex:1, didYouKnow:"Salinger became a recluse after the book's success and gave his last interview in 1980." },
+  { id:"l23", category:"Literature", difficulty:"hard", question:"What is the longest novel ever written?", options:["War and Peace","Les Misérables","In Search of Lost Time","Moby-Dick"], correctIndex:2, didYouKnow:"In Search of Lost Time by Marcel Proust contains about 1.2 million words." },
+  { id:"l24", category:"Literature", difficulty:"easy", question:"Who wrote 'The Little Prince'?", options:["Jules Verne","Antoine de Saint-Exupéry","Victor Hugo","Gustave Flaubert"], correctIndex:1, didYouKnow:"Saint-Exupéry was a pioneering aviator who disappeared during a reconnaissance mission in 1944." },
+  { id:"l25", category:"Literature", difficulty:"medium", question:"In 'Animal Farm', which animals represent the working class?", options:["Pigs","Horses","Dogs","Sheep"], correctIndex:1, didYouKnow:"Boxer the horse's motto is I will work harder, and he represents the exploited proletariat." },
+  { id:"l26", category:"Literature", difficulty:"hard", question:"Who wrote 'The Divine Comedy'?", options:["Boccaccio","Petrarch","Dante Alighieri","Machiavelli"], correctIndex:2, didYouKnow:"Dante wrote The Divine Comedy in Tuscan dialect, helping establish it as the Italian standard." },
+  { id:"l27", category:"Literature", difficulty:"easy", question:"What is the name of the hobbit played by Elijah Wood in the films?", options:["Samwise","Frodo","Bilbo","Pippin"], correctIndex:1, didYouKnow:"Frodo is the Ring-bearer tasked with destroying the One Ring in Mount Doom." },
+  { id:"l28", category:"Literature", difficulty:"medium", question:"Who wrote 'The Handmaid's Tale'?", options:["Ursula K. Le Guin","Margaret Atwood","Octavia Butler","Doris Lessing"], correctIndex:1, didYouKnow:"Atwood insisted every authoritarian element in the book had a real historical precedent." },
+  { id:"l29", category:"Literature", difficulty:"hard", question:"In 'Crime and Punishment', what is Raskolnikov's crime?", options:["Fraud","Murder","Theft","Treason"], correctIndex:1, didYouKnow:"Raskolnikov murders a pawnbroker, justifying it with a theory of extraordinary men." },
+  { id:"l30", category:"Literature", difficulty:"easy", question:"Who wrote 'Charlie and the Chocolate Factory'?", options:["Enid Blyton","Roald Dahl","C.S. Lewis","J.K. Rowling"], correctIndex:1, didYouKnow:"Dahl based Willy Wonka partly on his experiences at Cadbury and Rowntree factories as a child." },
+  { id:"l31", category:"Literature", difficulty:"medium", question:"What is the name of the whale in 'Moby-Dick'?", options:["Leviathan","Moby Dick","White Whale","Barnacle"], correctIndex:1, didYouKnow:"The whale was based on a real albino sperm whale named Mocha Dick." },
+  { id:"l32", category:"Literature", difficulty:"hard", question:"Who wrote 'The Metamorphosis'?", options:["Thomas Mann","Hermann Hesse","Franz Kafka","Rainer Maria Rilke"], correctIndex:2, didYouKnow:"Kafka asked his friend Max Brod to burn all his unpublished manuscripts after his death." },
+  { id:"l33", category:"Literature", difficulty:"easy", question:"Who wrote 'The Very Hungry Caterpillar'?", options:["Dr. Seuss","Eric Carle","Maurice Sendak","Shel Silverstein"], correctIndex:1, didYouKnow:"The book has been translated into over 70 languages and sold more than 50 million copies." },
+  { id:"l34", category:"Literature", difficulty:"medium", question:"In 'The Great Gatsby', where does Gatsby live?", options:["East Egg","West Egg","Manhattan","New Haven"], correctIndex:1, didYouKnow:"West Egg represents new money, while East Egg represents inherited wealth." },
+  { id:"l35", category:"Literature", difficulty:"hard", question:"Who wrote 'Ulysses'?", options:["Virginia Woolf","James Joyce","Samuel Beckett","W.B. Yeats"], correctIndex:1, didYouKnow:"Ulysses was banned in the US for obscenity until a landmark court case in 1933." },
+  { id:"l36", category:"Literature", difficulty:"easy", question:"What is the name of the wizard in 'The Lord of the Rings'?", options:["Merlin","Dumbledore","Gandalf","Radagast"], correctIndex:2, didYouKnow:"Gandalf was inspired by the Norse god Odin in his wanderer guise." },
+  { id:"l37", category:"Literature", difficulty:"medium", question:"Who wrote 'Brave New World'?", options:["George Orwell","Aldous Huxley","Ray Bradbury","Kurt Vonnegut"], correctIndex:1, didYouKnow:"Huxley wrote Brave New World in 1931, 17 years before Orwell's 1984." },
+  { id:"l38", category:"Literature", difficulty:"hard", question:"What is the name of the fictional language in '1984'?", options:["Oldspeak","Newspeak","Doublespeak","Thoughtspeak"], correctIndex:1, didYouKnow:"Newspeak was designed to eliminate rebellious thoughts by reducing vocabulary." },
+  { id:"l39", category:"Literature", difficulty:"easy", question:"Who wrote 'The Hobbit'?", options:["C.S. Lewis","J.R.R. Tolkien","George R.R. Martin","Terry Pratchett"], correctIndex:1, didYouKnow:"Tolkien wrote The Hobbit for his children, originally telling it as a bedtime story." },
+  { id:"l40", category:"Literature", difficulty:"medium", question:"In 'To Kill a Mockingbird', what is Atticus Finch's profession?", options:["Doctor","Teacher","Lawyer","Sheriff"], correctIndex:2, didYouKnow:"Gregory Peck, who played Atticus in the 1962 film, said it was his favorite role." },
 ];
 
 // ---- State ----
-const STATE_VERSION = 1;
+const STATE_VERSION = 2;
+const Q_PER_DAY = 10;
+const Q_TIME_LIMIT = 10000; // 10 seconds per question
 let state = {
-  mode: 'daily', // 'daily' | 'endless'
+  mode: 'daily',
   screen: 'landing',
   dailyQuestions: [],
-  endlessQuestions: [],
   currentQ: 0,
-  answers: [], // {correct:bool, time:number}
+  answers: [], // {correct:bool, time:number, category:string, hintUsed:false}
   startTime: 0,
   qStartTime: 0,
-  lives: 3,
-  endlessStreak: 0,
-  endlessBest: 0,
   waiting: false,
-  muted: false,
+  muted: true, // muted by default
+  timerId: null,
 };
 
 let stats = loadStats();
 
 function loadStats() {
   try {
-    const raw = localStorage.getItem('synapse_stats_v1');
+    const raw = localStorage.getItem('synapse_stats_v2');
     if (raw) return JSON.parse(raw);
   } catch(e){}
-  return { played:0, won:0, streak:0, maxStreak:0, totalCorrect:0, totalAnswered:0, bestEndless:0, lastDate:null };
+  return { played:0, won:0, streak:0, maxStreak:0, totalCorrect:0, totalAnswered:0, bestEndless:0, lastDate:null, completedDaily:null };
 }
 function saveStats() {
-  try { localStorage.setItem('synapse_stats_v1', JSON.stringify(stats)); } catch(e){}
+  try { localStorage.setItem('synapse_stats_v2', JSON.stringify(stats)); } catch(e){}
 }
 function loadState() {
   try {
-    const raw = localStorage.getItem('synapse_state_v1');
+    const raw = localStorage.getItem('synapse_state_v2');
     if (raw) {
       const s = JSON.parse(raw);
       if (s.version === STATE_VERSION && s.date === getToday()) {
@@ -331,15 +604,20 @@ function loadState() {
 }
 function saveState() {
   try {
-    localStorage.setItem('synapse_state_v1', JSON.stringify({ ...state, version: STATE_VERSION, date: getToday() }));
+    localStorage.setItem('synapse_state_v2', JSON.stringify({ ...state, version: STATE_VERSION, date: getToday() }));
   } catch(e){}
 }
 function clearState() {
-  try { localStorage.removeItem('synapse_state_v1'); } catch(e){}
+  try { localStorage.removeItem('synapse_state_v2'); } catch(e){}
 }
 function getToday() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function getDailyNum() {
+  const start = new Date(2024,0,1);
+  const now = new Date();
+  return Math.floor((now - start) / (1000*60*60*24));
 }
 
 // ---- DOM helpers ----
@@ -355,37 +633,57 @@ function toast(msg) {
   setTimeout(()=>el.remove(), 2200);
 }
 
+// ---- Landing ----
+function renderLanding() {
+  renderLandingStats();
+  renderStreakBar();
+
+  const completedToday = stats.completedDaily === getToday();
+  $('btn-daily').style.display = completedToday ? 'none' : 'block';
+  $('daily-lock').style.display = completedToday ? 'block' : 'none';
+}
+function renderLandingStats() {
+  const el = $('landing-stats');
+  el.innerHTML = `
+    <div class="stat-chip">Played<b>${stats.played}</b></div>
+    <div class="stat-chip">Best<b>${stats.maxStreak}</b></div>
+  `;
+}
+function renderStreakBar() {
+  const bar = $('streak-bar');
+  const fire = $('streak-fire');
+  if (stats.streak > 0) {
+    bar.style.display = 'flex';
+    $('streak-text').textContent = `${stats.streak} day streak`;
+    if (stats.streak >= 7) fire.textContent = '🔥';
+    else if (stats.streak >= 3) fire.textContent = '⚡';
+    else fire.textContent = '🔥';
+    fire.classList.remove('broken');
+  } else if (stats.played > 0 && stats.streak === 0) {
+    bar.style.display = 'flex';
+    $('streak-text').textContent = `Streak broken`;
+    fire.textContent = '💔';
+    fire.classList.add('broken');
+  } else {
+    bar.style.display = 'none';
+  }
+}
+
 // ---- Daily questions ----
 function getDailyQuestions() {
   const seed = getDailySeed();
   const indices = seededShuffle(QUESTIONS.map((_,i)=>i), seed);
-  return indices.slice(0,10).map(i=>QUESTIONS[i]);
+  return indices.slice(0, Q_PER_DAY).map(i=>QUESTIONS[i]);
 }
-function getEndlessQuestion() {
-  const pool = QUESTIONS.filter((_,i)=> !state.endlessQuestions.includes(i));
-  const poolIdx = pool.length ? pool : QUESTIONS;
-  const pick = poolIdx[Math.floor(Math.random()*poolIdx.length)];
-  return pick;
+function getPracticeQuestion() {
+  return QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
 }
 
 // ---- Rendering ----
-function renderLandingStats() {
-  const el = $('landing-stats');
-  const streakFire = stats.streak > 2 ? '🔥' : '';
-  el.innerHTML = `
-    <div class="stat-chip">Streak<b>${streakFire}${stats.streak}</b></div>
-    <div class="stat-chip">Best<b>${stats.maxStreak}</b></div>
-    <div class="stat-chip">Played<b>${stats.played}</b></div>
-  `;
-}
-function renderHearts() {
-  const el = $('hearts-bar');
-  el.innerHTML = Array.from({length:3},(_,i)=>`<span class="heart ${i<state.lives?'':'lost'}">${i<state.lives?'♥':'♡'}</span>`).join('');
-}
 function renderQuestion() {
-  const q = state.mode==='daily' ? state.dailyQuestions[state.currentQ] : state.endlessQuestions[state.endlessQuestions.length-1];
+  const q = state.dailyQuestions[state.currentQ];
   if (!q) return;
-  $('q-tracker').textContent = state.mode==='daily' ? `Question ${state.currentQ+1} / ${state.dailyQuestions.length}` : `Streak ${state.endlessStreak} · Question ${state.endlessQuestions.length}`;
+  $('q-tracker').textContent = `Question ${state.currentQ+1} / ${state.dailyQuestions.length}`;
   $('q-text').innerHTML = `<div class="category-tag">${q.category}</div>${escapeHtml(q.question)}`;
   const grid = $('options-grid');
   grid.innerHTML = '';
@@ -398,8 +696,38 @@ function renderQuestion() {
   });
   $('feedback-strip').className = 'feedback-strip';
   state.qStartTime = performance.now();
+  state.waiting = false;
+
+  // Start per-question timer
+  if (state.timerId) cancelAnimationFrame(state.timerId);
+  startQTimer();
 }
 function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+// ---- Per-question timer ----
+function startQTimer() {
+  const bar = $('q-timer-fill');
+  const start = performance.now();
+  function tick() {
+    if (state.screen !== 'playing' || state.waiting) return;
+    const elapsed = performance.now() - start;
+    const pct = Math.max(0, 100 - (elapsed / Q_TIME_LIMIT) * 100);
+    bar.style.width = pct + '%';
+    bar.className = 'q-timer-fill';
+    if (pct < 30) bar.classList.add('danger');
+    else if (pct < 60) bar.classList.add('urgent');
+    if (elapsed >= Q_TIME_LIMIT) {
+      handleTimeout();
+      return;
+    }
+    state.timerId = requestAnimationFrame(tick);
+  }
+  tick();
+}
+function stopQTimer() {
+  if (state.timerId) cancelAnimationFrame(state.timerId);
+  state.timerId = null;
+}
 
 // ---- Game logic ----
 function startDaily() {
@@ -408,54 +736,70 @@ function startDaily() {
   state.answers = [];
   state.dailyQuestions = getDailyQuestions();
   state.startTime = performance.now();
-  state.lives = 3;
   state.waiting = false;
   $('mode-title').textContent = 'Daily 10';
-  $('hearts-bar').style.display = 'none';
-  $('timer-bar').style.display = 'block';
   showScreen('playing');
   renderQuestion();
-  updateTimerBar();
 }
-function startEndless() {
-  state.mode = 'endless';
+function startPractice() {
+  state.mode = 'practice';
   state.currentQ = 0;
   state.answers = [];
-  state.endlessQuestions = [];
-  state.lives = 3;
-  state.endlessStreak = 0;
+  state.dailyQuestions = [];
+  for (let i=0; i<Q_PER_DAY; i++) state.dailyQuestions.push(getPracticeQuestion());
+  state.startTime = performance.now();
   state.waiting = false;
-  $('mode-title').textContent = 'Endless Gauntlet';
-  $('hearts-bar').style.display = 'flex';
-  $('timer-bar').style.display = 'none';
+  $('mode-title').textContent = 'Practice';
   showScreen('playing');
-  nextEndlessQuestion();
-}
-function nextEndlessQuestion() {
-  const q = getEndlessQuestion();
-  state.endlessQuestions.push(q);
   renderQuestion();
-  renderHearts();
 }
-function updateTimerBar() {
-  if (state.mode !== 'daily' || state.screen !== 'playing') return;
-  const elapsed = performance.now() - state.startTime;
-  const pct = Math.min(100, (elapsed / 120000) * 100); // 2 min total bar
-  $('timer-fill').style.width = pct + '%';
-  requestAnimationFrame(updateTimerBar);
+
+function handleTimeout() {
+  if (state.waiting) return;
+  const q = state.dailyQuestions[state.currentQ];
+  const time = performance.now() - state.qStartTime;
+  state.answers.push({correct:false, time, category:q.category, hintUsed:false, timeout:true});
+  state.waiting = true;
+  stopQTimer();
+
+  // Visual feedback
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach((btn, i) => {
+    if (i === q.correctIndex) btn.classList.add('correct');
+    else btn.classList.add('dimmed');
+  });
+
+  // Audio
+  if (!state.muted) audio.wrong();
+
+  // Feedback strip
+  const fb = $('feedback-strip');
+  $('fb-result').textContent = 'Time\'s up!';
+  $('fb-result').style.color = 'var(--warning)';
+  $('fb-insight').textContent = q.didYouKnow;
+  fb.className = 'feedback-strip show timeout';
+
+  setTimeout(()=>{
+    fb.classList.remove('show');
+    state.currentQ++;
+    if (state.currentQ >= state.dailyQuestions.length) { finishGame(); }
+    else { state.waiting = false; renderQuestion(); }
+  }, 1400);
 }
 
 function handleAnswer(idx) {
   if (state.waiting) return;
-  const q = state.mode==='daily' ? state.dailyQuestions[state.currentQ] : state.endlessQuestions[state.endlessQuestions.length-1];
+  stopQTimer();
+  const q = state.dailyQuestions[state.currentQ];
   const correct = idx === q.correctIndex;
   const time = performance.now() - state.qStartTime;
-  state.answers.push({correct, time, hintUsed:false});
+  state.answers.push({correct, time, category:q.category, hintUsed:false});
 
   // Visual feedback
   const btns = document.querySelectorAll('.option-btn');
   btns[idx].classList.add(correct ? 'correct' : 'wrong');
   if (!correct) btns[q.correctIndex].classList.add('correct');
+  btns.forEach((btn, i) => { if (i !== idx && i !== q.correctIndex) btn.classList.add('dimmed'); });
 
   // Audio
   if (!state.muted) { correct ? audio.correct() : audio.wrong(); }
@@ -469,28 +813,16 @@ function handleAnswer(idx) {
 
   state.waiting = true;
 
-  // Lives (endless only)
-  if (!correct && state.mode === 'endless') {
-    state.lives--;
-    renderHearts();
-  }
-
   setTimeout(()=>{
     fb.classList.remove('show');
-    if (state.mode === 'daily') {
-      state.currentQ++;
-      if (state.currentQ >= state.dailyQuestions.length) { finishGame(); }
-      else { state.waiting = false; renderQuestion(); }
-    } else {
-      if (!correct && state.lives <= 0) { finishGame(); return; }
-      if (correct) state.endlessStreak++;
-      state.waiting = false;
-      nextEndlessQuestion();
-    }
-  }, 1100); // The 1.1s micro-flash
+    state.currentQ++;
+    if (state.currentQ >= state.dailyQuestions.length) { finishGame(); }
+    else { state.waiting = false; renderQuestion(); }
+  }, 1400);
 }
 
 function finishGame() {
+  stopQTimer();
   const total = state.answers.length;
   const correct = state.answers.filter(a=>a.correct).length;
   const time = Math.round((performance.now() - state.startTime)/1000);
@@ -507,45 +839,62 @@ function finishGame() {
       stats.streak = 0;
     }
     stats.maxStreak = Math.max(stats.maxStreak, stats.streak);
-  } else {
-    stats.bestEndless = Math.max(stats.bestEndless, state.endlessStreak);
+    stats.completedDaily = today;
   }
   saveStats();
   clearState();
 
   // Results screen
   showScreen('results');
-  if (state.mode === 'daily') {
-    $('result-title').textContent = 'Daily 10';
-    $('result-meta').textContent = today;
-    $('result-score').textContent = `${correct}/${total}`;
-    let label = 'Keep practicing!';
-    if (correct === 10) label = 'Perfect score! 🏆';
-    else if (correct >= 8) label = 'Excellent!';
-    else if (correct >= 6) label = 'Solid effort!';
-    $('result-label').textContent = label;
-    $('endless-stats').style.display = 'none';
+  $('result-title').textContent = state.mode === 'daily' ? 'Daily 10' : 'Practice';
+  $('result-meta').textContent = state.mode === 'daily' ? today : 'Practice Mode';
+  $('result-score').textContent = `${correct}/${total}`;
+  $('result-score').className = 'results-score' + (correct === total ? ' perfect-flash' : '');
 
-    // Share grid
-    const grid = $('share-grid');
-    grid.innerHTML = state.answers.map(a=>`<div>${a.correct ? '🟩' : '🟥'}</div>`).join('');
-    const timeStr = fmtTime(time);
-    const pct = mockPercentile(correct, total);
-    $('share-text').textContent = `Synapse Trivia — Daily 10\n${correct}/${total} · ${timeStr} · Top ${pct}%\n\n${state.answers.map(a=>a.correct?'🟩':'🟥').join('')}\n\nsynapse-trivia.app`;
-  } else {
-    $('result-title').textContent = 'Game Over';
-    $('result-meta').textContent = 'Endless Gauntlet';
-    $('result-score').textContent = state.endlessStreak;
-    $('result-label').textContent = 'Best streak';
-    $('endless-stats').style.display = 'flex';
-    $('endless-stats').innerHTML = `
-      <div class="endless-stat"><span class="val">${state.endlessStreak}</span><span class="lbl">Streak</span></div>
-      <div class="endless-stat"><span class="val">${state.answers.filter(a=>a.correct).length}</span><span class="lbl">Correct</span></div>
-      <div class="endless-stat"><span class="val">${state.answers.length}</span><span class="lbl">Total</span></div>
-    `;
-    $('share-grid').innerHTML = '';
-    $('share-text').textContent = `Synapse Trivia — Endless Gauntlet\n🔥 Streak: ${state.endlessStreak}\n✅ Correct: ${state.answers.filter(a=>a.correct).length}/${state.answers.length}\n\nsynapse-trivia.app`;
+  let label = 'Keep practicing!';
+  if (correct === total) label = 'Perfect score! 🏆';
+  else if (correct >= 8) label = 'Excellent!';
+  else if (correct >= 6) label = 'Solid effort!';
+  $('result-label').textContent = label;
+
+  // Category mastery
+  const categories = {};
+  state.answers.forEach(a => {
+    if (!categories[a.category]) categories[a.category] = { total:0, correct:0 };
+    categories[a.category].total++;
+    if (a.correct) categories[a.category].correct++;
+  });
+  const masteryEl = $('mastery-grid');
+  masteryEl.innerHTML = Object.entries(categories).map(([cat, data]) => {
+    const perfect = data.correct === data.total;
+    const ok = data.correct >= data.total/2;
+    const icon = perfect ? '🔥' : ok ? '✅' : '❄️';
+    return `<div class="mastery-chip"><span class="m-icon">${icon}</span>${cat} ${data.correct}/${data.total}</div>`;
+  }).join('');
+
+  // Visual share grid (5x2)
+  const visualEl = $('share-visual');
+  visualEl.innerHTML = '';
+  for (let i=0; i<10; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'share-cell';
+    if (i < state.answers.length) {
+      cell.classList.add(state.answers[i].correct ? 'correct' : 'wrong');
+    } else {
+      cell.classList.add('empty');
+    }
+    visualEl.appendChild(cell);
   }
+
+  // Share text
+  const timeStr = fmtTime(time);
+  const dailyNum = getDailyNum();
+  const pct = mockPercentile(correct, total);
+  const shareBody = state.answers.map(a => a.correct ? '🟩' : '🟥').join('');
+  $('share-text').textContent = `Synapse Trivia #${dailyNum}\n${correct}/${total} · ${timeStr} · Top ${pct}%\n\n${shareBody}\n\nsynapse-trivia.app`;
+
+  // Confetti for perfect
+  if (correct === total) launchConfetti();
 }
 
 function fmtTime(s) {
@@ -559,6 +908,49 @@ function mockPercentile(correct, total) {
   return Math.min(99, base + variance);
 }
 
+// ---- Confetti ----
+function launchConfetti() {
+  const canvas = $('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const pieces = [];
+  const colors = ['#10b981','#58a6ff','#f59e0b','#f43f5e','#8b5cf6','#ec4899'];
+  for (let i=0; i<120; i++) {
+    pieces.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height - canvas.height,
+      w: Math.random()*8+4,
+      h: Math.random()*8+4,
+      dx: (Math.random()-0.5)*4,
+      dy: Math.random()*4+2,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*360,
+      drot: (Math.random()-0.5)*10,
+      life: 1,
+    });
+  }
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive = false;
+    pieces.forEach(p => {
+      if (p.life <= 0) return;
+      alive = true;
+      p.x += p.dx; p.y += p.dy; p.rot += p.drot; p.life -= 0.008;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = p.life;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    if (alive) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
 // ---- Input ----
 document.addEventListener('keydown', e => {
   if (state.screen !== 'playing' || state.waiting) return;
@@ -569,26 +961,31 @@ document.addEventListener('keydown', e => {
 
 // ---- Buttons ----
 $('btn-daily').onclick = ()=>{ audio.click(); startDaily(); };
-$('btn-endless').onclick = ()=>{ audio.click(); startEndless(); };
+$('btn-practice').onclick = ()=>{ audio.click(); startPractice(); };
 $('btn-mute').onclick = ()=>{
   state.muted = !state.muted;
+  audio.enabled = !state.muted;
   $('btn-mute').textContent = state.muted ? '🔇' : '🔊';
   toast(state.muted ? 'Sound muted' : 'Sound on');
 };
 $('btn-close').onclick = ()=>{
-  if (confirm('Quit current game? Progress will be lost.')) { clearState(); showScreen('landing'); renderLandingStats(); }
+  if (confirm('Quit current game? Progress will be lost.')) { stopQTimer(); clearState(); showScreen('landing'); renderLanding(); }
 };
 $('btn-copy').onclick = ()=>{
   navigator.clipboard.writeText($('share-text').textContent).then(()=>toast('Copied to clipboard!'));
 };
-$('btn-again').onclick = ()=>{
-  audio.click();
-  if (state.mode === 'daily') startDaily(); else startEndless();
+$('btn-share').onclick = ()=>{
+  const text = $('share-text').textContent;
+  if (navigator.share) {
+    navigator.share({ title: 'Synapse Trivia', text }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(text).then(()=>toast('Copied to clipboard!'));
+  }
 };
-$('btn-home').onclick = ()=>{ audio.click(); showScreen('landing'); renderLandingStats(); };
+$('btn-home').onclick = ()=>{ audio.click(); showScreen('landing'); renderLanding(); };
 
 // ---- Init ----
-renderLandingStats();
+renderLanding();
 
 // Lazy audio init on first interaction
 document.addEventListener('click', ()=>audio.init(), {once:true});
