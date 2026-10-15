@@ -6,7 +6,10 @@
 <meta name="theme-color" content="#0f1115">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Synapse Trivia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>KNOWIT</title>
 <style>
 :root {
   --bg: #0f1115;
@@ -25,7 +28,7 @@
   --shadow: 0 2px 12px rgba(0,0,0,0.45);
   --radius: 14px;
   --radius-sm: 10px;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-serif: Georgia, "Times New Roman", serif;
 }
 
@@ -53,6 +56,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 #app { max-width: 640px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; position: relative; }
 .screen { display: none; flex-direction: column; height: 100vh; overflow: hidden; padding: 16px; }
 .screen.active { display: flex; }
+#screen-playing { padding: 16px 16px 0; overflow-y: auto; }
 
 /* Header */
 .game-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 12px; flex-shrink: 0; }
@@ -105,18 +109,18 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .daily-locked b { color: var(--ink); }
 
 /* Question */
-.question-stage { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+.question-stage { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow-y: auto; }
 .question-tracker { font-size: 12px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
-.question-text { font-size: 20px; font-weight: 700; line-height: 1.35; margin: 0 0 16px; }
+.question-text { font-size: 20px; font-weight: 700; line-height: 1.35; margin: 0 0 8px; }
 .question-text .category-tag {
   display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
   padding: 3px 8px; border-radius: 6px; background: var(--surface-2); color: var(--accent); margin-bottom: 10px;
 }
 
 /* Options */
-.options-grid { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; margin-bottom: 12px; }
+.options-grid { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; position: sticky; bottom: 0; background: var(--bg); padding: 10px 0 16px; margin-bottom: 0; }
 .option-btn {
-  display: flex; align-items: center; gap: 12px; width: 100%; padding: 14px 16px; border-radius: var(--radius);
+  display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: var(--radius);
   border: 1px solid var(--border); background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 600;
   cursor: pointer; text-align: left; transition: transform .1s, border-color .2s, background .2s; position: relative; overflow: hidden;
 }
@@ -143,7 +147,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
 /* Feedback strip */
 .feedback-strip {
-  text-align: center; padding: 14px; border-radius: var(--radius); margin-bottom: 14px;
+  text-align: center; padding: 12px; border-radius: var(--radius); margin-bottom: 8px;
   border: 1px solid var(--border); background: var(--surface); opacity: 0; transform: translateY(6px); transition: opacity .25s, transform .25s;
 }
 .feedback-strip.show { opacity: 1; transform: translateY(0); }
@@ -215,10 +219,10 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
   <!-- LANDING -->
   <div id="screen-landing" class="screen active">
-    <div class="game-header"><h1>Synapse</h1><div class="meta">Trivia</div></div>
+    <div class="game-header"><h1>KNOWIT</h1><div class="meta">Daily Trivia</div></div>
     <div class="landing-body">
       <div class="logo">🧠</div>
-      <h2>Synapse Trivia</h2>
+      <h2>KNOWIT</h2>
       <p>10 questions. Same set for everyone. Once per day.</p>
 
       <!-- Streak display -->
@@ -293,7 +297,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
 <script>
 /* ================================================================
-   SYNAPSE TRIVIA — Curated daily trivia
+   KNOWIT — Curated daily trivia
    ================================================================ */
 
 // ---- Audio Engine (muted by default) ----
@@ -891,7 +895,7 @@ function finishGame() {
   const dailyNum = getDailyNum();
   const pct = mockPercentile(correct, total);
   const shareBody = state.answers.map(a => a.correct ? '🟩' : '🟥').join('');
-  $('share-text').textContent = `Synapse Trivia #${dailyNum}\n${correct}/${total} · ${timeStr} · Top ${pct}%\n\n${shareBody}\n\nsynapse-trivia.app`;
+  $('share-text').textContent = `KNOWIT #${dailyNum}\n${correct}/${total} · ${timeStr} · Top ${pct}%\n\n${shareBody}\n\nknowit.app`;
 
   // Confetti for perfect
   if (correct === total) launchConfetti();
@@ -977,7 +981,7 @@ $('btn-copy').onclick = ()=>{
 $('btn-share').onclick = ()=>{
   const text = $('share-text').textContent;
   if (navigator.share) {
-    navigator.share({ title: 'Synapse Trivia', text }).catch(()=>{});
+    navigator.share({ title: 'KNOWIT', text }).catch(()=>{});
   } else {
     navigator.clipboard.writeText(text).then(()=>toast('Copied to clipboard!'));
   }
