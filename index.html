@@ -3,52 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0f1115">
+<meta name="theme-color" content="#09090b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>KNOWIT</title>
 <style>
 :root {
-  --bg: #0f1115;
-  --surface: #181b21;
-  --surface-2: #20242c;
-  --surface-3: #2a2f3a;
-  --ink: #e8e6e3;
-  --ink-faint: #8a8580;
-  --ink-dim: #5a5550;
-  --border: #2a2f38;
-  --accent: #58a6ff;
-  --accent-warm: #c75b39;
-  --correct: #10b981;
-  --wrong: #f43f5e;
+  --bg: #09090b;
+  --surface: #18181b;
+  --surface-2: #27272a;
+  --surface-3: #3f3f46;
+  --ink: #fafafa;
+  --ink-faint: #a1a1aa;
+  --ink-dim: #71717a;
+  --border: #27272a;
+  --accent: #7c6fff;
+  --accent-warm: #f59e0b;
+  --correct: #22c55e;
+  --wrong: #ef4444;
   --warning: #f59e0b;
-  --shadow: 0 2px 12px rgba(0,0,0,0.45);
+  --shadow: 0 2px 16px rgba(0,0,0,0.55);
   --radius: 14px;
   --radius-sm: 10px;
   --font-sans: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-serif: Georgia, "Times New Roman", serif;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #f6f4f0;
-    --surface: #ffffff;
-    --surface-2: #f0ece6;
-    --surface-3: #e8e2da;
-    --ink: #1a1a1a;
-    --ink-faint: #6b6560;
-    --ink-dim: #9a9590;
-    --border: #ddd8d0;
-    --accent: #2563eb;
-    --accent-warm: #c75b39;
-    --correct: #059669;
-    --wrong: #e11d48;
-    --warning: #d97706;
-    --shadow: 0 2px 10px rgba(0,0,0,0.08);
-  }
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -60,7 +41,9 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
 /* Header */
 .game-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 12px; flex-shrink: 0; }
-.game-header h1 { font-size: 18px; font-weight: 700; margin: 0; letter-spacing: -0.3px; }
+.game-header .brand { display: flex; align-items: center; gap: 8px; }
+.game-header .brand svg { width: 28px; height: 28px; }
+.game-header h1 { font-size: 18px; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
 .game-header .meta { font-size: 13px; color: var(--ink-faint); font-weight: 500; }
 .header-actions { display: flex; gap: 8px; }
 .icon-btn {
@@ -70,43 +53,54 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 }
 .icon-btn:active { transform: scale(0.92); }
 
+/* Logo mark */
+.logo-mark { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); }
+.logo-mark svg { width: 36px; height: 36px; }
+
 /* Landing */
 .landing-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 16px; }
-.landing-body .logo { font-size: 56px; line-height: 1; }
 .landing-body h2 { font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
 .landing-body p { font-size: 15px; color: var(--ink-faint); max-width: 320px; margin: 0; line-height: 1.5; }
 .landing-streak-bar {
   display: flex; align-items: center; gap: 6px;
   background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
-  padding: 6px 14px; font-size: 14px; font-weight: 700; color: var(--ink);
+  padding: 6px 14px; font-size: 14px; font-weight: 700; color: var(--ink); font-family: var(--font-mono);
 }
-.landing-streak-bar .fire { font-size: 18px; }
+.landing-streak-bar .fire { font-size: 16px; }
 .landing-streak-bar .broken { opacity: 0.4; filter: grayscale(1); }
 .btn-primary {
   width: 100%; max-width: 280px; padding: 14px 20px; border-radius: var(--radius); border: none;
   background: var(--accent); color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
-  box-shadow: var(--shadow); transition: transform .12s, filter .12s;
+  box-shadow: var(--shadow); transition: transform .12s, filter .12s; font-family: var(--font-sans);
 }
 .btn-primary:active { transform: scale(0.97); }
 .btn-secondary {
   width: 100%; max-width: 280px; padding: 12px 20px; border-radius: var(--radius); border: 1px solid var(--border);
   background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 600; cursor: pointer;
-  transition: transform .12s;
+  transition: transform .12s; font-family: var(--font-sans);
 }
 .btn-secondary:active { transform: scale(0.97); }
 .btn-primary:disabled, .btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* Stats bar */
 .stats-bar { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-.stat-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--ink-faint); }
+.stat-chip { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--ink-faint); font-family: var(--font-mono); }
 .stat-chip b { color: var(--ink); margin-left: 3px; }
 
 /* Daily lock notice */
 .daily-locked {
-  background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 12px 16px; max-width: 280px; width: 100%; font-size: 13px; color: var(--ink-faint);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; max-width: 280px; width: 100%; font-size: 13px; color: var(--ink-faint);
 }
-.daily-locked b { color: var(--ink); }
+.daily-locked b { color: var(--ink); font-size: 14px; }
+
+/* Gauntlet teaser */
+.gauntlet-teaser {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; max-width: 280px; width: 100%; text-align: center;
+}
+.gauntlet-teaser .gt-streak { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--accent-warm); }
+.gauntlet-teaser .gt-label { font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
 
 /* Question */
 .question-stage { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow-y: auto; }
@@ -128,9 +122,10 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .option-btn .key-hint {
   width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-faint); flex-shrink: 0;
+  font-family: var(--font-mono);
 }
-.option-btn.correct { border-color: var(--correct); background: rgba(16,185,129,0.08); }
-.option-btn.wrong { border-color: var(--wrong); background: rgba(244,63,94,0.08); animation: shake 0.4s ease-in-out; }
+.option-btn.correct { border-color: var(--correct); background: rgba(34,197,94,0.08); }
+.option-btn.wrong { border-color: var(--wrong); background: rgba(239,68,68,0.08); animation: shake 0.4s ease-in-out; }
 .option-btn.dimmed { opacity: 0.35; pointer-events: none; }
 .option-btn.timeout { border-color: var(--warning); background: rgba(245,158,11,0.08); }
 
@@ -138,9 +133,14 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
   0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)}
 }
 
+/* Gauntlet HUD */
+.gauntlet-hud { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-shrink: 0; }
+.gauntlet-hud .lives { font-size: 20px; letter-spacing: 2px; }
+.gauntlet-hud .streak { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-warm); }
+
 /* Per-question timer */
 .q-timer-wrap { margin-bottom: 12px; }
-.q-timer-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.q-timer-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
 .q-timer-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .1s linear; }
 .q-timer-fill.urgent { background: var(--warning); }
 .q-timer-fill.danger { background: var(--wrong); }
@@ -155,12 +155,25 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .feedback-strip.wrong { border-color: var(--wrong); }
 .feedback-strip.timeout { border-color: var(--warning); }
 .feedback-strip .fb-result { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-.feedback-strip .fb-insight { font-size: 13px; color: var(--ink-faint); line-height: 1.45; font-style: italic; font-family: var(--font-serif); }
+.feedback-strip .fb-insight { font-size: 13px; color: var(--ink-faint); line-height: 1.45; }
 
 /* Share / results */
 .results-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 14px; min-height: 0; overflow-y: auto; padding-bottom: 16px; }
 .results-score { font-size: 48px; font-weight: 800; line-height: 1; }
 .results-label { font-size: 15px; color: var(--ink-faint); font-weight: 500; }
+
+/* Telemetry */
+.telemetry-row {
+  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
+  max-width: 320px; width: 100%;
+}
+.telemetry-item { text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; flex: 1; min-width: 80px; }
+.telemetry-item .val { font-family: var(--font-mono); font-size: 18px; font-weight: 700; display: block; color: var(--ink); }
+.telemetry-item .lbl { font-size: 10px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; display: block; }
+.telemetry-item .badge { display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px; }
+.badge-lightning { background: rgba(245,158,11,0.15); color: var(--accent-warm); }
+.badge-fast { background: rgba(124,111,255,0.15); color: var(--accent); }
+.badge-deliberate { background: var(--surface-2); color: var(--ink-faint); }
 
 /* Visual share grid */
 .share-visual {
@@ -174,9 +187,9 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .share-cell.empty { background: var(--surface-3); }
 
 .share-text {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
-  background: var(--surface-2); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);
-  max-width: 320px; width: 100%; word-break: break-word; text-align: left;
+  font-family: var(--font-mono); font-size: 12px;
+  background: var(--surface); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);
+  max-width: 320px; width: 100%; word-break: break-word; text-align: left; color: var(--ink-faint);
 }
 
 /* Category mastery */
@@ -219,13 +232,20 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
   <!-- LANDING -->
   <div id="screen-landing" class="screen active">
-    <div class="game-header"><h1>KNOWIT</h1><div class="meta">Daily Trivia</div></div>
+    <div class="game-header">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>
+        <h1>KNOWIT</h1>
+      </div>
+      <div class="meta">Daily Trivia</div>
+    </div>
     <div class="landing-body">
-      <div class="logo">🧠</div>
+      <div class="logo-mark">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>
+      </div>
       <h2>KNOWIT</h2>
       <p>10 questions. Same set for everyone. Once per day.</p>
 
-      <!-- Streak display -->
       <div class="landing-streak-bar" id="streak-bar" style="display:none;">
         <span class="fire" id="streak-fire">🔥</span>
         <span id="streak-text"></span>
@@ -240,22 +260,38 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
       <div class="stats-bar" id="landing-stats"></div>
 
-      <button class="btn-secondary" id="btn-practice">🎯 Practice Mode</button>
+      <!-- Gauntlet teaser -->
+      <div class="gauntlet-teaser" id="gauntlet-teaser" style="display:none;">
+        <div class="gt-streak" id="gt-best">0</div>
+        <div class="gt-label">Best Gauntlet Streak</div>
+        <button class="btn-secondary" id="btn-gauntlet" style="max-width:100%;">⚡ Play The Gauntlet</button>
+      </div>
+
+      <button class="btn-secondary" id="btn-practice" style="display:none;">🎯 Practice Mode</button>
     </div>
   </div>
 
   <!-- PLAYING -->
   <div id="screen-playing" class="screen">
     <div class="game-header">
-      <h1 id="mode-title">Daily 10</h1>
+      <div class="brand">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>
+        <h1 id="mode-title">Daily 10</h1>
+      </div>
       <div class="header-actions">
-        <button class="icon-btn" id="btn-mute" aria-label="Toggle sound">🔊</button>
+        <button class="icon-btn" id="btn-mute" aria-label="Toggle sound">🔇</button>
         <button class="icon-btn" id="btn-close" aria-label="Quit">✕</button>
       </div>
     </div>
 
     <div class="q-timer-wrap">
       <div class="q-timer-bar"><div class="q-timer-fill" id="q-timer-fill"></div></div>
+    </div>
+
+    <!-- Gauntlet HUD -->
+    <div class="gauntlet-hud" id="gauntlet-hud" style="display:none;">
+      <div class="lives" id="gauntlet-lives"></div>
+      <div class="streak" id="gauntlet-streak">Streak 0</div>
     </div>
 
     <div class="question-stage">
@@ -273,10 +309,33 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
   <!-- RESULTS -->
   <div id="screen-results" class="screen">
-    <div class="game-header"><h1 id="result-title">Done</h1><div class="meta" id="result-meta"></div></div>
+    <div class="game-header">
+      <div class="brand">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>
+        <h1 id="result-title">Done</h1>
+      </div>
+      <div class="meta" id="result-meta"></div>
+    </div>
     <div class="results-body">
       <div class="results-score" id="result-score">8/10</div>
       <div class="results-label" id="result-label">Great job!</div>
+
+      <!-- Telemetry -->
+      <div class="telemetry-row" id="telemetry-row">
+        <div class="telemetry-item">
+          <span class="val" id="tel-total">0s</span>
+          <span class="lbl">Total Time</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="val" id="tel-avg">0ms</span>
+          <span class="lbl">Avg / Q</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="val" id="tel-speed">—</span>
+          <span class="lbl">Speed</span>
+          <span class="badge" id="tel-badge"></span>
+        </div>
+      </div>
 
       <!-- Mastery -->
       <div class="mastery-grid" id="mastery-grid"></div>
@@ -288,6 +347,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
       <button class="btn-primary" id="btn-share">📤 Share Score</button>
       <button class="btn-secondary" id="btn-copy">📋 Copy Text</button>
+      <button class="btn-secondary" id="btn-gauntlet-result" style="display:none;">⚡ Play The Gauntlet</button>
       <button class="btn-secondary" id="btn-home">🏠 Home</button>
     </div>
   </div>
@@ -300,10 +360,13 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
    KNOWIT — Curated daily trivia
    ================================================================ */
 
+// ---- SVG Logo (reusable) ----
+const LOGO_SVG = `<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>`;
+
 // ---- Audio Engine (muted by default) ----
 class AudioEngine {
   constructor() {
-    this.ctx = null; this.master = null; this.enabled = false; // muted by default
+    this.ctx = null; this.master = null; this.enabled = false;
   }
   init() {
     if (this.ctx) return;
@@ -565,54 +628,35 @@ const QUESTIONS = [
 ];
 
 // ---- State ----
-const STATE_VERSION = 2;
+const STATE_VERSION = 3;
 const Q_PER_DAY = 10;
-const Q_TIME_LIMIT = 10000; // 10 seconds per question
+const GAUNTLET_LIVES = 3;
 let state = {
-  mode: 'daily',
+  mode: 'daily', // 'daily' | 'gauntlet'
   screen: 'landing',
-  dailyQuestions: [],
+  questions: [],
   currentQ: 0,
-  answers: [], // {correct:bool, time:number, category:string, hintUsed:false}
+  answers: [], // {correct:bool, time:number, category:string}
   startTime: 0,
   qStartTime: 0,
   waiting: false,
-  muted: true, // muted by default
+  muted: true,
   timerId: null,
+  gauntletLives: GAUNTLET_LIVES,
+  gauntletStreak: 0,
 };
 
 let stats = loadStats();
 
 function loadStats() {
   try {
-    const raw = localStorage.getItem('synapse_stats_v2');
+    const raw = localStorage.getItem('knowit_stats_v3');
     if (raw) return JSON.parse(raw);
   } catch(e){}
-  return { played:0, won:0, streak:0, maxStreak:0, totalCorrect:0, totalAnswered:0, bestEndless:0, lastDate:null, completedDaily:null };
+  return { played:0, streak:0, maxStreak:0, totalCorrect:0, totalAnswered:0, bestGauntlet:0, lastDate:null, completedDaily:null };
 }
 function saveStats() {
-  try { localStorage.setItem('synapse_stats_v2', JSON.stringify(stats)); } catch(e){}
-}
-function loadState() {
-  try {
-    const raw = localStorage.getItem('synapse_state_v2');
-    if (raw) {
-      const s = JSON.parse(raw);
-      if (s.version === STATE_VERSION && s.date === getToday()) {
-        Object.assign(state, s);
-        return true;
-      }
-    }
-  } catch(e){}
-  return false;
-}
-function saveState() {
-  try {
-    localStorage.setItem('synapse_state_v2', JSON.stringify({ ...state, version: STATE_VERSION, date: getToday() }));
-  } catch(e){}
-}
-function clearState() {
-  try { localStorage.removeItem('synapse_state_v2'); } catch(e){}
+  try { localStorage.setItem('knowit_stats_v3', JSON.stringify(stats)); } catch(e){}
 }
 function getToday() {
   const d = new Date();
@@ -645,6 +689,8 @@ function renderLanding() {
   const completedToday = stats.completedDaily === getToday();
   $('btn-daily').style.display = completedToday ? 'none' : 'block';
   $('daily-lock').style.display = completedToday ? 'block' : 'none';
+  $('gauntlet-teaser').style.display = 'block';
+  $('gt-best').textContent = stats.bestGauntlet;
 }
 function renderLandingStats() {
   const el = $('landing-stats');
@@ -659,9 +705,7 @@ function renderStreakBar() {
   if (stats.streak > 0) {
     bar.style.display = 'flex';
     $('streak-text').textContent = `${stats.streak} day streak`;
-    if (stats.streak >= 7) fire.textContent = '🔥';
-    else if (stats.streak >= 3) fire.textContent = '⚡';
-    else fire.textContent = '🔥';
+    fire.textContent = stats.streak >= 7 ? '🔥' : stats.streak >= 3 ? '⚡' : '🔥';
     fire.classList.remove('broken');
   } else if (stats.played > 0 && stats.streak === 0) {
     bar.style.display = 'flex';
@@ -673,40 +717,47 @@ function renderStreakBar() {
   }
 }
 
-// ---- Daily questions ----
+// ---- Question sourcing ----
 function getDailyQuestions() {
   const seed = getDailySeed();
   const indices = seededShuffle(QUESTIONS.map((_,i)=>i), seed);
   return indices.slice(0, Q_PER_DAY).map(i=>QUESTIONS[i]);
 }
-function getPracticeQuestion() {
+function getRandomQuestion() {
   return QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
 }
 
 // ---- Rendering ----
 function renderQuestion() {
-  const q = state.dailyQuestions[state.currentQ];
+  const q = state.questions[state.currentQ];
   if (!q) return;
-  $('q-tracker').textContent = `Question ${state.currentQ+1} / ${state.dailyQuestions.length}`;
+  $('q-tracker').textContent = state.mode === 'daily'
+    ? `Question ${state.currentQ+1} / ${state.questions.length}`
+    : `Streak ${state.gauntletStreak} · Question ${state.currentQ+1}`;
   $('q-text').innerHTML = `<div class="category-tag">${q.category}</div>${escapeHtml(q.question)}`;
   const grid = $('options-grid');
   grid.innerHTML = '';
   q.options.forEach((opt,idx)=>{
     const btn = document.createElement('button');
     btn.className = 'option-btn';
-    btn.innerHTML = `<span class="key-hint">${idx+1}</span><span>${escapeHtml(opt)}</span>`;
+    btn.innerHTML = `<span class="key-hint">${String.fromCharCode(65+idx)}</span><span>${escapeHtml(opt)}</span>`;
     btn.onclick = ()=>handleAnswer(idx);
     grid.appendChild(btn);
   });
   $('feedback-strip').className = 'feedback-strip';
   state.qStartTime = performance.now();
   state.waiting = false;
-
-  // Start per-question timer
   if (state.timerId) cancelAnimationFrame(state.timerId);
   startQTimer();
 }
 function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+// ---- Gauntlet HUD ----
+function renderGauntletHUD() {
+  const hearts = Array.from({length:GAUNTLET_LIVES},(_,i)=>`<span style="opacity:${i<state.gauntletLives?1:0.25};filter:${i<state.gauntletLives?'none':'grayscale(1)'}">♥</span>`).join('');
+  $('gauntlet-lives').innerHTML = hearts;
+  $('gauntlet-streak').textContent = `Streak ${state.gauntletStreak}`;
+}
 
 // ---- Per-question timer ----
 function startQTimer() {
@@ -715,15 +766,13 @@ function startQTimer() {
   function tick() {
     if (state.screen !== 'playing' || state.waiting) return;
     const elapsed = performance.now() - start;
-    const pct = Math.max(0, 100 - (elapsed / Q_TIME_LIMIT) * 100);
+    const max = state.mode === 'gauntlet' ? 15000 : 20000;
+    const pct = Math.max(0, 100 - (elapsed / max) * 100);
     bar.style.width = pct + '%';
     bar.className = 'q-timer-fill';
-    if (pct < 30) bar.classList.add('danger');
-    else if (pct < 60) bar.classList.add('urgent');
-    if (elapsed >= Q_TIME_LIMIT) {
-      handleTimeout();
-      return;
-    }
+    if (pct < 25) bar.classList.add('danger');
+    else if (pct < 55) bar.classList.add('urgent');
+    if (elapsed >= max) { handleTimeout(); return; }
     state.timerId = requestAnimationFrame(tick);
   }
   tick();
@@ -738,77 +787,87 @@ function startDaily() {
   state.mode = 'daily';
   state.currentQ = 0;
   state.answers = [];
-  state.dailyQuestions = getDailyQuestions();
+  state.questions = getDailyQuestions();
   state.startTime = performance.now();
   state.waiting = false;
+  state.gauntletLives = GAUNTLET_LIVES;
+  state.gauntletStreak = 0;
   $('mode-title').textContent = 'Daily 10';
+  $('gauntlet-hud').style.display = 'none';
   showScreen('playing');
   renderQuestion();
 }
-function startPractice() {
-  state.mode = 'practice';
+function startGauntlet() {
+  state.mode = 'gauntlet';
   state.currentQ = 0;
   state.answers = [];
-  state.dailyQuestions = [];
-  for (let i=0; i<Q_PER_DAY; i++) state.dailyQuestions.push(getPracticeQuestion());
+  state.questions = [];
+  for (let i=0; i<10; i++) state.questions.push(getRandomQuestion());
   state.startTime = performance.now();
   state.waiting = false;
-  $('mode-title').textContent = 'Practice';
+  state.gauntletLives = GAUNTLET_LIVES;
+  state.gauntletStreak = 0;
+  $('mode-title').textContent = 'The Gauntlet';
+  $('gauntlet-hud').style.display = 'flex';
   showScreen('playing');
   renderQuestion();
+  renderGauntletHUD();
 }
 
 function handleTimeout() {
   if (state.waiting) return;
-  const q = state.dailyQuestions[state.currentQ];
+  const q = state.questions[state.currentQ];
   const time = performance.now() - state.qStartTime;
-  state.answers.push({correct:false, time, category:q.category, hintUsed:false, timeout:true});
+  state.answers.push({correct:false, time, category:q.category});
   state.waiting = true;
   stopQTimer();
 
-  // Visual feedback
   const btns = document.querySelectorAll('.option-btn');
-  btns.forEach((btn, i) => {
-    if (i === q.correctIndex) btn.classList.add('correct');
-    else btn.classList.add('dimmed');
-  });
-
-  // Audio
+  btns.forEach((btn, i) => { if (i === q.correctIndex) btn.classList.add('correct'); else btn.classList.add('dimmed'); });
   if (!state.muted) audio.wrong();
 
-  // Feedback strip
   const fb = $('feedback-strip');
-  $('fb-result').textContent = 'Time\'s up!';
+  $('fb-result').textContent = "Time's up!";
   $('fb-result').style.color = 'var(--warning)';
   $('fb-insight').textContent = q.didYouKnow;
   fb.className = 'feedback-strip show timeout';
 
+  if (state.mode === 'gauntlet') {
+    state.gauntletLives--;
+    renderGauntletHUD();
+  }
+
   setTimeout(()=>{
     fb.classList.remove('show');
+    if (state.mode === 'gauntlet' && state.gauntletLives <= 0) { finishGame(); return; }
     state.currentQ++;
-    if (state.currentQ >= state.dailyQuestions.length) { finishGame(); }
-    else { state.waiting = false; renderQuestion(); }
+    if (state.mode === 'daily' && state.currentQ >= state.questions.length) { finishGame(); }
+    else {
+      if (state.mode === 'gauntlet' && state.currentQ >= state.questions.length) {
+        for (let i=0; i<5; i++) state.questions.push(getRandomQuestion());
+      }
+      state.waiting = false;
+      renderQuestion();
+      if (state.mode === 'gauntlet') renderGauntletHUD();
+    }
   }, 1400);
 }
 
 function handleAnswer(idx) {
   if (state.waiting) return;
   stopQTimer();
-  const q = state.dailyQuestions[state.currentQ];
+  const q = state.questions[state.currentQ];
   const correct = idx === q.correctIndex;
   const time = performance.now() - state.qStartTime;
-  state.answers.push({correct, time, category:q.category, hintUsed:false});
+  state.answers.push({correct, time, category:q.category});
 
-  // Visual feedback
   const btns = document.querySelectorAll('.option-btn');
   btns[idx].classList.add(correct ? 'correct' : 'wrong');
   if (!correct) btns[q.correctIndex].classList.add('correct');
   btns.forEach((btn, i) => { if (i !== idx && i !== q.correctIndex) btn.classList.add('dimmed'); });
 
-  // Audio
   if (!state.muted) { correct ? audio.correct() : audio.wrong(); }
 
-  // Feedback strip
   const fb = $('feedback-strip');
   $('fb-result').textContent = correct ? 'Correct!' : 'Incorrect';
   $('fb-result').style.color = correct ? 'var(--correct)' : 'var(--wrong)';
@@ -817,11 +876,25 @@ function handleAnswer(idx) {
 
   state.waiting = true;
 
+  if (state.mode === 'gauntlet') {
+    if (!correct) state.gauntletLives--;
+    else state.gauntletStreak++;
+    renderGauntletHUD();
+  }
+
   setTimeout(()=>{
     fb.classList.remove('show');
+    if (state.mode === 'gauntlet' && state.gauntletLives <= 0) { finishGame(); return; }
     state.currentQ++;
-    if (state.currentQ >= state.dailyQuestions.length) { finishGame(); }
-    else { state.waiting = false; renderQuestion(); }
+    if (state.mode === 'daily' && state.currentQ >= state.questions.length) { finishGame(); }
+    else {
+      if (state.mode === 'gauntlet' && state.currentQ >= state.questions.length) {
+        for (let i=0; i<5; i++) state.questions.push(getRandomQuestion());
+      }
+      state.waiting = false;
+      renderQuestion();
+      if (state.mode === 'gauntlet') renderGauntletHUD();
+    }
   }, 1400);
 }
 
@@ -829,7 +902,9 @@ function finishGame() {
   stopQTimer();
   const total = state.answers.length;
   const correct = state.answers.filter(a=>a.correct).length;
-  const time = Math.round((performance.now() - state.startTime)/1000);
+  const totalTimeMs = performance.now() - state.startTime;
+  const totalTimeSec = totalTimeMs / 1000;
+  const avgMs = total > 0 ? Math.round(totalTimeMs / total) : 0;
   const today = getToday();
 
   // Stats
@@ -844,22 +919,38 @@ function finishGame() {
     }
     stats.maxStreak = Math.max(stats.maxStreak, stats.streak);
     stats.completedDaily = today;
+  } else {
+    stats.bestGauntlet = Math.max(stats.bestGauntlet, state.gauntletStreak);
   }
   saveStats();
-  clearState();
 
   // Results screen
   showScreen('results');
-  $('result-title').textContent = state.mode === 'daily' ? 'Daily 10' : 'Practice';
-  $('result-meta').textContent = state.mode === 'daily' ? today : 'Practice Mode';
-  $('result-score').textContent = `${correct}/${total}`;
-  $('result-score').className = 'results-score' + (correct === total ? ' perfect-flash' : '');
+  $('result-title').textContent = state.mode === 'daily' ? 'Daily 10' : 'The Gauntlet';
+  $('result-meta').textContent = state.mode === 'daily' ? today : 'Endless Mode';
 
-  let label = 'Keep practicing!';
-  if (correct === total) label = 'Perfect score! 🏆';
-  else if (correct >= 8) label = 'Excellent!';
-  else if (correct >= 6) label = 'Solid effort!';
-  $('result-label').textContent = label;
+  if (state.mode === 'daily') {
+    $('result-score').textContent = `${correct}/${total}`;
+    $('result-score').className = 'results-score' + (correct === total ? ' perfect-flash' : '');
+    let label = 'Keep practicing!';
+    if (correct === total) label = 'Perfect score! 🏆';
+    else if (correct >= 8) label = 'Excellent!';
+    else if (correct >= 6) label = 'Solid effort!';
+    $('result-label').textContent = label;
+  } else {
+    $('result-score').textContent = state.gauntletStreak;
+    $('result-score').className = 'results-score';
+    $('result-label').textContent = 'Best Streak';
+  }
+
+  // Telemetry
+  $('tel-total').textContent = fmtTimeSec(totalTimeSec);
+  $('tel-avg').textContent = avgMs + 'ms';
+  const speed = getSpeedRating(avgMs);
+  $('tel-speed').textContent = speed.label;
+  const badge = $('tel-badge');
+  badge.textContent = speed.label;
+  badge.className = 'badge ' + speed.badgeClass;
 
   // Category mastery
   const categories = {};
@@ -868,8 +959,7 @@ function finishGame() {
     categories[a.category].total++;
     if (a.correct) categories[a.category].correct++;
   });
-  const masteryEl = $('mastery-grid');
-  masteryEl.innerHTML = Object.entries(categories).map(([cat, data]) => {
+  $('mastery-grid').innerHTML = Object.entries(categories).map(([cat, data]) => {
     const perfect = data.correct === data.total;
     const ok = data.correct >= data.total/2;
     const icon = perfect ? '🔥' : ok ? '✅' : '❄️';
@@ -882,34 +972,36 @@ function finishGame() {
   for (let i=0; i<10; i++) {
     const cell = document.createElement('div');
     cell.className = 'share-cell';
-    if (i < state.answers.length) {
-      cell.classList.add(state.answers[i].correct ? 'correct' : 'wrong');
-    } else {
-      cell.classList.add('empty');
-    }
+    if (i < state.answers.length) cell.classList.add(state.answers[i].correct ? 'correct' : 'wrong');
+    else cell.classList.add('empty');
     visualEl.appendChild(cell);
   }
 
   // Share text
-  const timeStr = fmtTime(time);
   const dailyNum = getDailyNum();
-  const pct = mockPercentile(correct, total);
   const shareBody = state.answers.map(a => a.correct ? '🟩' : '🟥').join('');
-  $('share-text').textContent = `KNOWIT #${dailyNum}\n${correct}/${total} · ${timeStr} · Top ${pct}%\n\n${shareBody}\n\nknowit.app`;
+  if (state.mode === 'daily') {
+    $('share-text').textContent = `KNOWIT Daily #${dailyNum} 🧠\n${correct}/${total}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} • Speed: ${speed.label}\nCan you beat my score? knowit.app`;
+  } else {
+    $('share-text').textContent = `KNOWIT Gauntlet ⚡\nStreak: ${state.gauntletStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}\nknowit.app`;
+  }
 
-  // Confetti for perfect
-  if (correct === total) launchConfetti();
+  // Show gauntlet button on daily results
+  $('btn-gauntlet-result').style.display = state.mode === 'daily' ? 'block' : 'none';
+
+  // Confetti for perfect daily
+  if (state.mode === 'daily' && correct === total) launchConfetti();
 }
 
-function fmtTime(s) {
+function fmtTimeSec(s) {
   const m = Math.floor(s/60);
-  const r = s%60;
+  const r = Math.round(s%60);
   return m ? `${m}m ${r}s` : `${r}s`;
 }
-function mockPercentile(correct, total) {
-  const base = [3,8,15,25,38,52,68,82,92,97,99][correct] || 50;
-  const variance = Math.floor(mulberry32(getDailySeed()+correct)()*8);
-  return Math.min(99, base + variance);
+function getSpeedRating(avgMs) {
+  if (avgMs < 2500) return { label: 'Lightning', badgeClass: 'badge-lightning' };
+  if (avgMs < 5500) return { label: 'Fast', badgeClass: 'badge-fast' };
+  return { label: 'Deliberate', badgeClass: 'badge-deliberate' };
 }
 
 // ---- Confetti ----
@@ -919,7 +1011,7 @@ function launchConfetti() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   const pieces = [];
-  const colors = ['#10b981','#58a6ff','#f59e0b','#f43f5e','#8b5cf6','#ec4899'];
+  const colors = ['#22c55e','#7c6fff','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
   for (let i=0; i<120; i++) {
     pieces.push({
       x: Math.random()*canvas.width,
@@ -965,7 +1057,9 @@ document.addEventListener('keydown', e => {
 
 // ---- Buttons ----
 $('btn-daily').onclick = ()=>{ audio.click(); startDaily(); };
-$('btn-practice').onclick = ()=>{ audio.click(); startPractice(); };
+$('btn-gauntlet').onclick = ()=>{ audio.click(); startGauntlet(); };
+$('btn-gauntlet-result').onclick = ()=>{ audio.click(); startGauntlet(); };
+$('btn-practice').onclick = ()=>{ audio.click(); startDaily(); };
 $('btn-mute').onclick = ()=>{
   state.muted = !state.muted;
   audio.enabled = !state.muted;
@@ -973,7 +1067,7 @@ $('btn-mute').onclick = ()=>{
   toast(state.muted ? 'Sound muted' : 'Sound on');
 };
 $('btn-close').onclick = ()=>{
-  if (confirm('Quit current game? Progress will be lost.')) { stopQTimer(); clearState(); showScreen('landing'); renderLanding(); }
+  if (confirm('Quit current game? Progress will be lost.')) { stopQTimer(); showScreen('landing'); renderLanding(); }
 };
 $('btn-copy').onclick = ()=>{
   navigator.clipboard.writeText($('share-text').textContent).then(()=>toast('Copied to clipboard!'));
