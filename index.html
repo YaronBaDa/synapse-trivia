@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Badeen+Display&family=JetBrains+Mono:wght@400;500;600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>KNOWIT</title>
 <style>
 :root {
@@ -54,9 +54,25 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 }
 .icon-btn:active { transform: scale(0.92); }
 
-/* Logo mark */
-.logo-mark { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); }
-.logo-mark svg { width: 36px; height: 36px; }
+/* Logo mark — Badeen Display "K" */
+.logo-mark {
+  display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; border-radius: 16px;
+  background: var(--accent); border: 1px solid var(--border);
+}
+.logo-mark .logo-letter {
+  font-family: 'Badeen Display', serif; font-size: 40px; font-weight: 400;
+  color: #fff; line-height: 1; padding-top: 4px;
+}
+.logo-mark-sm {
+  display: flex; align-items: center; justify-content: center;
+  width: 26px; height: 26px; border-radius: 7px;
+  background: var(--accent);
+}
+.logo-mark-sm .logo-letter {
+  font-family: 'Badeen Display', serif; font-size: 17px; font-weight: 400;
+  color: #fff; line-height: 1; padding-top: 2px;
+}
 
 /* Landing */
 .landing-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 16px; }
@@ -240,14 +256,14 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
   <div id="screen-landing" class="screen active">
     <div class="game-header">
       <div class="brand">
-        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>
+        <span class="logo-mark-sm"><span class="logo-letter">K</span></span>
         <h1>KNOWIT</h1>
       </div>
       <div class="meta">Daily Trivia</div>
     </div>
     <div class="landing-body">
       <div class="logo-mark">
-        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>
+        <span class="logo-letter">K</span>
       </div>
       <h2>KNOWIT</h2>
       <p>10 questions. Same set for everyone. Once per day.</p>
@@ -281,7 +297,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
   <div id="screen-playing" class="screen">
     <div class="game-header">
       <div class="brand">
-        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>
+        <span class="logo-mark-sm"><span class="logo-letter">K</span></span>
         <h1>KNOWIT</h1>
       </div>
       <div class="meta" id="header-meta">#1020 · Q1/10</div>
@@ -318,7 +334,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
   <div id="screen-results" class="screen">
     <div class="game-header">
       <div class="brand">
-        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>
+        <span class="logo-mark-sm"><span class="logo-letter">K</span></span>
         <h1 id="result-title">Done</h1>
       </div>
       <div class="meta" id="result-meta"></div>
@@ -367,8 +383,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
    KNOWIT — Curated daily trivia
    ================================================================ */
 
-// ---- SVG Logo (reusable) ----
-const LOGO_SVG = `<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>`;
+// ---- Logo (unused, kept for reference) ----
+// const LOGO_SVG = ...
 
 // ---- Audio Engine (muted by default) ----
 class AudioEngine {
