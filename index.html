@@ -111,13 +111,13 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 }
 .daily-locked b { color: var(--ink); font-size: 14px; }
 
-/* Gauntlet teaser */
-.gauntlet-teaser {
+/* Endless teaser */
+.endless-teaser {
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 14px 16px; max-width: 280px; width: 100%; text-align: center;
 }
-.gauntlet-teaser .gt-streak { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--accent-warm); }
-.gauntlet-teaser .gt-label { font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+.endless-teaser .gt-streak { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--accent-warm); }
+.endless-teaser .gt-label { font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
 
 /* Question */
 .question-stage { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow-y: auto; padding-bottom: 8px; }
@@ -155,13 +155,13 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
   0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)}
 }
 
-/* Gauntlet HUD */
-.gauntlet-hud { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-shrink: 0; }
-.gauntlet-hud .lives { font-size: 20px; letter-spacing: 2px; display: flex; gap: 4px; }
-.gauntlet-hud .life { transition: opacity .3s, filter .3s, transform .3s; }
-.gauntlet-hud .life.lost { opacity: 0.25; filter: grayscale(1); transform: scale(0.85); }
-.gauntlet-hud .streak { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-warm); transition: all .3s; }
-.gauntlet-hud .streak.blazing {
+/* Endless HUD */
+.endless-hud { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-shrink: 0; }
+.endless-hud .lives { font-size: 20px; letter-spacing: 2px; display: flex; gap: 4px; }
+.endless-hud .life { transition: opacity .3s, filter .3s, transform .3s; }
+.endless-hud .life.lost { opacity: 0.25; filter: grayscale(1); transform: scale(0.85); }
+.endless-hud .streak { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-warm); transition: all .3s; }
+.endless-hud .streak.blazing {
   color: #fbbf24; text-shadow: 0 0 12px rgba(251,191,36,0.5);
   border: 1px solid rgba(251,191,36,0.4); background: rgba(251,191,36,0.08);
   padding: 4px 10px; border-radius: 20px;
@@ -316,11 +316,12 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
       <div class="stats-bar" id="landing-stats"></div>
 
-      <!-- Gauntlet teaser -->
-      <div class="gauntlet-teaser" id="gauntlet-teaser" style="display:none;">
+      <!-- Endless teaser -->
+      <div class="endless-teaser" id="endless-teaser" style="display:none;">
         <div class="gt-streak" id="gt-best">0</div>
-        <div class="gt-label">Best Gauntlet Streak</div>
-        <button class="btn-secondary" id="btn-gauntlet" style="max-width:100%;">⚡ Play The Gauntlet</button>
+        <div class="gt-label">Best Endless Streak</div>
+        <div style="font-size:12px;color:var(--ink-faint);margin-bottom:10px;">Survive as long as you can. 3 lives.</div>
+        <button class="btn-secondary" id="btn-endless" style="max-width:100%;">⚡ Play Endless Mode</button>
       </div>
 
       <button class="btn-secondary" id="btn-practice" style="display:none;">🎯 Practice Mode</button>
@@ -336,7 +337,6 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       </div>
       <div class="meta" id="header-meta">#1020 · Q1/10</div>
       <div class="header-actions">
-        <button class="icon-btn" id="btn-mute" aria-label="Toggle sound">🔇</button>
         <button class="icon-btn" id="btn-close" aria-label="Quit">✕</button>
       </div>
     </div>
@@ -351,10 +351,10 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <span id="duel-banner-text">DUELING: Alex (8/10 · 24.2s)</span>
     </div>
 
-    <!-- Gauntlet HUD -->
-    <div class="gauntlet-hud" id="gauntlet-hud" style="display:none;">
-      <div class="lives" id="gauntlet-lives"></div>
-      <div class="streak" id="gauntlet-streak">Streak 0</div>
+    <!-- Endless HUD -->
+    <div class="endless-hud" id="endless-hud" style="display:none;">
+      <div class="lives" id="endless-lives"></div>
+      <div class="streak" id="endless-streak">Streak 0</div>
     </div>
 
     <div class="question-stage">
@@ -429,7 +429,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <button class="btn-primary" id="btn-share">📤 Share Score</button>
       <button class="btn-secondary" id="btn-challenge">⚔️ Challenge a Friend</button>
       <button class="btn-secondary" id="btn-copy">📋 Copy Text</button>
-      <button class="btn-secondary" id="btn-gauntlet-result" style="display:none;">⚡ Play The Gauntlet</button>
+      <button class="btn-secondary" id="btn-endless-result" style="display:none;">⚡ Play Endless Mode</button>
       <button class="btn-secondary" id="btn-home">🏠 Home</button>
     </div>
   </div>
@@ -714,7 +714,7 @@ const STATE_VERSION = 3;
 const Q_PER_DAY = 10;
 const GAUNTLET_LIVES = 3;
 let state = {
-  mode: 'daily', // 'daily' | 'gauntlet'
+  mode: 'daily', // 'daily' | 'endless'
   screen: 'landing',
   questions: [],
   currentQ: 0,
@@ -722,10 +722,10 @@ let state = {
   startTime: 0,
   qStartTime: 0,
   waiting: false,
-  muted: true,
+  muted: true, // audio off by default, no UI toggle
   timerId: null,
-  gauntletLives: GAUNTLET_LIVES,
-  gauntletStreak: 0,
+  endlessLives: GAUNTLET_LIVES,
+  endlessStreak: 0,
   // Ghost duel
   duel: null, // {score, time, name} or null
 };
@@ -735,9 +735,14 @@ let stats = loadStats();
 function loadStats() {
   try {
     const raw = localStorage.getItem('knowit_stats_v3');
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const s = JSON.parse(raw);
+      // Migrate old key name if present
+      if (s.bestGauntlet !== undefined && s.bestEndless === undefined) s.bestEndless = s.bestGauntlet;
+      return s;
+    }
   } catch(e){}
-  return { played:0, streak:0, maxStreak:0, totalCorrect:0, totalAnswered:0, bestGauntlet:0, lastDate:null, completedDaily:null };
+  return { played:0, streak:0, maxStreak:0, totalCorrect:0, totalAnswered:0, bestEndless:0, lastDate:null, completedDaily:null };
 }
 function saveStats() {
   try { localStorage.setItem('knowit_stats_v3', JSON.stringify(stats)); } catch(e){}
@@ -799,8 +804,9 @@ function renderLanding() {
   const completedToday = stats.completedDaily === getToday();
   $('btn-daily').style.display = completedToday ? 'none' : 'block';
   $('daily-lock').style.display = completedToday ? 'block' : 'none';
-  $('gauntlet-teaser').style.display = 'block';
-  $('gt-best').textContent = stats.bestGauntlet;
+  // Gating: Endless only visible after daily is done
+  $('endless-teaser').style.display = completedToday ? 'block' : 'none';
+  $('gt-best').textContent = stats.bestEndless;
 }
 function renderLandingStats() {
   const el = $('landing-stats');
@@ -844,7 +850,7 @@ function renderQuestion() {
   // Header meta: daily number + question progress
   $('header-meta').textContent = state.mode === 'daily'
     ? `#${getDailyNum()} · Q${state.currentQ+1}/${state.questions.length}`
-    : `⚡ Streak ${state.gauntletStreak} · Q${state.currentQ+1}`;
+    : `⚡ Streak ${state.endlessStreak} · Q${state.currentQ+1}`;
   // Category tag sits ABOVE the question, not inline
   $('q-text').innerHTML = `<span class="category-tag">${q.category}</span><br>${escapeHtml(q.question)}`;
   const grid = $('options-grid');
@@ -864,13 +870,13 @@ function renderQuestion() {
 }
 function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
 
-// ---- Gauntlet HUD ----
-function renderGauntletHUD() {
-  const hearts = Array.from({length:GAUNTLET_LIVES},(_,i)=>`<span class="life ${i<state.gauntletLives?'':'lost'}">♥</span>`).join('');
-  $('gauntlet-lives').innerHTML = hearts;
-  const streakEl = $('gauntlet-streak');
-  const isBlazing = state.gauntletStreak >= 5;
-  streakEl.textContent = isBlazing ? `🔥 ${state.gauntletStreak}` : `Streak ${state.gauntletStreak}`;
+// ---- Endless HUD ----
+function renderEndlessHUD() {
+  const hearts = Array.from({length:GAUNTLET_LIVES},(_,i)=>`<span class="life ${i<state.endlessLives?'':'lost'}">♥</span>`).join('');
+  $('endless-lives').innerHTML = hearts;
+  const streakEl = $('endless-streak');
+  const isBlazing = state.endlessStreak >= 5;
+  streakEl.textContent = isBlazing ? `🔥 ${state.endlessStreak}` : `Streak ${state.endlessStreak}`;
   streakEl.className = 'streak' + (isBlazing ? ' blazing' : '');
 }
 
@@ -881,7 +887,7 @@ function startQTimer() {
   function tick() {
     if (state.screen !== 'playing' || state.waiting) return;
     const elapsed = performance.now() - start;
-    const max = state.mode === 'gauntlet' ? 15000 : 20000;
+    const max = state.mode === 'endless' ? 15000 : 20000;
     const pct = Math.max(0, 100 - (elapsed / max) * 100);
     bar.style.width = pct + '%';
     bar.className = 'q-timer-fill';
@@ -905,11 +911,11 @@ function startDaily() {
   state.questions = getDailyQuestions();
   state.startTime = performance.now();
   state.waiting = false;
-  state.gauntletLives = GAUNTLET_LIVES;
-  state.gauntletStreak = 0;
+  state.endlessLives = GAUNTLET_LIVES;
+  state.endlessStreak = 0;
   state.duel = parseDuelParam();
   $('header-meta').textContent = `#${getDailyNum()} · Q1/10`;
-  $('gauntlet-hud').style.display = 'none';
+  $('endless-hud').style.display = 'none';
   if (state.duel) {
     $('duel-banner').style.display = 'flex';
     $('duel-banner-text').textContent = `DUELING: ${state.duel.name} (${state.duel.score}/10 · ${state.duel.time}s)`;
@@ -919,23 +925,23 @@ function startDaily() {
   showScreen('playing');
   renderQuestion();
 }
-function startGauntlet() {
-  state.mode = 'gauntlet';
+function startEndless() {
+  state.mode = 'endless';
   state.currentQ = 0;
   state.answers = [];
   state.questions = [];
   for (let i=0; i<10; i++) state.questions.push(getRandomQuestion());
   state.startTime = performance.now();
   state.waiting = false;
-  state.gauntletLives = GAUNTLET_LIVES;
-  state.gauntletStreak = 0;
+  state.endlessLives = GAUNTLET_LIVES;
+  state.endlessStreak = 0;
   state.duel = null;
   $('header-meta').textContent = `⚡ Streak 0 · Q1`;
-  $('gauntlet-hud').style.display = 'flex';
+  $('endless-hud').style.display = 'flex';
   $('duel-banner').style.display = 'none';
   showScreen('playing');
   renderQuestion();
-  renderGauntletHUD();
+  renderEndlessHUD();
 }
 
 function handleTimeout() {
@@ -956,23 +962,23 @@ function handleTimeout() {
   $('fb-insight').textContent = q.didYouKnow;
   fb.className = 'feedback-strip show timeout';
 
-  if (state.mode === 'gauntlet') {
-    state.gauntletLives--;
-    renderGauntletHUD();
+  if (state.mode === 'endless') {
+    state.endlessLives--;
+    renderEndlessHUD();
   }
 
   setTimeout(()=>{
     fb.classList.remove('show');
-    if (state.mode === 'gauntlet' && state.gauntletLives <= 0) { finishGame(); return; }
+    if (state.mode === 'endless' && state.endlessLives <= 0) { finishGame(); return; }
     state.currentQ++;
     if (state.mode === 'daily' && state.currentQ >= state.questions.length) { finishGame(); }
     else {
-      if (state.mode === 'gauntlet' && state.currentQ >= state.questions.length) {
+      if (state.mode === 'endless' && state.currentQ >= state.questions.length) {
         for (let i=0; i<5; i++) state.questions.push(getRandomQuestion());
       }
       state.waiting = false;
       renderQuestion();
-      if (state.mode === 'gauntlet') renderGauntletHUD();
+      if (state.mode === 'endless') renderEndlessHUD();
     }
   }, 1400);
 }
@@ -1000,24 +1006,24 @@ function handleAnswer(idx) {
 
   state.waiting = true;
 
-  if (state.mode === 'gauntlet') {
-    if (!correct) state.gauntletLives--;
-    else state.gauntletStreak++;
-    renderGauntletHUD();
+  if (state.mode === 'endless') {
+    if (!correct) state.endlessLives--;
+    else state.endlessStreak++;
+    renderEndlessHUD();
   }
 
   setTimeout(()=>{
     fb.classList.remove('show');
-    if (state.mode === 'gauntlet' && state.gauntletLives <= 0) { finishGame(); return; }
+    if (state.mode === 'endless' && state.endlessLives <= 0) { finishGame(); return; }
     state.currentQ++;
     if (state.mode === 'daily' && state.currentQ >= state.questions.length) { finishGame(); }
     else {
-      if (state.mode === 'gauntlet' && state.currentQ >= state.questions.length) {
+      if (state.mode === 'endless' && state.currentQ >= state.questions.length) {
         for (let i=0; i<5; i++) state.questions.push(getRandomQuestion());
       }
       state.waiting = false;
       renderQuestion();
-      if (state.mode === 'gauntlet') renderGauntletHUD();
+      if (state.mode === 'endless') renderEndlessHUD();
     }
   }, 1400);
 }
@@ -1044,13 +1050,13 @@ function finishGame() {
     stats.maxStreak = Math.max(stats.maxStreak, stats.streak);
     stats.completedDaily = today;
   } else {
-    stats.bestGauntlet = Math.max(stats.bestGauntlet, state.gauntletStreak);
+    stats.bestEndless = Math.max(stats.bestEndless, state.endlessStreak);
   }
   saveStats();
 
   // Results screen
   showScreen('results');
-  $('result-title').textContent = state.mode === 'daily' ? 'Daily 10' : 'The Gauntlet';
+  $('result-title').textContent = state.mode === 'daily' ? 'Daily 10' : 'Endless Mode';
   $('result-meta').textContent = state.mode === 'daily' ? today : 'Endless Mode';
 
   if (state.mode === 'daily') {
@@ -1062,7 +1068,7 @@ function finishGame() {
     else if (correct >= 6) label = 'Solid effort!';
     $('result-label').textContent = label;
   } else {
-    $('result-score').textContent = state.gauntletStreak;
+    $('result-score').textContent = state.endlessStreak;
     $('result-score').className = 'results-score';
     $('result-label').textContent = 'Best Streak';
   }
@@ -1108,7 +1114,7 @@ function finishGame() {
   if (state.mode === 'daily') {
     $('share-text').textContent = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} (Avg: ${fmtTimeSec(avgMs/1000)}s/Q · ${speed.label})\n\nCan you beat my score?\n${challengeUrl}`;
   } else {
-    $('share-text').textContent = `KNOWIT Gauntlet ⚡\nStreak: ${state.gauntletStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}\n\nCan you beat my streak?\n${challengeUrl}`;
+    $('share-text').textContent = `KNOWIT Endless ⚡\nStreak: ${state.endlessStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}\n\nCan you beat my streak?\n${challengeUrl}`;
   }
 
   // Duel result card
@@ -1133,8 +1139,8 @@ function finishGame() {
     $('duel-card').style.display = 'none';
   }
 
-  // Show gauntlet button on daily results
-  $('btn-gauntlet-result').style.display = state.mode === 'daily' ? 'block' : 'none';
+  // Show endless button on daily results
+  $('btn-endless-result').style.display = state.mode === 'daily' ? 'block' : 'none';
 
   // Confetti for perfect daily
   if (state.mode === 'daily' && correct === total) launchConfetti();
@@ -1204,15 +1210,10 @@ document.addEventListener('keydown', e => {
 
 // ---- Buttons ----
 $('btn-daily').onclick = ()=>{ audio.click(); startDaily(); };
-$('btn-gauntlet').onclick = ()=>{ audio.click(); startGauntlet(); };
-$('btn-gauntlet-result').onclick = ()=>{ audio.click(); startGauntlet(); };
+$('btn-endless').onclick = ()=>{ audio.click(); startEndless(); };
+$('btn-endless-result').onclick = ()=>{ audio.click(); startEndless(); };
 $('btn-practice').onclick = ()=>{ audio.click(); startDaily(); };
-$('btn-mute').onclick = ()=>{
-  state.muted = !state.muted;
-  audio.enabled = !state.muted;
-  $('btn-mute').textContent = state.muted ? '🔇' : '🔊';
-  toast(state.muted ? 'Sound muted' : 'Sound on');
-};
+
 $('btn-close').onclick = ()=>{
   if (confirm('Quit current game? Progress will be lost.')) { stopQTimer(); showScreen('landing'); renderLanding(); }
 };
