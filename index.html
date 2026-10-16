@@ -138,9 +138,9 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .option-btn {
   display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: var(--radius);
   border: 1px solid var(--border); background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 600;
-  cursor: pointer; text-align: left; transition: transform .1s, border-color .2s, background .2s; position: relative; overflow: hidden;
+  cursor: pointer; text-align: left; transition: transform .08s ease, border-color .2s, background .2s; position: relative; overflow: hidden;
 }
-.option-btn:active { transform: scale(0.985); }
+.option-btn:active { transform: scale(0.98); }
 .option-btn .key-hint {
   width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-faint); flex-shrink: 0;
@@ -157,8 +157,15 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
 /* Gauntlet HUD */
 .gauntlet-hud { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-shrink: 0; }
-.gauntlet-hud .lives { font-size: 20px; letter-spacing: 2px; }
-.gauntlet-hud .streak { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-warm); }
+.gauntlet-hud .lives { font-size: 20px; letter-spacing: 2px; display: flex; gap: 4px; }
+.gauntlet-hud .life { transition: opacity .3s, filter .3s, transform .3s; }
+.gauntlet-hud .life.lost { opacity: 0.25; filter: grayscale(1); transform: scale(0.85); }
+.gauntlet-hud .streak { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-warm); transition: all .3s; }
+.gauntlet-hud .streak.blazing {
+  color: #fbbf24; text-shadow: 0 0 12px rgba(251,191,36,0.5);
+  border: 1px solid rgba(251,191,36,0.4); background: rgba(251,191,36,0.08);
+  padding: 4px 10px; border-radius: 20px;
+}
 
 /* Per-question timer */
 .q-timer-wrap { margin-bottom: 12px; }
@@ -242,6 +249,33 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .toast { background: var(--surface); border: 1px solid var(--border); color: var(--ink); padding: 10px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: var(--shadow); margin-top: 8px; animation: toastIn .3s ease; }
 @keyframes toastIn { from { opacity:0; transform:translateY(10px)} to { opacity:1; transform:translateY(0)} }
 
+/* Duel banner */
+.duel-banner {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: rgba(124,111,255,0.12); border: 1px solid rgba(124,111,255,0.3);
+  border-radius: var(--radius-sm); padding: 8px 14px; margin-bottom: 10px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent);
+}
+.duel-banner .swords { font-size: 14px; }
+
+/* Duel result card */
+.duel-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 16px; max-width: 320px; width: 100%; text-align: center;
+}
+.duel-card .duel-outcome { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+.duel-card .duel-vs { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.duel-card .duel-side { flex: 1; }
+.duel-card .duel-side .d-name { font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+.duel-card .duel-side .d-score { font-family: var(--font-mono); font-size: 24px; font-weight: 800; }
+.duel-card .duel-side .d-time { font-family: var(--font-mono); font-size: 13px; color: var(--ink-faint); }
+.duel-card .duel-divider { font-size: 18px; color: var(--ink-dim); font-weight: 700; }
+.duel-card .duel-you .d-score { color: var(--accent); }
+.duel-card .duel-them .d-score { color: var(--ink-faint); }
+
+/* Copy button success state */
+.btn-copied { background: var(--correct) !important; border-color: var(--correct) !important; color: #fff !important; }
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
@@ -311,6 +345,12 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="q-timer-bar"><div class="q-timer-fill" id="q-timer-fill"></div></div>
     </div>
 
+    <!-- Duel banner -->
+    <div class="duel-banner" id="duel-banner" style="display:none;">
+      <span class="swords">⚔️</span>
+      <span id="duel-banner-text">DUELING: Alex (8/10 · 24.2s)</span>
+    </div>
+
     <!-- Gauntlet HUD -->
     <div class="gauntlet-hud" id="gauntlet-hud" style="display:none;">
       <div class="lives" id="gauntlet-lives"></div>
@@ -368,7 +408,26 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
       <div class="share-text" id="share-text"></div>
 
+      <!-- Duel result card -->
+      <div class="duel-card" id="duel-card" style="display:none;">
+        <div class="duel-outcome" id="duel-outcome">VICTORY! 🏆</div>
+        <div class="duel-vs">
+          <div class="duel-side duel-you">
+            <div class="d-name">You</div>
+            <div class="d-score" id="duel-you-score">8/10</div>
+            <div class="d-time" id="duel-you-time">28.4s</div>
+          </div>
+          <div class="duel-divider">VS</div>
+          <div class="duel-side duel-them">
+            <div class="d-name" id="duel-them-name">Alex</div>
+            <div class="d-score" id="duel-them-score">7/10</div>
+            <div class="d-time" id="duel-them-time">31.2s</div>
+          </div>
+        </div>
+      </div>
+
       <button class="btn-primary" id="btn-share">📤 Share Score</button>
+      <button class="btn-secondary" id="btn-challenge">⚔️ Challenge a Friend</button>
       <button class="btn-secondary" id="btn-copy">📋 Copy Text</button>
       <button class="btn-secondary" id="btn-gauntlet-result" style="display:none;">⚡ Play The Gauntlet</button>
       <button class="btn-secondary" id="btn-home">🏠 Home</button>
@@ -659,7 +718,7 @@ let state = {
   screen: 'landing',
   questions: [],
   currentQ: 0,
-  answers: [], // {correct:bool, time:number, category:string}
+  answers: [],
   startTime: 0,
   qStartTime: 0,
   waiting: false,
@@ -667,6 +726,8 @@ let state = {
   timerId: null,
   gauntletLives: GAUNTLET_LIVES,
   gauntletStreak: 0,
+  // Ghost duel
+  duel: null, // {score, time, name} or null
 };
 
 let stats = loadStats();
@@ -689,6 +750,32 @@ function getDailyNum() {
   const start = new Date(2024,0,1);
   const now = new Date();
   return Math.floor((now - start) / (1000*60*60*24));
+}
+
+// ---- Ghost Duel ----
+function parseDuelParam() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const vs = params.get('vs');
+    if (!vs) return null;
+    // Format: score_seconds_name (name optional)
+    const parts = vs.split('_');
+    if (parts.length < 2) return null;
+    const score = parseInt(parts[0]);
+    const time = parseFloat(parts[1]);
+    const name = parts[2] ? decodeURIComponent(parts.slice(2).join('_')) : 'Challenger';
+    if (isNaN(score) || isNaN(time) || score < 0 || score > 10) return null;
+    return { score, time, name };
+  } catch(e) { return null; }
+}
+function getDuelUrl(score, time) {
+  const base = window.location.origin + window.location.pathname;
+  return `${base}?vs=${score}_${Math.round(time*10)/10}`;
+}
+function clearDuelParam() {
+  const url = new URL(window.location);
+  url.searchParams.delete('vs');
+  window.history.replaceState({}, '', url);
 }
 
 // ---- DOM helpers ----
@@ -779,9 +866,12 @@ function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; 
 
 // ---- Gauntlet HUD ----
 function renderGauntletHUD() {
-  const hearts = Array.from({length:GAUNTLET_LIVES},(_,i)=>`<span style="opacity:${i<state.gauntletLives?1:0.25};filter:${i<state.gauntletLives?'none':'grayscale(1)'}">♥</span>`).join('');
+  const hearts = Array.from({length:GAUNTLET_LIVES},(_,i)=>`<span class="life ${i<state.gauntletLives?'':'lost'}">♥</span>`).join('');
   $('gauntlet-lives').innerHTML = hearts;
-  $('gauntlet-streak').textContent = `Streak ${state.gauntletStreak}`;
+  const streakEl = $('gauntlet-streak');
+  const isBlazing = state.gauntletStreak >= 5;
+  streakEl.textContent = isBlazing ? `🔥 ${state.gauntletStreak}` : `Streak ${state.gauntletStreak}`;
+  streakEl.className = 'streak' + (isBlazing ? ' blazing' : '');
 }
 
 // ---- Per-question timer ----
@@ -817,8 +907,15 @@ function startDaily() {
   state.waiting = false;
   state.gauntletLives = GAUNTLET_LIVES;
   state.gauntletStreak = 0;
+  state.duel = parseDuelParam();
   $('header-meta').textContent = `#${getDailyNum()} · Q1/10`;
   $('gauntlet-hud').style.display = 'none';
+  if (state.duel) {
+    $('duel-banner').style.display = 'flex';
+    $('duel-banner-text').textContent = `DUELING: ${state.duel.name} (${state.duel.score}/10 · ${state.duel.time}s)`;
+  } else {
+    $('duel-banner').style.display = 'none';
+  }
   showScreen('playing');
   renderQuestion();
 }
@@ -832,8 +929,10 @@ function startGauntlet() {
   state.waiting = false;
   state.gauntletLives = GAUNTLET_LIVES;
   state.gauntletStreak = 0;
+  state.duel = null;
   $('header-meta').textContent = `⚡ Streak 0 · Q1`;
   $('gauntlet-hud').style.display = 'flex';
+  $('duel-banner').style.display = 'none';
   showScreen('playing');
   renderQuestion();
   renderGauntletHUD();
@@ -1005,10 +1104,33 @@ function finishGame() {
   // Share text
   const dailyNum = getDailyNum();
   const shareBody = state.answers.map(a => a.correct ? '🟩' : '🟥').join('');
+  const challengeUrl = getDuelUrl(correct, totalTimeSec);
   if (state.mode === 'daily') {
-    $('share-text').textContent = `KNOWIT Daily #${dailyNum} 🧠\n${correct}/${total}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} • Speed: ${speed.label}\nCan you beat my score? knowit.app`;
+    $('share-text').textContent = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} (Avg: ${fmtTimeSec(avgMs/1000)}s/Q · ${speed.label})\n\nCan you beat my score?\n${challengeUrl}`;
   } else {
-    $('share-text').textContent = `KNOWIT Gauntlet ⚡\nStreak: ${state.gauntletStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}\nknowit.app`;
+    $('share-text').textContent = `KNOWIT Gauntlet ⚡\nStreak: ${state.gauntletStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}\n\nCan you beat my streak?\n${challengeUrl}`;
+  }
+
+  // Duel result card
+  if (state.duel && state.mode === 'daily') {
+    const d = state.duel;
+    $('duel-card').style.display = 'block';
+    $('duel-them-name').textContent = d.name;
+    $('duel-them-score').textContent = `${d.score}/10`;
+    $('duel-them-time').textContent = fmtTimeSec(d.time);
+    $('duel-you-score').textContent = `${correct}/${total}`;
+    $('duel-you-time').textContent = fmtTimeSec(totalTimeSec);
+    let outcome = 'TIED 🤝';
+    if (correct > d.score) outcome = 'VICTORY! 🏆';
+    else if (correct < d.score) outcome = 'DEFEATED 💀';
+    else if (totalTimeSec < d.time) outcome = 'VICTORY! 🏆';
+    else if (totalTimeSec > d.time) outcome = 'DEFEATED 💀';
+    $('duel-outcome').textContent = outcome;
+    if (outcome.includes('VICTORY')) $('duel-outcome').style.color = 'var(--correct)';
+    else if (outcome.includes('DEFEATED')) $('duel-outcome').style.color = 'var(--wrong)';
+    else $('duel-outcome').style.color = 'var(--accent-warm)';
+  } else {
+    $('duel-card').style.display = 'none';
   }
 
   // Show gauntlet button on daily results
@@ -1095,7 +1217,30 @@ $('btn-close').onclick = ()=>{
   if (confirm('Quit current game? Progress will be lost.')) { stopQTimer(); showScreen('landing'); renderLanding(); }
 };
 $('btn-copy').onclick = ()=>{
-  navigator.clipboard.writeText($('share-text').textContent).then(()=>toast('Copied to clipboard!'));
+  const btn = $('btn-copy');
+  navigator.clipboard.writeText($('share-text').textContent).then(()=>{
+    btn.textContent = 'Copied to Clipboard! ✓';
+    btn.classList.add('btn-copied');
+    setTimeout(()=>{
+      btn.textContent = '📋 Copy Text';
+      btn.classList.remove('btn-copied');
+    }, 2000);
+  });
+};
+$('btn-challenge').onclick = ()=>{
+  const correct = state.answers.filter(a=>a.correct).length;
+  const totalTimeMs = performance.now() - state.startTime;
+  const totalTimeSec = totalTimeMs / 1000;
+  const url = getDuelUrl(correct, totalTimeSec);
+  const btn = $('btn-challenge');
+  navigator.clipboard.writeText(url).then(()=>{
+    btn.textContent = 'Challenge Link Copied! ✓';
+    btn.classList.add('btn-copied');
+    setTimeout(()=>{
+      btn.textContent = '⚔️ Challenge a Friend';
+      btn.classList.remove('btn-copied');
+    }, 2000);
+  });
 };
 $('btn-share').onclick = ()=>{
   const text = $('share-text').textContent;
@@ -1109,6 +1254,11 @@ $('btn-home').onclick = ()=>{ audio.click(); showScreen('landing'); renderLandin
 
 // ---- Init ----
 renderLanding();
+// If arriving via challenge link, auto-start duel mode
+if (parseDuelParam()) {
+  // Small delay so landing renders first, then jump straight in
+  setTimeout(()=>startDaily(), 400);
+}
 
 // Lazy audio init on first interaction
 document.addEventListener('click', ()=>audio.init(), {once:true});
