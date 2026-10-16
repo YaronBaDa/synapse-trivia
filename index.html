@@ -34,17 +34,18 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; margin: 0; font-family: var(--font-sans); background: var(--bg); color: var(--ink); overflow: hidden; }
-#app { max-width: 640px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; position: relative; }
-.screen { display: none; flex-direction: column; height: 100vh; overflow: hidden; padding: 16px; }
+#app { max-width: 640px; margin: 0 auto; height: 100vh; height: 100dvh; display: flex; flex-direction: column; position: relative; }
+.screen { display: none; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; padding: 16px; }
 .screen.active { display: flex; }
-#screen-playing { padding: 16px 16px 0; overflow-y: auto; }
+/* Playing screen: flex column, NO scroll — options are a fixed flex footer */
+#screen-playing { padding: 16px 16px 0; overflow: hidden; }
 
 /* Header */
 .game-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 12px; flex-shrink: 0; }
 .game-header .brand { display: flex; align-items: center; gap: 8px; }
-.game-header .brand svg { width: 28px; height: 28px; }
-.game-header h1 { font-size: 18px; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
-.game-header .meta { font-size: 13px; color: var(--ink-faint); font-weight: 500; }
+.game-header .brand svg { width: 26px; height: 26px; }
+.game-header h1 { font-size: 17px; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
+.game-header .meta { font-size: 13px; color: var(--ink-faint); font-weight: 500; font-family: var(--font-mono); }
 .header-actions { display: flex; gap: 8px; }
 .icon-btn {
   width: 36px; height: 36px; border-radius: var(--radius-sm); border: 1px solid var(--border);
@@ -103,16 +104,21 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .gauntlet-teaser .gt-label { font-size: 12px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
 
 /* Question */
-.question-stage { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow-y: auto; }
-.question-tracker { font-size: 12px; font-weight: 600; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
-.question-text { font-size: 20px; font-weight: 700; line-height: 1.35; margin: 0 0 8px; }
-.question-text .category-tag {
-  display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-  padding: 3px 8px; border-radius: 6px; background: var(--surface-2); color: var(--accent); margin-bottom: 10px;
+.question-stage { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; min-height: 0; overflow-y: auto; padding-bottom: 8px; }
+.question-tracker { display: none; }
+.category-tag {
+  display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+  padding: 3px 8px; border-radius: 6px; background: var(--surface-2); color: var(--accent); margin-bottom: 12px;
 }
+.question-text { font-size: 20px; font-weight: 700; line-height: 1.35; margin: 0; }
 
-/* Options */
-.options-grid { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; position: sticky; bottom: 0; background: var(--bg); padding: 10px 0 16px; margin-bottom: 0; }
+/* Options — FIXED FOOTER, always fully visible */
+.options-grid {
+  display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
+  background: var(--bg); padding: 10px 0 max(16px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border);
+  margin: 0 -16px; padding-left: 16px; padding-right: 16px;
+}
 .option-btn {
   display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: var(--radius);
   border: 1px solid var(--border); background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 600;
@@ -276,8 +282,9 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
     <div class="game-header">
       <div class="brand">
         <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 22V10h2.5l5.2 7.8V10H20v12h-2.5l-5.2-7.8V22H10z" fill="#fff"/></svg>
-        <h1 id="mode-title">Daily 10</h1>
+        <h1>KNOWIT</h1>
       </div>
+      <div class="meta" id="header-meta">#1020 · Q1/10</div>
       <div class="header-actions">
         <button class="icon-btn" id="btn-mute" aria-label="Toggle sound">🔇</button>
         <button class="icon-btn" id="btn-close" aria-label="Quit">✕</button>
@@ -731,10 +738,12 @@ function getRandomQuestion() {
 function renderQuestion() {
   const q = state.questions[state.currentQ];
   if (!q) return;
-  $('q-tracker').textContent = state.mode === 'daily'
-    ? `Question ${state.currentQ+1} / ${state.questions.length}`
-    : `Streak ${state.gauntletStreak} · Question ${state.currentQ+1}`;
-  $('q-text').innerHTML = `<div class="category-tag">${q.category}</div>${escapeHtml(q.question)}`;
+  // Header meta: daily number + question progress
+  $('header-meta').textContent = state.mode === 'daily'
+    ? `#${getDailyNum()} · Q${state.currentQ+1}/${state.questions.length}`
+    : `⚡ Streak ${state.gauntletStreak} · Q${state.currentQ+1}`;
+  // Category tag sits ABOVE the question, not inline
+  $('q-text').innerHTML = `<span class="category-tag">${q.category}</span><br>${escapeHtml(q.question)}`;
   const grid = $('options-grid');
   grid.innerHTML = '';
   q.options.forEach((opt,idx)=>{
@@ -792,7 +801,7 @@ function startDaily() {
   state.waiting = false;
   state.gauntletLives = GAUNTLET_LIVES;
   state.gauntletStreak = 0;
-  $('mode-title').textContent = 'Daily 10';
+  $('header-meta').textContent = `#${getDailyNum()} · Q1/10`;
   $('gauntlet-hud').style.display = 'none';
   showScreen('playing');
   renderQuestion();
@@ -807,7 +816,7 @@ function startGauntlet() {
   state.waiting = false;
   state.gauntletLives = GAUNTLET_LIVES;
   state.gauntletStreak = 0;
-  $('mode-title').textContent = 'The Gauntlet';
+  $('header-meta').textContent = `⚡ Streak 0 · Q1`;
   $('gauntlet-hud').style.display = 'flex';
   showScreen('playing');
   renderQuestion();
