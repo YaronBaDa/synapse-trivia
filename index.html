@@ -3,29 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#09090b">
+<meta name="theme-color" content="#0b0a0d">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bellefair&family=JetBrains+Mono:wght@400;500;600;700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <title>KNOWIT</title>
 <style>
 :root {
-  --bg: #09090b;
-  --surface: #18181b;
-  --surface-2: #27272a;
-  --surface-3: #3f3f46;
-  --ink: #fafafa;
-  --ink-faint: #a1a1aa;
-  --ink-dim: #71717a;
-  --border: #27272a;
-  --accent: #7c6fff;
-  --accent-warm: #f59e0b;
-  --correct: #22c55e;
-  --wrong: #ef4444;
-  --warning: #f59e0b;
+  --bg: #0b0a0d;
+  --surface: #211d28;
+  --surface-2: #191620;
+  --surface-3: #2a2435;
+  --ink: #f4f1ea;
+  --ink-faint: #8d8896;
+  --ink-dim: #807c8a;
+  --border: rgba(255,255,255,.08);
+  --accent: #7e8ce8;
+  --accent-warm: #ffd166;
+  --correct: #6fa88f;
+  --wrong: #ff5f6d;
+  --warning: #ffd166;
   --shadow: 0 2px 16px rgba(0,0,0,0.55);
+  --ice: #9ad8ff;
+  --aurora: linear-gradient(90deg,#3eb597,#4fb0e4,#7e8ce8,#a87fd4);
   --radius: 14px;
   --radius-sm: 10px;
   --font-sans: 'Lexend', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -33,7 +35,11 @@
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; margin: 0; font-family: var(--font-sans); background: var(--bg); color: var(--ink); overflow: hidden; }
+html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
+      radial-gradient(900px 500px at 80% -15%, rgba(62,181,151,.07), transparent 55%),
+      radial-gradient(800px 600px at -10% 110%, rgba(126,140,232,.06), transparent 55%),
+      var(--bg);
+    color: var(--ink); overflow: hidden; }
 #app { max-width: 640px; margin: 0 auto; height: 100vh; height: 100dvh; display: flex; flex-direction: column; position: relative; }
 .screen { display: none; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; padding: 16px; }
 .screen.active { display: flex; }
@@ -44,7 +50,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .game-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 0 12px; flex-shrink: 0; }
 .game-header .brand { display: flex; align-items: center; gap: 8px; }
 .game-header .brand svg { width: 26px; height: 26px; }
-.game-header h1 { font-size: 17px; font-weight: 800; margin: 0; letter-spacing: -0.3px; }
+.game-header h1 { font-size: 20px; font-weight: 400; margin: 0; letter-spacing: 0.02em; font-family: 'Bellefair', serif; }
 .game-header .meta { font-size: 13px; color: var(--ink-faint); font-weight: 500; font-family: var(--font-mono); }
 .header-actions { display: flex; gap: 8px; }
 .icon-btn {
@@ -54,15 +60,15 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 }
 .icon-btn:active { transform: scale(0.92); }
 
-/* Logo mark — Badeen Display "K" */
+/* Logo mark — Bellefair "K" */
 .logo-mark {
   display: flex; align-items: center; justify-content: center;
   width: 64px; height: 64px; border-radius: 16px;
   background: var(--accent); border: 1px solid var(--border);
 }
 .logo-mark .logo-letter {
-  font-family: 'Lexend', sans-serif; font-size: 38px; font-weight: 800;
-  color: #fff; line-height: 1;
+  font-family: 'Bellefair', serif; font-size: 38px; font-weight: 400;
+  color: #fff; line-height: 1; padding-top: 2px;
 }
 .logo-mark-sm {
   display: flex; align-items: center; justify-content: center;
@@ -70,13 +76,13 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
   background: var(--accent);
 }
 .logo-mark-sm .logo-letter {
-  font-family: 'Lexend', sans-serif; font-size: 16px; font-weight: 800;
-  color: #fff; line-height: 1;
+  font-family: 'Bellefair', serif; font-size: 17px; font-weight: 400;
+  color: #fff; line-height: 1; padding-top: 1px;
 }
 
 /* Landing */
 .landing-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 16px; }
-.landing-body h2 { font-size: 28px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+.landing-body h2 { font-size: 34px; font-weight: 400; margin: 0; letter-spacing: 0.02em; font-family: 'Bellefair', serif; }
 .landing-body p { font-size: 15px; color: var(--ink-faint); max-width: 320px; margin: 0; line-height: 1.5; }
 .landing-streak-bar {
   display: flex; align-items: center; gap: 6px;
@@ -138,18 +144,19 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .option-btn {
   display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; border-radius: var(--radius);
   border: 1px solid var(--border); background: var(--surface); color: var(--ink); font-size: 15px; font-weight: 600;
+  font-family: var(--font-sans);
   cursor: pointer; text-align: left; transition: transform .08s ease, border-color .2s, background .2s; position: relative; overflow: hidden;
 }
 .option-btn:active { transform: scale(0.98); }
 .option-btn .key-hint {
   width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-faint); flex-shrink: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
-.option-btn.correct { border-color: var(--correct); background: rgba(34,197,94,0.08); }
-.option-btn.wrong { border-color: var(--wrong); background: rgba(239,68,68,0.08); animation: shake 0.4s ease-in-out; }
+.option-btn.correct { border-color: var(--correct); background: rgba(111,168,143,0.08); }
+.option-btn.wrong { border-color: var(--wrong); background: rgba(255,95,109,0.08); animation: shake 0.4s ease-in-out; }
 .option-btn.dimmed { opacity: 0.35; pointer-events: none; }
-.option-btn.timeout { border-color: var(--warning); background: rgba(245,158,11,0.08); }
+.option-btn.timeout { border-color: var(--warning); background: rgba(255,209,102,0.08); }
 
 @keyframes shake {
   0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)}
@@ -162,8 +169,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .endless-hud .life.lost { opacity: 0.25; filter: grayscale(1); transform: scale(0.85); }
 .endless-hud .streak { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-warm); transition: all .3s; }
 .endless-hud .streak.blazing {
-  color: #fbbf24; text-shadow: 0 0 12px rgba(251,191,36,0.5);
-  border: 1px solid rgba(251,191,36,0.4); background: rgba(251,191,36,0.08);
+  color: #ffd166; text-shadow: 0 0 12px rgba(255,209,102,0.5);
+  border: 1px solid rgba(255,209,102,0.4); background: rgba(255,209,102,0.08);
   padding: 4px 10px; border-radius: 20px;
 }
 
@@ -187,22 +194,18 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .feedback-strip .fb-insight { font-size: 13px; color: var(--ink-faint); line-height: 1.45; }
 
 /* Share / results */
-.results-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 14px; min-height: 0; overflow-y: auto; padding-bottom: 16px; }
-.results-score { font-size: 48px; font-weight: 800; line-height: 1; }
-.results-label { font-size: 15px; color: var(--ink-faint); font-weight: 500; }
+.results-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 10px; min-height: 0; overflow-y: auto; padding-bottom: 16px; }
 
-/* Telemetry */
-.telemetry-row {
-  display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;
-  max-width: 320px; width: 100%;
-}
-.telemetry-item { text-align: center; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 14px; flex: 1; min-width: 80px; }
-.telemetry-item .val { font-family: var(--font-mono); font-size: 18px; font-weight: 700; display: block; color: var(--ink); }
-.telemetry-item .lbl { font-size: 10px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; display: block; }
-.telemetry-item .badge { display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 4px; }
-.badge-lightning { background: rgba(245,158,11,0.15); color: var(--accent-warm); }
-.badge-fast { background: rgba(124,111,255,0.15); color: var(--accent); }
-.badge-deliberate { background: var(--surface-2); color: var(--ink-faint); }
+/* Hero score */
+.results-hero { display: flex; flex-direction: column; align-items: center; }
+.hero-score { font-size: 64px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+.hero-score .of { color: var(--ink-dim); font-size: 32px; font-weight: 700; }
+.hero-title { font-size: 19px; font-weight: 800; letter-spacing: 0.05em; margin-top: 6px; }
+.hero-sub { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+
+/* Highlights (replaces pill cloud) */
+.highlights { font-size: 12px; color: var(--ink-faint); line-height: 1.6; max-width: 320px; }
+.highlights b { color: var(--ink); font-weight: 700; }
 
 /* Visual share grid */
 .share-visual {
@@ -212,26 +215,44 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 }
 .share-cell { aspect-ratio: 1; border-radius: 6px; }
 .share-cell.correct { background: var(--correct); }
-.share-cell.wrong { background: var(--wrong); }
+.share-cell.wrong { background: var(--wrong); cursor: pointer; transition: transform .12s, outline .12s; }
+.share-cell.wrong:active { transform: scale(0.92); }
 .share-cell.empty { background: var(--surface-3); }
+.grid-hint { font-size: 11px; color: var(--ink-dim); font-family: var(--font-mono); margin-top: -4px; }
 
-.share-text {
-  font-family: var(--font-mono); font-size: 12px;
-  background: var(--surface); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border);
-  max-width: 320px; width: 100%; word-break: break-word; text-align: left; color: var(--ink-faint);
-}
+/* Share text stays constructed but hidden from UI */
+.share-text { display: none; }
 
-/* Category mastery */
-.mastery-grid {
-  display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
-  max-width: 320px; width: 100%;
+/* Buttons — brand palette */
+.btn-emerald {
+  width: 100%; max-width: 280px; padding: 14px 20px; border-radius: var(--radius); border: none;
+  background: var(--correct); color: #000; font-size: 16px; font-weight: 700; cursor: pointer;
+  box-shadow: var(--shadow); transition: transform .12s, filter .12s; font-family: var(--font-sans);
 }
-.mastery-chip {
-  display: flex; align-items: center; gap: 4px;
-  background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
-  padding: 5px 12px; font-size: 12px; font-weight: 600;
+.btn-emerald:active { transform: scale(0.97); filter: brightness(1.1); }
+.link-home {
+  background: none; border: none; color: var(--ink-dim); font-size: 13px; font-weight: 600;
+  cursor: pointer; padding: 8px; font-family: var(--font-sans);
+  text-decoration: underline; text-underline-offset: 3px;
 }
-.mastery-chip .m-icon { font-size: 13px; }
+.link-home:active { color: var(--ink); }
+
+/* Review modal */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 300;
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px; max-width: 340px; width: 100%; max-height: 80vh; overflow-y: auto; text-align: left;
+}
+.modal-card .mq { font-size: 16px; font-weight: 700; line-height: 1.4; margin-bottom: 14px; }
+.modal-card .mrow { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 14px; }
+.modal-card .mlabel { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-dim); flex-shrink: 0; width: 74px; padding-top: 3px; }
+.modal-card .mdyk { font-size: 13px; color: var(--ink-faint); font-style: italic; line-height: 1.5; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 6px; }
+
+/* Copy button success state */
+.btn-copied { background: var(--correct) !important; border-color: var(--correct) !important; color: var(--bg) !important; }
 
 /* Confetti canvas */
 #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
@@ -252,7 +273,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 /* Duel banner */
 .duel-banner {
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  background: rgba(124,111,255,0.12); border: 1px solid rgba(124,111,255,0.3);
+  background: rgba(126,140,232,0.12); border: 1px solid rgba(126,140,232,0.3);
   border-radius: var(--radius-sm); padding: 8px 14px; margin-bottom: 10px;
   font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent);
 }
@@ -274,7 +295,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .duel-card .duel-them .d-score { color: var(--ink-faint); }
 
 /* Copy button success state */
-.btn-copied { background: var(--correct) !important; border-color: var(--correct) !important; color: #fff !important; }
+.btn-copied { background: var(--correct) !important; border-color: var(--correct) !important; color: var(--bg) !important; }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -375,40 +396,19 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
     <div class="game-header">
       <div class="brand">
         <span class="logo-mark-sm"><span class="logo-letter">K</span></span>
-        <h1 id="result-title">Done</h1>
+        <h1 id="result-title">Daily 10</h1>
       </div>
       <div class="meta" id="result-meta"></div>
     </div>
     <div class="results-body">
-      <div class="results-score" id="result-score">8/10</div>
-      <div class="results-label" id="result-label">Great job!</div>
-
-      <!-- Telemetry -->
-      <div class="telemetry-row" id="telemetry-row">
-        <div class="telemetry-item">
-          <span class="val" id="tel-total">0s</span>
-          <span class="lbl">Total Time</span>
-        </div>
-        <div class="telemetry-item">
-          <span class="val" id="tel-avg">0ms</span>
-          <span class="lbl">Avg / Q</span>
-        </div>
-        <div class="telemetry-item">
-          <span class="val" id="tel-speed">—</span>
-          <span class="lbl">Speed</span>
-          <span class="badge" id="tel-badge"></span>
-        </div>
+      <!-- Hero score -->
+      <div class="results-hero">
+        <div class="hero-score" id="hero-score">9<span class="of">/10</span></div>
+        <div class="hero-title" id="hero-title">MASTERMIND 🧠</div>
+        <div class="hero-sub" id="hero-sub">Total 1m 09s • Pace: Deliberate • Top 5% today</div>
       </div>
 
-      <!-- Mastery -->
-      <div class="mastery-grid" id="mastery-grid"></div>
-
-      <!-- Visual share grid -->
-      <div class="share-visual" id="share-visual"></div>
-
-      <div class="share-text" id="share-text"></div>
-
-      <!-- Duel result card -->
+      <!-- Duel result card (duel runs only) -->
       <div class="duel-card" id="duel-card" style="display:none;">
         <div class="duel-outcome" id="duel-outcome">VICTORY! 🏆</div>
         <div class="duel-vs">
@@ -426,11 +426,32 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
         </div>
       </div>
 
-      <button class="btn-primary" id="btn-share">📤 Share Score</button>
-      <button class="btn-secondary" id="btn-challenge">⚔️ Challenge a Friend</button>
-      <button class="btn-secondary" id="btn-copy">📋 Copy Text</button>
+      <!-- Highlights -->
+      <div class="highlights" id="highlights"></div>
+
+      <!-- Visual share grid (tappable) -->
+      <div class="share-visual" id="share-visual"></div>
+      <div class="grid-hint" id="grid-hint">Tap a red square to review the question</div>
+
+      <!-- Share text: constructed but hidden -->
+      <div class="share-text" id="share-text"></div>
+
+      <!-- Actions -->
+      <button class="btn-emerald" id="btn-challenge">⚔️ Challenge a Friend</button>
       <button class="btn-secondary" id="btn-endless-result" style="display:none;">⚡ Play Endless Mode</button>
-      <button class="btn-secondary" id="btn-home">🏠 Home</button>
+      <button class="btn-secondary" id="btn-copy">📋 Copy Score Grid</button>
+      <button class="link-home" id="btn-home">Home Menu</button>
+    </div>
+  </div>
+
+  <!-- Review modal -->
+  <div class="modal-backdrop" id="review-modal" style="display:none;">
+    <div class="modal-card">
+      <div class="mq" id="rm-question"></div>
+      <div class="mrow"><span class="mlabel">You picked</span><span id="rm-picked" style="color:var(--wrong)"></span></div>
+      <div class="mrow"><span class="mlabel">Correct</span><span id="rm-correct" style="color:var(--correct)"></span></div>
+      <div class="mdyk" id="rm-dyk"></div>
+      <button class="btn-secondary" id="rm-close" style="margin-top:14px;max-width:100%;">Close</button>
     </div>
   </div>
 
@@ -1276,7 +1297,7 @@ function handleTimeout() {
   if (state.waiting) return;
   const q = state.questions[state.currentQ];
   const time = performance.now() - state.qStartTime;
-  state.answers.push({correct:false, time, category:q.category});
+  state.answers.push({correct:false, time, category:q.category, q, picked:null});
   state.waiting = true;
   stopQTimer();
 
@@ -1317,7 +1338,7 @@ function handleAnswer(idx) {
   const q = state.questions[state.currentQ];
   const correct = idx === q.correctIndex;
   const time = performance.now() - state.qStartTime;
-  state.answers.push({correct, time, category:q.category});
+  state.answers.push({correct, time, category:q.category, q, picked:idx});
 
   const btns = document.querySelectorAll('.option-btn');
   btns[idx].classList.add(correct ? 'correct' : 'wrong');
@@ -1387,63 +1408,74 @@ function finishGame() {
   $('result-title').textContent = state.mode === 'daily' ? 'Daily 10' : 'Endless Mode';
   $('result-meta').textContent = state.mode === 'daily' ? today : 'Endless Mode';
 
+  const speed = getSpeedRating(avgMs);
+  const avgSec = avgMs / 1000;
+  const avgStr = avgSec.toFixed(1); // e.g. "7.0" — fixes the old "7ss/Q" bug
+
+  // Hero
   if (state.mode === 'daily') {
-    $('result-score').textContent = `${correct}/${total}`;
-    $('result-score').className = 'results-score' + (correct === total ? ' perfect-flash' : '');
-    let label = 'Keep practicing!';
-    if (correct === total) label = 'Perfect score! 🏆';
-    else if (correct >= 8) label = 'Excellent!';
-    else if (correct >= 6) label = 'Solid effort!';
-    $('result-label').textContent = label;
+    $('hero-score').innerHTML = `${correct}<span class="of">/${total}</span>`;
+    let title = 'EGO CHECK 💀';
+    if (correct === total) title = 'FLAWLESS ⚡';
+    else if (correct >= 8) title = 'MASTERMIND 🧠';
+    else if (correct >= 5) title = 'SOLID RUN 🎯';
+    $('hero-title').textContent = title;
+    const pct = mockPercentile(correct, total);
+    $('hero-sub').textContent = `Total ${fmtTimeSec(totalTimeSec)} • Pace: ${speed.label} (Top ${100-pct}% today)`;
   } else {
-    $('result-score').textContent = state.endlessStreak;
-    $('result-score').className = 'results-score';
-    $('result-label').textContent = 'Best Streak';
+    $('hero-score').innerHTML = `${state.endlessStreak}`;
+    $('hero-title').textContent = state.endlessStreak >= 20 ? 'LEGENDARY 🔥' : state.endlessStreak >= 10 ? 'UNSTOPPABLE ⚡' : state.endlessStreak >= 5 ? 'ON A ROLL 🎯' : 'WARM-UP RUN 💀';
+    $('hero-sub').textContent = `Best Endless: ${stats.bestEndless} • Total ${fmtTimeSec(totalTimeSec)}`;
   }
 
-  // Telemetry
-  $('tel-total').textContent = fmtTimeSec(totalTimeSec);
-  $('tel-avg').textContent = avgMs + 'ms';
-  const speed = getSpeedRating(avgMs);
-  $('tel-speed').textContent = speed.label;
-  const badge = $('tel-badge');
-  badge.textContent = speed.label;
-  badge.className = 'badge ' + speed.badgeClass;
-
-  // Category mastery
+  // Highlights (compact — replaces pill cloud)
   const categories = {};
   state.answers.forEach(a => {
     if (!categories[a.category]) categories[a.category] = { total:0, correct:0 };
     categories[a.category].total++;
     if (a.correct) categories[a.category].correct++;
   });
-  $('mastery-grid').innerHTML = Object.entries(categories).map(([cat, data]) => {
-    const perfect = data.correct === data.total;
-    const ok = data.correct >= data.total/2;
-    const icon = perfect ? '🔥' : ok ? '✅' : '❄️';
-    return `<div class="mastery-chip"><span class="m-icon">${icon}</span>${cat} ${data.correct}/${data.total}</div>`;
-  }).join('');
+  const entries = Object.entries(categories);
+  const perfectCats = entries.filter(([,d]) => d.correct === d.total).map(([c]) => c);
+  const missedCats = entries.filter(([,d]) => d.correct < d.total);
+  missedCats.sort((a,b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total));
+  let hl = '';
+  if (perfectCats.length) hl += `<b>Strengths:</b> 🔥 ${perfectCats.join(', ')} (100%)`;
+  if (missedCats.length) {
+    const [wc, wd] = missedCats[0];
+    hl += (hl ? '<br>' : '') + `<b>Achilles Heel:</b> ❄️ ${wc} (${wd.correct}/${wd.total})`;
+  }
+  if (!hl) hl = '<b>Clean run.</b>';
+  $('highlights').innerHTML = hl;
 
-  // Visual share grid (5x2)
+  // Visual share grid (5x2) — wrong cells are tappable
   const visualEl = $('share-visual');
   visualEl.innerHTML = '';
+  let hasMiss = false;
   for (let i=0; i<10; i++) {
     const cell = document.createElement('div');
     cell.className = 'share-cell';
-    if (i < state.answers.length) cell.classList.add(state.answers[i].correct ? 'correct' : 'wrong');
-    else cell.classList.add('empty');
+    if (i < state.answers.length) {
+      const a = state.answers[i];
+      if (a.correct) cell.classList.add('correct');
+      else { cell.classList.add('wrong'); cell.dataset.idx = i; hasMiss = true; }
+    } else cell.classList.add('empty');
     visualEl.appendChild(cell);
   }
+  $('grid-hint').style.display = hasMiss ? 'block' : 'none';
 
-  // Share text
+  // Share texts — full (with challenge URL) + clean (grid only)
   const dailyNum = getDailyNum();
   const shareBody = state.answers.map(a => a.correct ? '🟩' : '🟥').join('');
   const challengeUrl = getDuelUrl(correct, totalTimeSec);
   if (state.mode === 'daily') {
-    $('share-text').textContent = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} (Avg: ${fmtTimeSec(avgMs/1000)}s/Q · ${speed.label})\n\nCan you beat my score?\n${challengeUrl}`;
+    state.shareClean = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} (Avg: ${avgStr}s/Q · ${speed.label})`;
+    state.shareFull = `${state.shareClean}\n\nCan you beat my score?\n${challengeUrl}`;
   } else {
-    $('share-text').textContent = `KNOWIT Endless ⚡\nStreak: ${state.endlessStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}\n\nCan you beat my streak?\n${challengeUrl}`;
+    state.shareClean = `KNOWIT Endless ⚡\nStreak: ${state.endlessStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}`;
+    state.shareFull = `${state.shareClean}\n\nCan you beat my streak?\n${challengeUrl}`;
   }
+  $('share-text').textContent = state.shareFull;
 
   // Duel result card
   if (state.duel && state.mode === 'daily') {
@@ -1474,6 +1506,18 @@ function finishGame() {
   if (state.mode === 'daily' && correct === total) launchConfetti();
 }
 
+// ---- Review modal ----
+function openReview(i) {
+  const a = state.answers[i];
+  if (!a || !a.q) return;
+  $('rm-question').textContent = a.q.question;
+  $('rm-picked').textContent = a.picked === null ? 'No answer (time ran out)' : a.q.options[a.picked];
+  $('rm-correct').textContent = a.q.options[a.q.correctIndex];
+  $('rm-dyk').textContent = a.q.didYouKnow;
+  $('review-modal').style.display = 'flex';
+}
+function closeReview() { $('review-modal').style.display = 'none'; }
+
 function fmtTimeSec(s) {
   const m = Math.floor(s/60);
   const r = Math.round(s%60);
@@ -1484,6 +1528,11 @@ function getSpeedRating(avgMs) {
   if (avgMs < 5500) return { label: 'Fast', badgeClass: 'badge-fast' };
   return { label: 'Deliberate', badgeClass: 'badge-deliberate' };
 }
+function mockPercentile(correct, total) {
+  const base = [3,8,15,25,38,52,68,82,92,97,99][correct] || 50;
+  const variance = Math.floor(mulberry32(getDailySeed()+correct)()*8);
+  return Math.min(99, base + variance);
+}
 
 // ---- Confetti ----
 function launchConfetti() {
@@ -1492,7 +1541,7 @@ function launchConfetti() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   const pieces = [];
-  const colors = ['#22c55e','#7c6fff','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
+  const colors = ['#6fa88f','#7e8ce8','#ffd166','#ff5f6d','#a87fd4','#4fb0e4'];
   for (let i=0; i<120; i++) {
     pieces.push({
       x: Math.random()*canvas.width,
@@ -1547,23 +1596,19 @@ $('btn-close').onclick = ()=>{
 };
 $('btn-copy').onclick = ()=>{
   const btn = $('btn-copy');
-  navigator.clipboard.writeText($('share-text').textContent).then(()=>{
+  navigator.clipboard.writeText(state.shareClean || $('share-text').textContent).then(()=>{
     btn.textContent = 'Copied to Clipboard! ✓';
     btn.classList.add('btn-copied');
     setTimeout(()=>{
-      btn.textContent = '📋 Copy Text';
+      btn.textContent = '📋 Copy Score Grid';
       btn.classList.remove('btn-copied');
     }, 2000);
   });
 };
 $('btn-challenge').onclick = ()=>{
-  const correct = state.answers.filter(a=>a.correct).length;
-  const totalTimeMs = performance.now() - state.startTime;
-  const totalTimeSec = totalTimeMs / 1000;
-  const url = getDuelUrl(correct, totalTimeSec);
   const btn = $('btn-challenge');
-  navigator.clipboard.writeText(url).then(()=>{
-    btn.textContent = 'Challenge Link Copied! ✓';
+  navigator.clipboard.writeText(state.shareFull || $('share-text').textContent).then(()=>{
+    btn.textContent = 'Copied to Clipboard! ✓';
     btn.classList.add('btn-copied');
     setTimeout(()=>{
       btn.textContent = '⚔️ Challenge a Friend';
@@ -1571,14 +1616,13 @@ $('btn-challenge').onclick = ()=>{
     }, 2000);
   });
 };
-$('btn-share').onclick = ()=>{
-  const text = $('share-text').textContent;
-  if (navigator.share) {
-    navigator.share({ title: 'KNOWIT', text }).catch(()=>{});
-  } else {
-    navigator.clipboard.writeText(text).then(()=>toast('Copied to clipboard!'));
-  }
-};
+// Review modal: tap wrong grid cell → open; backdrop/close button → close
+$('share-visual').addEventListener('click', e => {
+  const cell = e.target.closest('.share-cell.wrong');
+  if (cell && cell.dataset.idx !== undefined) openReview(parseInt(cell.dataset.idx));
+});
+$('rm-close').onclick = closeReview;
+$('review-modal').addEventListener('click', e => { if (e.target === $('review-modal')) closeReview(); });
 $('btn-home').onclick = ()=>{ audio.click(); showScreen('landing'); renderLanding(); };
 
 // ---- Init ----
