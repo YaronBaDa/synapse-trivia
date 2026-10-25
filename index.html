@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0b0a0d">
+<meta name="theme-color" content="#09090b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,21 +12,22 @@
 <title>KNOWIT</title>
 <style>
 :root {
-  --bg: #0b0a0d;
-  --surface: #211d28;
-  --surface-2: #191620;
-  --surface-3: #2a2435;
-  --ink: #f4f1ea;
-  --ink-faint: #8d8896;
-  --ink-dim: #807c8a;
-  --text-muted: #8d8896;
+  --bg: #09090b;
+  --surface: rgba(24, 24, 27, 0.75);
+  --surface-2: rgba(17, 17, 20, 0.85);
+  --surface-3: rgba(45, 45, 52, 0.55);
+  --ink: #f4f4f5;
+  --ink-faint: #a1a1aa;
+  --ink-dim: #71717a;
+  --text-muted: #a1a1aa;
   --border: rgba(255,255,255,.08);
   --accent: #7e8ce8;
   --accent-warm: #ffd166;
   --correct: #6fa88f;
   --wrong: #ff5f6d;
   --warning: #ffd166;
-  --shadow: 0 2px 16px rgba(0,0,0,0.55);
+  --shadow: 0 8px 30px rgba(0,0,0,0.45);
+  --shadow-sm: 0 2px 10px rgba(0,0,0,0.35);
   --ice: #9ad8ff;
   --aurora: linear-gradient(90deg,#3eb597,#4fb0e4,#7e8ce8,#a87fd4);
   --radius: 14px;
@@ -44,6 +45,14 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 #app { max-width: 640px; margin: 0 auto; height: 100vh; height: 100dvh; display: flex; flex-direction: column; position: relative; }
 .screen { display: none; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; padding: 16px; }
 .screen.active { display: flex; }
+/* Glassmorphism: translucent surfaces + ambient blur */
+.option-btn, .icon-btn, .btn-secondary, .stat-chip, .daily-locked, .endless-teaser,
+.feedback-strip, .share-visual, .modal-card, .duel-card, .toast, .landing-streak-bar, .category-tag {
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+/* Ambient depth */
+.share-visual, .modal-card, .duel-card, .feedback-strip, .daily-locked, .endless-teaser { box-shadow: var(--shadow); }
 /* Playing screen: flex column, NO scroll — options are a fixed flex footer */
 #screen-playing { padding: 16px 16px 0; overflow: hidden; }
 
@@ -147,26 +156,33 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
   border: 1px solid var(--border); background: var(--surface); color: var(--ink);
   font-size: 15px; font-weight: 600; font-family: var(--font-sans);
   cursor: pointer; text-align: left; padding: 0;
-  transition: border-color .2s, box-shadow .2s;
-  touch-action: pan-y;
+  transition: transform .08s ease, border-color .2s, box-shadow .2s;
+  touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  box-shadow: var(--shadow-sm);
 }
-.option-btn .swipe-track {
-  position: absolute; left: 0; top: 0; bottom: 0; width: 100%;
-  display: flex; align-items: center; padding-left: 16px;
-  background: var(--accent); color: var(--bg);
-  font-family: var(--font-mono); font-size: 12px; font-weight: 800; letter-spacing: 0.04em;
-  z-index: 0;
-}
+.option-btn:active { transform: translateY(1px) scale(0.98); }
 .option-btn .option-body {
-  position: relative; z-index: 1; display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px; background: var(--surface); will-change: transform;
+  position: relative; z-index: 2; display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; background: transparent;
 }
-.option-btn:active .option-body { transform: scale(0.985); }
 .option-btn .key-hint {
   width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-faint); flex-shrink: 0;
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
 }
+.option-btn .hold-fill {
+  position: absolute; inset: 0; border-radius: inherit; z-index: 1; pointer-events: none;
+  background: conic-gradient(rgba(126,140,232,0.30) calc(var(--hold-p, 0) * 1deg), transparent 0);
+  opacity: 0;
+}
+.option-btn.holding .hold-fill { opacity: 1; }
+.option-btn .bet-badge {
+  position: absolute; top: 8px; right: 10px; z-index: 3; pointer-events: none;
+  background: var(--accent); color: var(--bg); font-family: var(--font-mono);
+  font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 3px 8px; border-radius: 999px;
+  opacity: 0; transform: translateY(-4px); transition: opacity .15s, transform .15s;
+}
+.option-btn .bet-badge.show { opacity: 1; transform: translateY(0); }
 .option-btn.correct { border-color: var(--correct); }
 .option-btn.correct .option-body { box-shadow: inset 0 0 0 999px rgba(111,168,143,0.16); }
 .option-btn.wrong { border-color: var(--wrong); animation: shake 0.4s ease-in-out; }
@@ -175,11 +191,12 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .option-btn.timeout { border-color: var(--warning); }
 .option-btn.timeout .option-body { box-shadow: inset 0 0 0 999px rgba(255,209,102,0.14); }
 .option-btn.bet { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 0 16px rgba(126,140,232,0.35); }
-.option-btn.nudge .option-body { animation: nudgeRight 0.9s ease; }
-@keyframes nudgeRight {
-  0%, 100% { transform: translateX(0); }
-  35% { transform: translateX(20px); }
-  70% { transform: translateX(0); }
+.option-btn.locked { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 0 16px rgba(126,140,232,0.4); }
+.option-btn.nudge .option-body { animation: nudgePulse 0.9s ease; }
+@keyframes nudgePulse {
+  0%, 100% { transform: scale(1); }
+  35% { transform: scale(0.96); }
+  70% { transform: scale(1); }
 }
 
 @keyframes shake {
@@ -200,10 +217,16 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
 /* Per-question timer */
 .q-timer-wrap { margin-bottom: 12px; }
-.q-timer-bar { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.q-timer-row { display: flex; align-items: center; gap: 10px; }
+.q-timer-bar { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
 .q-timer-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .1s linear; }
 .q-timer-fill.urgent { background: var(--warning); }
 .q-timer-fill.danger { background: var(--wrong); }
+.q-timer-text { font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--text-muted); font-variant-numeric: tabular-nums; flex-shrink: 0; letter-spacing: 0.02em; }
+.q-timer-text.warn { color: var(--warning); animation: pulse 1s ease-in-out infinite; }
+.q-timer-text.danger { color: var(--wrong); animation: microshake 0.28s linear infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+@keyframes microshake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-1px)} 75%{transform:translateX(1px)} }
 
 /* Feedback strip */
 .feedback-strip {
@@ -324,20 +347,20 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
 /* Header bet pips */
 .header-status { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
-.header-pips { display: flex; gap: 4px; }
-.header-pip { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); border: 1px solid var(--accent); }
-.header-pip.spent { background: transparent; border-color: var(--ink-dim); opacity: 0.5; }
+.header-pips { display: flex; align-items: center; gap: 5px; }
+.bet-token-bolt { display: inline-flex; color: var(--accent); }
+.bet-token-bolt svg { width: 12px; height: 12px; }
+.header-pip { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); border: 1px solid var(--accent); box-shadow: 0 0 7px rgba(126,140,232,0.85); }
+.header-pip.spent { background: transparent; border-color: var(--ink-dim); opacity: 0.45; box-shadow: none; }
 
-/* Swipe-to-bet microcopy + tip */
-.swipe-hint {
-  flex-shrink: 0; text-align: center; font-size: 12px; color: var(--text-muted);
-  padding: 2px 0 8px; font-family: var(--font-mono);
-}
-.swipe-tip {
+/* Hold-to-bet day-1 tip */
+.hold-tip {
   flex-shrink: 0; text-align: center; font-size: 12px; color: var(--ink);
   background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius-sm);
   padding: 6px 12px; margin-bottom: 6px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
 }
+.hold-tip svg { width: 14px; height: 14px; color: var(--accent); flex-shrink: 0; }
 
 /* Progress strip (daily only) */
 .progress-strip { display: flex; gap: 3px; margin-bottom: 8px; flex-shrink: 0; }
@@ -363,6 +386,19 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+
+/* Inline SVG icons */
+.hero-title { display: flex; align-items: center; justify-content: center; gap: 7px; }
+.hero-title svg { width: 20px; height: 20px; color: var(--accent); flex-shrink: 0; }
+.hero-title.aurora svg { color: var(--ice); }
+.landing-streak-bar .fire { display: inline-flex; }
+.landing-streak-bar .fire svg { width: 16px; height: 16px; }
+.endless-hud .life { display: inline-flex; }
+.endless-hud .life svg { width: 20px; height: 20px; }
+.endless-hud .lives { color: var(--wrong); }
+.highlights svg { width: 12px; height: 12px; vertical-align: -2px; }
+.duel-outcome svg { width: 20px; height: 20px; vertical-align: -4px; margin-left: 5px; }
+.duel-banner .swords svg { width: 14px; height: 14px; vertical-align: -2px; }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -391,7 +427,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <p>10 questions. Same set for everyone. Once per day.</p>
 
       <div class="landing-streak-bar" id="streak-bar" style="display:none;">
-        <span class="fire" id="streak-fire">🔥</span>
+        <span class="fire" id="streak-fire"></span>
         <span id="streak-text"></span>
       </div>
 
@@ -409,10 +445,10 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
         <div class="gt-streak" id="gt-best">0</div>
         <div class="gt-label">Best Endless Streak</div>
         <div style="font-size:12px;color:var(--ink-faint);margin-bottom:10px;">Survive as long as you can. 3 lives.</div>
-        <button class="btn-secondary" id="btn-endless" style="max-width:100%;">⚡ Play Endless Mode</button>
+        <button class="btn-secondary" id="btn-endless" style="max-width:100%;">Play Endless Mode</button>
       </div>
 
-      <button class="btn-secondary" id="btn-practice" style="display:none;">🎯 Practice Mode</button>
+      <button class="btn-secondary" id="btn-practice" style="display:none;">Practice Mode</button>
     </div>
   </div>
 
@@ -433,7 +469,10 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
     </div>
 
     <div class="q-timer-wrap">
-      <div class="q-timer-bar"><div class="q-timer-fill" id="q-timer-fill"></div></div>
+      <div class="q-timer-row">
+        <div class="q-timer-bar"><div class="q-timer-fill" id="q-timer-fill"></div></div>
+        <div class="q-timer-text" id="q-timer-text">00:00.0</div>
+      </div>
     </div>
 
     <!-- Progress strip (daily only) -->
@@ -441,7 +480,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
     <!-- Duel banner -->
     <div class="duel-banner" id="duel-banner" style="display:none;">
-      <span class="swords">⚔️</span>
+      <span class="swords"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg></span>
       <span id="duel-banner-text">DUELING: Alex (8/10 · 24.2s)</span>
     </div>
 
@@ -461,9 +500,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="fb-insight" id="fb-insight"></div>
     </div>
 
-    <!-- Swipe-to-bet microcopy + day-1 tip (daily only) -->
-    <div class="swipe-tip" id="swipe-tip" style="display:none;">💡 Swipe right to bet (+2 if correct, -1 if wrong)</div>
-    <div class="swipe-hint" id="swipe-hint" style="display:none;">Tap to answer · Swipe right to bet (+2 if correct, -1 if wrong)</div>
+    <!-- Hold-to-bet day-1 tip (daily only) -->
+    <div class="hold-tip" id="hold-tip" style="display:none;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg><span>Hold to lock a bet (+2 if correct, -1 if wrong)</span></div>
 
     <div class="options-grid" id="options-grid"></div>
   </div>
@@ -481,13 +519,13 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <!-- Hero score -->
       <div class="results-hero">
         <div class="hero-score" id="hero-score">9<span class="of">/10</span></div>
-        <div class="hero-title" id="hero-title">MASTERMIND 🧠</div>
+        <div class="hero-title" id="hero-title">MASTERMIND</div>
         <div class="hero-sub" id="hero-sub">Total 1m 09s • Pace: Deliberate • Top 5% today</div>
       </div>
 
       <!-- Duel result card (duel runs only) -->
       <div class="duel-card" id="duel-card" style="display:none;">
-        <div class="duel-outcome" id="duel-outcome">VICTORY! 🏆</div>
+        <div class="duel-outcome" id="duel-outcome">VICTORY</div>
         <div class="duel-vs">
           <div class="duel-side duel-you">
             <div class="d-name">You</div>
@@ -514,9 +552,9 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="share-text" id="share-text"></div>
 
       <!-- Actions -->
-      <button class="btn-emerald" id="btn-challenge">⚔️ Challenge a Friend</button>
-      <button class="btn-secondary" id="btn-endless-result" style="display:none;">⚡ Play Endless Mode</button>
-      <button class="btn-secondary" id="btn-copy">📋 Copy Score Grid</button>
+      <button class="btn-emerald" id="btn-challenge">Challenge a Friend</button>
+      <button class="btn-secondary" id="btn-endless-result" style="display:none;">Play Endless Mode</button>
+      <button class="btn-secondary" id="btn-copy">Copy Score Grid</button>
       <button class="link-home" id="btn-home">Home Menu</button>
     </div>
   </div>
@@ -1218,6 +1256,20 @@ function clearDuelParam() {
 
 // ---- DOM helpers ----
 function $(id){ return document.getElementById(id); }
+// ---- Inline monochrome icons (Lucide-style, 1.5px stroke) ----
+const ICONS = {
+  lightning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7z"/></svg>',
+  flame: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 1.5 2 4.5 2 8a2.5 2.5 0 1 1-5 0z"/></svg>',
+  swords: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" x2="19" y1="19" y2="13"/><line x1="16" x2="20" y1="16" y2="20"/><line x1="19" x2="21" y1="21" y2="19"/><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/><line x1="5" x2="9" y1="14" y2="18"/><line x1="7" x2="4" y1="17" y2="20"/><line x1="3" x2="5" y1="19" y2="21"/></svg>',
+  bulb: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>',
+  skull: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.6"/><circle cx="15" cy="10" r="1.6"/><path d="M12 14v2M9 18c0 1.5 1.3 2.2 3 2.2s3-.7 3-2.2"/></svg>',
+  trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v6a5 5 0 0 1-10 0z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+  chess: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="2.2"/><path d="M12 8.5c-1.6 0-2.7 1.1-2.7 2.6S10.4 13.5 12 13.5s2.7-1.1 2.7-2.4-1.1-2.6-2.7-2.6z"/><path d="M9 16h6l-1 3H10z"/><path d="M10.5 19h3"/></svg>',
+  dice: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2"/><circle cx="15.5" cy="8.5" r="1.2"/><circle cx="8.5" cy="15.5" r="1.2"/><circle cx="15.5" cy="15.5" r="1.2"/></svg>',
+  heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+  snowflake: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>',
+};
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   $('screen-'+name).classList.add('active');
@@ -1254,12 +1306,12 @@ function renderStreakBar() {
   if (stats.streak > 0) {
     bar.style.display = 'flex';
     $('streak-text').textContent = `${stats.streak} day streak`;
-    fire.textContent = stats.streak >= 7 ? '🔥' : stats.streak >= 3 ? '⚡' : '🔥';
+    fire.innerHTML = stats.streak >= 3 ? ICONS.lightning : ICONS.flame;
     fire.classList.remove('broken');
   } else if (stats.played > 0 && stats.streak === 0) {
     bar.style.display = 'flex';
     $('streak-text').textContent = `Streak broken`;
-    fire.textContent = '💔';
+    fire.innerHTML = ICONS.flame;
     fire.classList.add('broken');
   } else {
     bar.style.display = 'none';
@@ -1304,10 +1356,10 @@ function getRandomQuestion() {
 function renderQuestion() {
   const q = state.questions[state.currentQ];
   if (!q) return;
-  // Header meta: daily number + question progress
+  // Header meta: daily number + question progress (mono tokens)
   $('header-meta').textContent = state.mode === 'daily'
-    ? `#${getDailyNum()} · Q${state.currentQ+1}/${state.questions.length}`
-    : `⚡ Streak ${state.endlessStreak} · Q${state.currentQ+1}`;
+    ? `#${getDailyNum()} · Q${String(state.currentQ+1).padStart(2,'0')}/${String(state.questions.length).padStart(2,'0')}`
+    : `STRK: ${String(state.endlessStreak).padStart(2,'0')} · Q${String(state.currentQ+1).padStart(2,'0')}`;
   // Category tag sits ABOVE the question, not inline
   $('q-text').innerHTML = `<span class="category-tag">${q.category}</span><br>${escapeHtml(q.question)}`;
   const grid = $('options-grid');
@@ -1316,14 +1368,9 @@ function renderQuestion() {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'option-btn';
-    btn.innerHTML = `<span class="swipe-track">⚡ BET</span><span class="option-body"><span class="key-hint">${String.fromCharCode(65+idx)}</span><span>${escapeHtml(opt)}</span></span>`;
-    btn.title = 'Drag right or Shift+Key to bet';
-    let suppressClick = false;
-    btn.addEventListener('click', (e) => {
-      if (suppressClick) { suppressClick = false; return; }
-      handleAnswer(idx);
-    });
-    attachSwipe(btn, idx, () => { suppressClick = true; });
+    btn.innerHTML = `<span class="option-body"><span class="key-hint">${String.fromCharCode(65+idx)}</span><span>${escapeHtml(opt)}</span></span><span class="hold-fill"></span><span class="bet-badge"></span>`;
+    btn.title = 'Hold or Shift+Key to bet';
+    attachHold(btn, idx);
     grid.appendChild(btn);
   });
   $('feedback-strip').className = 'feedback-strip';
@@ -1331,25 +1378,23 @@ function renderQuestion() {
   state.waiting = false;
   state.armed = false;
 
-  // Bet UI + progress strip: daily only
+  // Bet tokens + progress strip: daily only
   if (state.mode === 'daily') {
     $('header-pips').style.display = 'flex';
     $('progress-strip').style.display = 'flex';
     updateBetUI();
     renderProgressStrip();
     let seenTip = false;
-    try { seenTip = !!localStorage.getItem('knowit_seen_swipe_tip'); } catch(e){}
+    try { seenTip = !!localStorage.getItem('knowit_seen_hold_tip'); } catch(e){}
     if (state.currentQ === 0 && !seenTip) {
-      showSwipeTip();
+      showHoldTip();
     } else {
-      $('swipe-tip').style.display = 'none';
-      $('swipe-hint').style.display = 'block';
+      $('hold-tip').style.display = 'none';
     }
   } else {
     $('header-pips').style.display = 'none';
     $('progress-strip').style.display = 'none';
-    $('swipe-hint').style.display = 'none';
-    $('swipe-tip').style.display = 'none';
+    $('hold-tip').style.display = 'none';
   }
 
   if (state.timerId) cancelAnimationFrame(state.timerId);
@@ -1357,7 +1402,7 @@ function renderQuestion() {
 }
 function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
 
-// ---- Bet mechanic (swipe / shift-key) ----
+// ---- Bet mechanic (hold / shift-key) ----
 function vibrate(ms) {
   if (navigator.vibrate) { try { navigator.vibrate(ms || 20); } catch(e){} }
 }
@@ -1370,62 +1415,69 @@ function answerWithBet(idx, bet) {
   }
   handleAnswer(idx);
 }
-function attachSwipe(btn, idx, onSuppress) {
-  let startX = 0, startY = 0, dx = 0, dy = 0, isHorizontal = false, active = false;
-  const body = btn.querySelector('.option-body');
+function attachHold(btn, idx) {
+  let holdTimer = null, rafId = null, locked = false, suppressClick = false;
+  const fill = btn.querySelector('.hold-fill');
+  const badge = btn.querySelector('.bet-badge');
+
+  function resetHold() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    locked = false;
+    btn.classList.remove('holding', 'locked');
+    btn.style.setProperty('--hold-p', 0);
+    if (badge) badge.classList.remove('show');
+  }
+
+  // Mouse / desktop click = standard answer (hold-to-bet is keyboard-driven on desktop)
+  btn.addEventListener('click', (e) => {
+    if (suppressClick) { suppressClick = false; return; }
+    if (state.waiting) return;
+    handleAnswer(idx);
+  });
+
   btn.addEventListener('touchstart', (e) => {
-    if (state.mode !== 'daily' || state.waiting || state.betsLeft <= 0) return;
-    const t = e.touches[0];
-    startX = t.clientX; startY = t.clientY; dx = 0; dy = 0; isHorizontal = false; active = true;
+    if (state.waiting) return;
+    if (state.mode !== 'daily' || state.betsLeft <= 0) return; // let click handle the tap
+    suppressClick = true;
+    locked = false;
+    btn.classList.add('holding');
+    const start = performance.now();
+    function sweep(now) {
+      const p = Math.min(1, (now - start) / 250);
+      btn.style.setProperty('--hold-p', Math.round(p * 360));
+      if (p < 1 && !locked) rafId = requestAnimationFrame(sweep);
+    }
+    rafId = requestAnimationFrame(sweep);
+    holdTimer = setTimeout(() => {
+      locked = true;
+      btn.classList.add('locked');
+      if (badge) { badge.textContent = '⚡ BET LOCKED (+2 / -1)'; badge.classList.add('show'); }
+      vibrate([10, 25]);
+    }, 250);
   }, { passive: true });
-  btn.addEventListener('touchmove', (e) => {
-    if (!active || state.waiting || state.betsLeft <= 0) return;
-    const t = e.touches[0];
-    dx = t.clientX - startX; dy = t.clientY - startY;
-    const adx = Math.abs(dx), ady = Math.abs(dy);
-    if (!isHorizontal) {
-      // Angle lock: cancel if vertical scroll wins before horizontal threshold is met
-      if (ady > 25) { active = false; return; }
-      if (adx > 8 && adx > ady * 1.5 && dx > 0) isHorizontal = true;
-      else return;
-    }
-    if (isHorizontal) {
-      if (dx > 0) e.preventDefault();
-      body.style.transition = 'none';
-      body.style.transform = `translateX(${Math.max(0, Math.min(dx, 72))}px)`;
-    }
-  }, { passive: false });
-  btn.addEventListener('touchend', () => {
-    if (!active) return;
-    active = false;
-    if (!isHorizontal) return;
-    if (onSuppress) onSuppress();
-    if (dx >= 48 && state.betsLeft > 0 && !state.waiting) {
-      body.style.transition = 'transform .15s ease';
-      body.style.transform = 'translateX(0)';
-      vibrate(20);
-      state.armed = true;
-      handleAnswer(idx);
-    } else {
-      body.style.transition = 'transform .2s ease';
-      body.style.transform = 'translateX(0)';
-    }
+
+  btn.addEventListener('touchend', (e) => {
+    if (!suppressClick) return;
+    // keep suppressClick=true so the synthetic click is swallowed after touch
+    const bet = locked;
+    resetHold();
+    if (state.waiting) return;
+    state.armed = bet;
+    handleAnswer(idx);
   }, { passive: true });
+
   btn.addEventListener('touchcancel', () => {
-    if (!active) return;
-    active = false;
-    if (isHorizontal) {
-      body.style.transition = 'transform .2s ease';
-      body.style.transform = 'translateX(0)';
-    }
+    suppressClick = false;
+    resetHold();
   }, { passive: true });
 }
 function updateBetUI() {
   const pips = $('header-pips');
   const n = state.betsLeft;
-  pips.innerHTML = Array.from({length:3}, (_,i)=>`<span class="header-pip ${i < n ? '' : 'spent'}"></span>`).join('');
+  pips.innerHTML = `<span class="bet-token-bolt">${ICONS.lightning}</span>` +
+    Array.from({length:3}, (_,i)=>`<span class="header-pip ${i < n ? '' : 'spent'}"></span>`).join('');
   pips.setAttribute('aria-label', `${n} ${n === 1 ? 'bet' : 'bets'} left`);
-  $('swipe-hint').textContent = n > 0 ? 'Tap to answer · Swipe right to bet (+2 if correct, -1 if wrong)' : 'Tap to answer · No bets left';
 }
 function renderProgressStrip() {
   const el = $('progress-strip');
@@ -1447,21 +1499,18 @@ function renderProgressStrip() {
     el.appendChild(seg);
   }
 }
-function showSwipeTip() {
-  try { if (localStorage.getItem('knowit_seen_swipe_tip')) return; } catch(e){}
+function showHoldTip() {
+  try { if (localStorage.getItem('knowit_seen_hold_tip')) return; } catch(e){}
   const first = document.querySelectorAll('.option-btn')[0];
   if (first) {
     first.classList.add('nudge');
     setTimeout(()=>{ try { first.classList.remove('nudge'); } catch(e){} }, 1000);
   }
-  const tip = $('swipe-tip');
-  const hint = $('swipe-hint');
-  tip.style.display = 'block';
-  hint.style.display = 'none';
+  const tip = $('hold-tip');
+  tip.style.display = 'flex';
   const dismiss = () => {
     tip.style.display = 'none';
-    hint.style.display = 'block';
-    try { localStorage.setItem('knowit_seen_swipe_tip', '1'); } catch(e){}
+    try { localStorage.setItem('knowit_seen_hold_tip', '1'); } catch(e){}
     document.removeEventListener('click', dismiss);
     document.removeEventListener('touchstart', dismiss);
   };
@@ -1472,27 +1521,37 @@ function showSwipeTip() {
 
 // ---- Endless HUD ----
 function renderEndlessHUD() {
-  const hearts = Array.from({length:GAUNTLET_LIVES},(_,i)=>`<span class="life ${i<state.endlessLives?'':'lost'}">♥</span>`).join('');
+  const hearts = Array.from({length:GAUNTLET_LIVES},(_,i)=>`<span class="life ${i<state.endlessLives?'':'lost'}">${ICONS.heart}</span>`).join('');
   $('endless-lives').innerHTML = hearts;
   const streakEl = $('endless-streak');
   const isBlazing = state.endlessStreak >= 5;
-  streakEl.textContent = isBlazing ? `🔥 ${state.endlessStreak}` : `Streak ${state.endlessStreak}`;
+  streakEl.textContent = `STRK: ${String(state.endlessStreak).padStart(2,'0')}`;
   streakEl.className = 'streak' + (isBlazing ? ' blazing' : '');
 }
 
 // ---- Per-question timer ----
 function startQTimer() {
   const bar = $('q-timer-fill');
+  const txt = $('q-timer-text');
   const start = performance.now();
   function tick() {
     if (state.screen !== 'playing' || state.waiting) return;
     const elapsed = performance.now() - start;
+    const sec = elapsed / 1000;
     const max = state.mode === 'endless' ? 15000 : 20000;
     const pct = Math.max(0, 100 - (elapsed / max) * 100);
     bar.style.width = pct + '%';
     bar.className = 'q-timer-fill';
     if (pct < 25) bar.classList.add('danger');
     else if (pct < 55) bar.classList.add('urgent');
+    // Stopwatch tension: calm → amber pulse → crimson shake
+    if (txt) {
+      txt.textContent = fmtClock(sec);
+      let cls = 'q-timer-text';
+      if (sec >= 8) cls += ' danger';
+      else if (sec >= 5) cls += ' warn';
+      txt.className = cls;
+    }
     if (elapsed >= max) { handleTimeout(); return; }
     state.timerId = requestAnimationFrame(tick);
   }
@@ -1516,7 +1575,7 @@ function startDaily() {
   state.betsLeft = 3;
   state.armed = false;
   state.duel = parseDuelParam();
-  $('header-meta').textContent = `#${getDailyNum()} · Q1/10`;
+  $('header-meta').textContent = `#${getDailyNum()} · Q01/10`;
   $('endless-hud').style.display = 'none';
   if (state.duel) {
     $('duel-banner').style.display = 'flex';
@@ -1540,7 +1599,7 @@ function startEndless() {
   state.betsLeft = 0;
   state.armed = false;
   state.duel = null;
-  $('header-meta').textContent = `⚡ Streak 0 · Q1`;
+  $('header-meta').textContent = `STRK: 00 · Q01`;
   $('endless-hud').style.display = 'flex';
   $('duel-banner').style.display = 'none';
   showScreen('playing');
@@ -1690,24 +1749,22 @@ function finishGame() {
   $('result-title').textContent = state.mode === 'daily' ? 'Daily 10' : 'Endless Mode';
   $('result-meta').textContent = state.mode === 'daily' ? today : 'Endless Mode';
 
-  const avgSec = avgMs / 1000;
-  const avgStr = avgSec.toFixed(1); // e.g. "7.0" — fixes the old "7ss/Q" bug
-  const pace = getPace(totalTimeSec);
+  const betUsed = state.answers.filter(a=>a.bet).length;
+  const betHit = state.answers.filter(a=>a.bet && a.correct).length;
+  const totalPoints = state.answers.reduce((s,a)=>s+(a.points||0),0);
+  const dailyArch = state.mode === 'daily' ? getArchetype(correct, total, totalTimeSec, betUsed, betHit) : null;
 
   // Hero
   if (state.mode === 'daily') {
     $('hero-score').innerHTML = `${correct}<span class="of">/${total}</span>`;
-    let title = 'EGO CHECK 💀';
-    let titleClass = '';
-    if (correct === total) { title = 'KNOW IT ALL! 🤓'; titleClass = 'aurora perfect-flash'; }
-    else if (correct >= 8) title = 'MASTERMIND 🧠';
-    else if (correct >= 5) title = 'SOLID RUN 🎯';
-    $('hero-title').textContent = title;
-    $('hero-title').className = 'hero-title' + (titleClass ? ' ' + titleClass : '');
-    $('hero-sub').textContent = `Total ${fmtTimeSec(totalTimeSec)} • Pace: ${pace.label} ${pace.emoji} • ${pace.pct} today`;
+    $('hero-title').className = 'hero-title' + (correct === total ? ' aurora perfect-flash' : '');
+    $('hero-title').innerHTML = `${ICONS[dailyArch.icon]}<span>${dailyArch.name}</span>`;
+    $('hero-sub').textContent = `Total ${fmtTimeSec(totalTimeSec)} • ${dailyArch.sub}`;
   } else {
     $('hero-score').innerHTML = `${state.endlessStreak}`;
-    $('hero-title').textContent = state.endlessStreak >= 20 ? 'LEGENDARY 🔥' : state.endlessStreak >= 10 ? 'UNSTOPPABLE ⚡' : state.endlessStreak >= 5 ? 'ON A ROLL 🎯' : 'WARM-UP RUN 💀';
+    const eT = state.endlessStreak >= 20 ? ['LEGENDARY','flame'] : state.endlessStreak >= 10 ? ['UNSTOPPABLE','lightning'] : state.endlessStreak >= 5 ? ['ON A ROLL','target'] : ['WARM-UP RUN','skull'];
+    $('hero-title').className = 'hero-title';
+    $('hero-title').innerHTML = `${ICONS[eT[1]]}<span>${eT[0]}</span>`;
     $('hero-sub').textContent = `Best Endless: ${stats.bestEndless} • Total ${fmtTimeSec(totalTimeSec)}`;
   }
 
@@ -1718,28 +1775,21 @@ function finishGame() {
     categories[a.category].total++;
     if (a.correct) categories[a.category].correct++;
   });
-  const betUsed = state.answers.filter(a=>a.bet).length;
-  const betHit = state.answers.filter(a=>a.bet && a.correct).length;
-  const totalPoints = state.answers.reduce((s,a)=>s+(a.points||0),0);
   const entries = Object.entries(categories);
   const perfectCats = entries.filter(([,d]) => d.correct === d.total).map(([c]) => c);
   const missedCats = entries.filter(([,d]) => d.correct < d.total);
   missedCats.sort((a,b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total));
   let hl = '';
-  if (perfectCats.length) hl += `<b>Strengths:</b> 🔥 ${perfectCats.join(', ')} (100%)`;
+  if (perfectCats.length) hl += `<b>Strengths:</b> ${ICONS.flame} ${perfectCats.join(', ')} (100%)`;
   if (missedCats.length) {
     const [wc, wd] = missedCats[0];
-    hl += (hl ? '<br>' : '') + `<b>Achilles Heel:</b> ❄️ ${wc} (${wd.correct}/${wd.total})`;
+    hl += (hl ? '<br>' : '') + `<b>Achilles Heel:</b> ${ICONS.snowflake} ${wc} (${wd.correct}/${wd.total})`;
   }
   if (!hl) hl = '<b>Clean run.</b>';
   // Bets line first (daily only)
   if (state.mode === 'daily') {
     let betsLine = '<b>Bets:</b> none placed';
-    if (betUsed > 0) {
-      betsLine = `<b>Bets:</b> ${betHit}/${betUsed} hit · ${totalPoints} pts`;
-      if (betUsed === 3 && betHit === 3) betsLine += ' · SNIPER 🎯';
-      else if (betUsed === 3 && betHit === 0) betsLine += ' · OVERCONFIDENT 🤡';
-    }
+    if (betUsed > 0) betsLine = `<b>Bets:</b> ${betHit}/${betUsed} hit · ${totalPoints} pts`;
     hl = betsLine + (hl ? '<br>' + hl : '');
   }
   $('highlights').innerHTML = hl;
@@ -1774,15 +1824,14 @@ function finishGame() {
     return a.correct ? '🟩' : '🟥';
   }).join('');
   const challengeUrl = getDuelUrl(correct, totalTimeSec);
+  const timeStr = `${Math.round(totalTimeSec*10)/10}s`;
   if (state.mode === 'daily') {
-    let head = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}`;
-    if (betUsed > 0) head += ` · ${betHit}/${betUsed} bets hit`;
-    if (correct === total) head += ' · KNOW IT ALL 🤓';
-    state.shareClean = `${head}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} (Avg: ${avgStr}s/Q · ${pace.label})`;
-    state.shareFull = `${state.shareClean}\n\nCan you beat my score?\n${challengeUrl}`;
+    const head = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}`;
+    state.shareClean = `${head}\n${shareBody}\n⏱ ${timeStr} • ${dailyArch.name}`;
+    state.shareFull = `${state.shareClean}\n\nThink you can beat my time?\n${challengeUrl}`;
   } else {
-    state.shareClean = `KNOWIT Endless ⚡\nStreak: ${state.endlessStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}`;
-    state.shareFull = `${state.shareClean}\n\nCan you beat my streak?\n${challengeUrl}`;
+    state.shareClean = `KNOWIT Endless ⚡\nStreak: ${state.endlessStreak}\nCorrect: ${correct}/${total}\n⏱ ${timeStr}`;
+    state.shareFull = `${state.shareClean}\n\nThink you can beat my streak?\n${challengeUrl}`;
   }
   $('share-text').textContent = state.shareFull;
 
@@ -1795,15 +1844,13 @@ function finishGame() {
     $('duel-them-time').textContent = fmtTimeSec(d.time);
     $('duel-you-score').textContent = `${correct}/${total}`;
     $('duel-you-time').textContent = fmtTimeSec(totalTimeSec);
-    let outcome = 'TIED 🤝';
-    if (correct > d.score) outcome = 'VICTORY! 🏆';
-    else if (correct < d.score) outcome = 'DEFEATED 💀';
-    else if (totalTimeSec < d.time) outcome = 'VICTORY! 🏆';
-    else if (totalTimeSec > d.time) outcome = 'DEFEATED 💀';
-    $('duel-outcome').textContent = outcome;
-    if (outcome.includes('VICTORY')) $('duel-outcome').style.color = 'var(--correct)';
-    else if (outcome.includes('DEFEATED')) $('duel-outcome').style.color = 'var(--wrong)';
-    else $('duel-outcome').style.color = 'var(--accent-warm)';
+    let outcome = 'TIED', oIcon = null, oColor = 'var(--accent-warm)';
+    if (correct > d.score) { outcome = 'VICTORY'; oIcon = 'trophy'; oColor = 'var(--correct)'; }
+    else if (correct < d.score) { outcome = 'DEFEATED'; oIcon = 'skull'; oColor = 'var(--wrong)'; }
+    else if (totalTimeSec < d.time) { outcome = 'VICTORY'; oIcon = 'trophy'; oColor = 'var(--correct)'; }
+    else if (totalTimeSec > d.time) { outcome = 'DEFEATED'; oIcon = 'skull'; oColor = 'var(--wrong)'; }
+    $('duel-outcome').innerHTML = `${outcome}${oIcon ? ICONS[oIcon] : ''}`;
+    $('duel-outcome').style.color = oColor;
   } else {
     $('duel-card').style.display = 'none';
   }
@@ -1833,11 +1880,21 @@ function fmtTimeSec(s) {
   const r = Math.round(s%60);
   return m ? `${m}m ${r}s` : `${r}s`;
 }
-function getPace(totalTimeSec) {
-  if (totalTimeSec < 35) return { label: 'Lightning', emoji: '⚡', pct: 'Top 5%' };
-  if (totalTimeSec < 55) return { label: 'Swift', emoji: '🎯', pct: 'Top 20%' };
-  if (totalTimeSec < 85) return { label: 'Deliberate', emoji: '🧠', pct: 'Top 50%' };
-  return { label: 'Methodical', emoji: '⏳', pct: 'Top 75%' };
+function getArchetype(correct, total, totalTimeSec, betUsed, betHit) {
+  const fast = totalTimeSec < 55;
+  if (correct < 5) return { name: 'THE EGO CHECK', icon: 'skull', sub: 'Back to basics' };
+  if (betUsed === 3 && betHit === 0) return { name: 'THE ADRENALINE JUNKIE', icon: 'dice', sub: 'Missed all 3 bets' };
+  if (betUsed === 3 && betHit === 3) return { name: 'THE SNIPER', icon: 'target', sub: '3/3 bets hit' };
+  if (correct >= 9 && fast) return { name: 'THE SYNTHESIZER', icon: 'lightning', sub: 'Top 2% latency' };
+  if (correct >= 7 && !fast) return { name: 'THE GRANDMASTER', icon: 'chess', sub: 'Slow & steady' };
+  if (correct >= 7) return { name: 'THE SNIPER', icon: 'target', sub: 'Sharp run' };
+  return { name: 'THE GRANDMASTER', icon: 'chess', sub: 'Steady progress' };
+}
+function fmtClock(s) {
+  const m = Math.floor(s / 60);
+  const r = s - m * 60;
+  const [w, d] = r.toFixed(1).split('.');
+  return `${String(m).padStart(2,'0')}:${String(w).padStart(2,'0')}.${d}`;
 }
 
 // ---- Confetti ----
@@ -1884,12 +1941,44 @@ function launchConfetti() {
 }
 
 // ---- Input ----
+// Keyboard: quick press = standard, Shift = bet, hold 250ms = bet
+let kbHold = null;
 document.addEventListener('keydown', e => {
   if (state.screen !== 'playing' || state.waiting) return;
   const key = e.key.toLowerCase();
-  const bet = e.shiftKey;
-  if (key >= '1' && key <= '4') { e.preventDefault(); answerWithBet(parseInt(key)-1, bet); }
-  else if (key >= 'a' && key <= 'd') { e.preventDefault(); answerWithBet(key.charCodeAt(0)-97, bet); }
+  let idx = -1;
+  if (key >= '1' && key <= '4') idx = parseInt(key) - 1;
+  else if (key >= 'a' && key <= 'd') idx = key.charCodeAt(0) - 97;
+  if (idx < 0) return;
+  e.preventDefault();
+  if (e.repeat) return;
+  if (e.shiftKey) { answerWithBet(idx, true); return; }
+  if (kbHold) return;
+  kbHold = { idx, locked: false };
+  kbHold.timer = setTimeout(() => {
+    if (!kbHold) return;
+    kbHold.locked = true;
+    const btns = document.querySelectorAll('.option-btn');
+    const btn = btns[kbHold.idx];
+    if (btn) {
+      btn.classList.add('locked');
+      const badge = btn.querySelector('.bet-badge');
+      if (badge) { badge.textContent = '⚡ BET LOCKED (+2 / -1)'; badge.classList.add('show'); }
+    }
+    vibrate([10, 25]);
+  }, 250);
+});
+document.addEventListener('keyup', e => {
+  if (!kbHold) return;
+  const key = e.key.toLowerCase();
+  let idx = -1;
+  if (key >= '1' && key <= '4') idx = parseInt(key) - 1;
+  else if (key >= 'a' && key <= 'd') idx = key.charCodeAt(0) - 97;
+  if (idx !== kbHold.idx) return;
+  clearTimeout(kbHold.timer);
+  const bet = kbHold.locked;
+  kbHold = null;
+  answerWithBet(idx, bet);
 });
 
 // ---- Buttons ----
@@ -1907,7 +1996,7 @@ $('btn-copy').onclick = ()=>{
     btn.textContent = 'Copied to Clipboard! ✓';
     btn.classList.add('btn-copied');
     setTimeout(()=>{
-      btn.textContent = '📋 Copy Score Grid';
+      btn.textContent = 'Copy Score Grid';
       btn.classList.remove('btn-copied');
     }, 2000);
   });
@@ -1918,7 +2007,7 @@ $('btn-challenge').onclick = ()=>{
     btn.textContent = 'Copied to Clipboard! ✓';
     btn.classList.add('btn-copied');
     setTimeout(()=>{
-      btn.textContent = '⚔️ Challenge a Friend';
+      btn.textContent = 'Challenge a Friend';
       btn.classList.remove('btn-copied');
     }, 2000);
   });
