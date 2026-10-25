@@ -273,7 +273,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .modal-card .mq { font-size: 16px; font-weight: 700; line-height: 1.4; margin-bottom: 14px; }
 .modal-card .mrow { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 10px; font-size: 14px; }
 .modal-card .mlabel { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-dim); flex-shrink: 0; width: 74px; padding-top: 3px; }
-.modal-card .mdyk { font-size: 13px; color: var(--ink-faint); font-style: italic; line-height: 1.5; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 6px; }
+.modal-card .mdyk { font-size: 13px; color: var(--text-muted); font-style: italic; line-height: 1.5; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 6px; }
+.modal-card .mdyk-label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-dim); font-style: normal; margin-bottom: 4px; }
 
 /* Copy button success state */
 .btn-copied { background: var(--correct) !important; border-color: var(--correct) !important; color: var(--bg) !important; }
@@ -528,7 +529,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="mrow"><span class="mlabel">You picked</span><span id="rm-picked" style="color:var(--wrong)"></span></div>
       <div class="mrow"><span class="mlabel">Correct</span><span id="rm-correct" style="color:var(--correct)"></span></div>
       <div class="mrow"><span class="mlabel">Bet</span><span id="rm-bet"></span></div>
-      <div class="mdyk" id="rm-dyk"></div>
+      <div class="mdyk"><div class="mdyk-label">Did you know?</div><span id="rm-dyk"></span></div>
       <button class="btn-secondary" id="rm-close" style="margin-top:14px;max-width:100%;">Close</button>
     </div>
   </div>
@@ -1267,13 +1268,37 @@ function renderStreakBar() {
 }
 
 // ---- Question sourcing ----
+function shuffleIntoSlot(q, rng, slot) {
+  // Deterministically place the correct answer at `slot`, Fisher-Yates the distractors.
+  const opts = q.options.slice();
+  const correct = opts[q.correctIndex];
+  const others = [];
+  for (let i = 0; i < opts.length; i++) if (i !== q.correctIndex) others.push(opts[i]);
+  for (let i = others.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [others[i], others[j]] = [others[j], others[i]];
+  }
+  others.splice(slot, 0, correct);
+  return { ...q, options: others, correctIndex: slot };
+}
 function getDailyQuestions() {
   const seed = getDailySeed();
+  const dayIndex = getDailyNum();
   const indices = seededShuffle(QUESTIONS.map((_,i)=>i), seed);
-  return indices.slice(0, Q_PER_DAY).map(i=>QUESTIONS[i]);
+  const rotation = dayIndex % 4; // per-day offset so correct answers spread across A/B/C/D
+  return indices.slice(0, Q_PER_DAY).map((qi, pos) => {
+    const rng = mulberry32(dayIndex * 1000 + pos);
+    return shuffleIntoSlot(QUESTIONS[qi], rng, (rotation + pos) % 4);
+  });
 }
 function getRandomQuestion() {
-  return QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
+  const q = QUESTIONS[Math.floor(Math.random()*QUESTIONS.length)];
+  const opts = q.options.slice();
+  for (let i = opts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [opts[i], opts[j]] = [opts[j], opts[i]];
+  }
+  return { ...q, options: opts, correctIndex: opts.indexOf(q.options[q.correctIndex]) };
 }
 
 // ---- Rendering ----
@@ -1311,10 +1336,16 @@ function renderQuestion() {
   if (state.mode === 'daily') {
     $('header-pips').style.display = 'flex';
     $('progress-strip').style.display = 'flex';
-    $('swipe-hint').style.display = 'block';
     updateBetUI();
     renderProgressStrip();
-    if (state.currentQ === 0) showSwipeTip();
+    let seenTip = false;
+    try { seenTip = !!localStorage.getItem('knowit_seen_swipe_tip'); } catch(e){}
+    if (state.currentQ === 0 && !seenTip) {
+      showSwipeTip();
+    } else {
+      $('swipe-tip').style.display = 'none';
+      $('swipe-hint').style.display = 'block';
+    }
   } else {
     $('header-pips').style.display = 'none';
     $('progress-strip').style.display = 'none';
@@ -1352,7 +1383,13 @@ function attachSwipe(btn, idx, onSuppress) {
     if (!active || state.waiting || state.betsLeft <= 0) return;
     const t = e.touches[0];
     dx = t.clientX - startX; dy = t.clientY - startY;
-    if (!isHorizontal && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) isHorizontal = true;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    if (!isHorizontal) {
+      // Angle lock: cancel if vertical scroll wins before horizontal threshold is met
+      if (ady > 25) { active = false; return; }
+      if (adx > 8 && adx > ady * 1.5 && dx > 0) isHorizontal = true;
+      else return;
+    }
     if (isHorizontal) {
       if (dx > 0) e.preventDefault();
       body.style.transition = 'none';
@@ -1420,9 +1457,12 @@ function showSwipeTip() {
     setTimeout(()=>{ try { first.classList.remove('nudge'); } catch(e){} }, 1000);
   }
   const tip = $('swipe-tip');
+  const hint = $('swipe-hint');
   tip.style.display = 'block';
+  hint.style.display = 'none';
   const dismiss = () => {
     tip.style.display = 'none';
+    hint.style.display = 'block';
     try { localStorage.setItem('knowit_seen_swipe_tip', '1'); } catch(e){}
     document.removeEventListener('click', dismiss);
     document.removeEventListener('touchstart', dismiss);
@@ -1652,9 +1692,9 @@ function finishGame() {
   $('result-title').textContent = state.mode === 'daily' ? 'Daily 10' : 'Endless Mode';
   $('result-meta').textContent = state.mode === 'daily' ? today : 'Endless Mode';
 
-  const speed = getSpeedRating(avgMs);
   const avgSec = avgMs / 1000;
   const avgStr = avgSec.toFixed(1); // e.g. "7.0" — fixes the old "7ss/Q" bug
+  const pace = getPace(totalTimeSec);
 
   // Hero
   if (state.mode === 'daily') {
@@ -1666,8 +1706,7 @@ function finishGame() {
     else if (correct >= 5) title = 'SOLID RUN 🎯';
     $('hero-title').textContent = title;
     $('hero-title').className = 'hero-title' + (titleClass ? ' ' + titleClass : '');
-    const pct = mockPercentile(correct, total);
-    $('hero-sub').textContent = `Total ${fmtTimeSec(totalTimeSec)} • Pace: ${speed.label} (Top ${100-pct}% today)`;
+    $('hero-sub').textContent = `Total ${fmtTimeSec(totalTimeSec)} • Pace: ${pace.label} ${pace.emoji} • ${pace.pct} today`;
   } else {
     $('hero-score').innerHTML = `${state.endlessStreak}`;
     $('hero-title').textContent = state.endlessStreak >= 20 ? 'LEGENDARY 🔥' : state.endlessStreak >= 10 ? 'UNSTOPPABLE ⚡' : state.endlessStreak >= 5 ? 'ON A ROLL 🎯' : 'WARM-UP RUN 💀';
@@ -1741,7 +1780,7 @@ function finishGame() {
     let head = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}`;
     if (betUsed > 0) head += ` · ${betHit}/${betUsed} bets hit`;
     if (correct === total) head += ' · KNOW IT ALL 🤓';
-    state.shareClean = `${head}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} (Avg: ${avgStr}s/Q · ${speed.label})`;
+    state.shareClean = `${head}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} (Avg: ${avgStr}s/Q · ${pace.label})`;
     state.shareFull = `${state.shareClean}\n\nCan you beat my score?\n${challengeUrl}`;
   } else {
     state.shareClean = `KNOWIT Endless ⚡\nStreak: ${state.endlessStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}`;
@@ -1796,15 +1835,11 @@ function fmtTimeSec(s) {
   const r = Math.round(s%60);
   return m ? `${m}m ${r}s` : `${r}s`;
 }
-function getSpeedRating(avgMs) {
-  if (avgMs < 2500) return { label: 'Lightning', badgeClass: 'badge-lightning' };
-  if (avgMs < 5500) return { label: 'Fast', badgeClass: 'badge-fast' };
-  return { label: 'Deliberate', badgeClass: 'badge-deliberate' };
-}
-function mockPercentile(correct, total) {
-  const base = [3,8,15,25,38,52,68,82,92,97,99][correct] || 50;
-  const variance = Math.floor(mulberry32(getDailySeed()+correct)()*8);
-  return Math.min(99, base + variance);
+function getPace(totalTimeSec) {
+  if (totalTimeSec < 35) return { label: 'Lightning', emoji: '⚡', pct: 'Top 5%' };
+  if (totalTimeSec < 55) return { label: 'Swift', emoji: '🎯', pct: 'Top 20%' };
+  if (totalTimeSec < 85) return { label: 'Deliberate', emoji: '🧠', pct: 'Top 50%' };
+  return { label: 'Methodical', emoji: '⏳', pct: 'Top 75%' };
 }
 
 // ---- Confetti ----
