@@ -462,8 +462,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
     </div>
 
     <!-- Swipe-to-bet microcopy + day-1 tip (daily only) -->
-    <div class="swipe-tip" id="swipe-tip" style="display:none;">💡 Swipe right to bet (+2 / -1)</div>
-    <div class="swipe-hint" id="swipe-hint" style="display:none;">Tap to answer · Swipe right to bet (+2 / -1)</div>
+    <div class="swipe-tip" id="swipe-tip" style="display:none;">💡 Swipe right to bet (+2 if correct, -1 if wrong)</div>
+    <div class="swipe-hint" id="swipe-hint" style="display:none;">Tap to answer · Swipe right to bet (+2 if correct, -1 if wrong)</div>
 
     <div class="options-grid" id="options-grid"></div>
   </div>
@@ -1316,7 +1316,7 @@ function renderQuestion() {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'option-btn';
-    btn.innerHTML = `<span class="swipe-track">⚡ +2 / -1</span><span class="option-body"><span class="key-hint">${String.fromCharCode(65+idx)}</span><span>${escapeHtml(opt)}</span></span>`;
+    btn.innerHTML = `<span class="swipe-track">⚡ BET</span><span class="option-body"><span class="key-hint">${String.fromCharCode(65+idx)}</span><span>${escapeHtml(opt)}</span></span>`;
     btn.title = 'Drag right or Shift+Key to bet';
     let suppressClick = false;
     btn.addEventListener('click', (e) => {
@@ -1425,7 +1425,7 @@ function updateBetUI() {
   const n = state.betsLeft;
   pips.innerHTML = Array.from({length:3}, (_,i)=>`<span class="header-pip ${i < n ? '' : 'spent'}"></span>`).join('');
   pips.setAttribute('aria-label', `${n} ${n === 1 ? 'bet' : 'bets'} left`);
-  $('swipe-hint').textContent = n > 0 ? 'Tap to answer · Swipe right to bet (+2 / -1)' : 'Tap to answer · No bets left';
+  $('swipe-hint').textContent = n > 0 ? 'Tap to answer · Swipe right to bet (+2 if correct, -1 if wrong)' : 'Tap to answer · No bets left';
 }
 function renderProgressStrip() {
   const el = $('progress-strip');
