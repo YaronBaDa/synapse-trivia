@@ -297,6 +297,61 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 /* Copy button success state */
 .btn-copied { background: var(--correct) !important; border-color: var(--correct) !important; color: var(--bg) !important; }
 
+/* Bet bar (daily only) */
+.bet-wrap { position: relative; flex-shrink: 0; margin-bottom: 8px; }
+.bet-tip {
+  position: absolute; bottom: calc(100% + 8px); left: 0; right: 0;
+  background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius-sm);
+  padding: 8px 12px; font-size: 12px; color: var(--ink); line-height: 1.4; z-index: 50; pointer-events: none;
+}
+.bet-bar { display: flex; align-items: center; gap: 10px; }
+.bet-btn {
+  flex: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center;
+  min-height: 44px; padding: 6px 12px; border-radius: var(--radius-sm);
+  border: 1px solid var(--accent); background: var(--surface); color: var(--ink);
+  font-family: var(--font-sans); cursor: pointer; text-align: left;
+  transition: background .15s, box-shadow .15s, transform .08s;
+}
+.bet-btn:active { transform: scale(0.98); }
+.bet-btn .bet-label { font-size: 13px; font-weight: 800; letter-spacing: 0.03em; }
+.bet-btn .bet-sub { font-size: 11px; color: var(--ink-faint); font-family: var(--font-mono); margin-top: 1px; }
+.bet-btn.armed { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 14px rgba(126,140,232,0.45); }
+.bet-btn.armed .bet-label { color: var(--bg); }
+.bet-btn.armed .bet-sub { color: rgba(11,10,13,0.75); }
+.bet-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.bet-pips { display: flex; gap: 6px; flex-shrink: 0; }
+.pip { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 1px solid var(--accent); }
+.pip.spent { background: transparent; border-color: var(--ink-dim); opacity: 0.5; }
+.options-grid.armed { border-top-color: var(--accent); box-shadow: 0 -2px 16px rgba(126,140,232,0.25); }
+.option-btn.bet { box-shadow: inset 0 0 0 2px var(--accent); }
+.q-timer-fill.bet { background: var(--accent) !important; }
+
+/* Progress strip (daily only) */
+.progress-strip { display: flex; gap: 3px; margin-bottom: 8px; flex-shrink: 0; }
+.prog-seg {
+  flex: 1; height: 14px; border-radius: 4px; background: var(--surface-3);
+  display: flex; align-items: center; justify-content: center; position: relative;
+}
+.prog-seg.current { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-dim); }
+.prog-seg.right { background: var(--correct); }
+.prog-seg.wrong { background: var(--wrong); }
+.prog-seg.bet { box-shadow: inset 0 0 0 2px var(--accent); }
+.prog-seg .glyph { color: var(--bg); font-weight: 800; font-size: 9px; line-height: 1; }
+
+/* Results grid bet cells + glyphs */
+.share-cell { aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+.share-cell .cell-glyph { color: var(--bg); font-weight: 800; font-size: 14px; line-height: 1; }
+.share-cell.bet { box-shadow: inset 0 0 0 2px var(--accent); }
+
+/* Hero aurora title */
+.hero-title.aurora {
+  color: var(--ice);
+  background: var(--aurora);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
@@ -366,6 +421,9 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="q-timer-bar"><div class="q-timer-fill" id="q-timer-fill"></div></div>
     </div>
 
+    <!-- Progress strip (daily only) -->
+    <div class="progress-strip" id="progress-strip" style="display:none;"></div>
+
     <!-- Duel banner -->
     <div class="duel-banner" id="duel-banner" style="display:none;">
       <span class="swords">⚔️</span>
@@ -386,6 +444,18 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
     <div id="feedback-strip" class="feedback-strip">
       <div class="fb-result" id="fb-result"></div>
       <div class="fb-insight" id="fb-insight"></div>
+    </div>
+
+    <!-- Bet bar (daily only) -->
+    <div class="bet-wrap" id="bet-wrap" style="display:none;">
+      <div class="bet-tip" id="bet-tip" style="display:none;">3 bets today. Back a hunch: 2x if right, -1 if wrong.</div>
+      <div class="bet-bar">
+        <button class="bet-btn" id="bet-btn" aria-pressed="false">
+          <span class="bet-label" id="bet-label">I KNOW IT</span>
+          <span class="bet-sub" id="bet-sub">2x or -1</span>
+        </button>
+        <div class="bet-pips" id="bet-pips" role="img" aria-label="3 bets left"></div>
+      </div>
     </div>
 
     <div class="options-grid" id="options-grid"></div>
@@ -450,6 +520,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="mq" id="rm-question"></div>
       <div class="mrow"><span class="mlabel">You picked</span><span id="rm-picked" style="color:var(--wrong)"></span></div>
       <div class="mrow"><span class="mlabel">Correct</span><span id="rm-correct" style="color:var(--correct)"></span></div>
+      <div class="mrow"><span class="mlabel">Bet</span><span id="rm-bet"></span></div>
       <div class="mdyk" id="rm-dyk"></div>
       <button class="btn-secondary" id="rm-close" style="margin-top:14px;max-width:100%;">Close</button>
     </div>
@@ -1075,6 +1146,9 @@ let state = {
   timerId: null,
   endlessLives: GAUNTLET_LIVES,
   endlessStreak: 0,
+  // Bet mechanic (daily only)
+  betsLeft: 3,
+  armed: false,
   // Ghost duel
   duel: null, // {score, time, name} or null
 };
@@ -1088,10 +1162,13 @@ function loadStats() {
       const s = JSON.parse(raw);
       // Migrate old key name if present
       if (s.bestGauntlet !== undefined && s.bestEndless === undefined) s.bestEndless = s.bestGauntlet;
+      // New bet stats — default for existing saved data
+      if (s.betsUsed === undefined) s.betsUsed = 0;
+      if (s.betsHit === undefined) s.betsHit = 0;
       return s;
     }
   } catch(e){}
-  return { played:0, streak:0, maxStreak:0, totalCorrect:0, totalAnswered:0, bestEndless:0, lastDate:null, completedDaily:null };
+  return { played:0, streak:0, maxStreak:0, totalCorrect:0, totalAnswered:0, bestEndless:0, lastDate:null, completedDaily:null, betsUsed:0, betsHit:0 };
 }
 function saveStats() {
   try { localStorage.setItem('knowit_stats_v3', JSON.stringify(stats)); } catch(e){}
@@ -1214,10 +1291,103 @@ function renderQuestion() {
   $('feedback-strip').className = 'feedback-strip';
   state.qStartTime = performance.now();
   state.waiting = false;
+  state.armed = false;
+
+  // Bet UI + progress strip: daily only
+  if (state.mode === 'daily') {
+    $('bet-wrap').style.display = 'block';
+    $('progress-strip').style.display = 'flex';
+    updateBetUI();
+    renderProgressStrip();
+    if (state.currentQ === 0) showBetTip();
+  } else {
+    $('bet-wrap').style.display = 'none';
+    $('progress-strip').style.display = 'none';
+  }
+
   if (state.timerId) cancelAnimationFrame(state.timerId);
   startQTimer();
 }
 function escapeHtml(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+
+// ---- Bet mechanic ----
+function vibrate() {
+  if (navigator.vibrate) { try { navigator.vibrate(10); } catch(e){} }
+}
+function toggleBet() {
+  if (state.mode !== 'daily') return;
+  if (state.waiting) return;
+  if (state.betsLeft <= 0) return;
+  state.armed = !state.armed;
+  vibrate();
+  updateBetUI();
+}
+function updateBetUI() {
+  const btn = $('bet-btn');
+  const label = $('bet-label');
+  const sub = $('bet-sub');
+  const pips = $('bet-pips');
+  const n = state.betsLeft;
+
+  pips.innerHTML = Array.from({length:3}, (_,i)=>`<span class="pip ${i < n ? '' : 'spent'}"></span>`).join('');
+  pips.setAttribute('aria-label', `${n} ${n === 1 ? 'bet' : 'bets'} left`);
+
+  if (n <= 0) {
+    btn.disabled = true;
+    btn.classList.remove('armed');
+    btn.setAttribute('aria-pressed', 'false');
+    label.textContent = 'I KNOW IT';
+    sub.textContent = 'No bets left';
+  } else if (state.armed) {
+    btn.disabled = false;
+    btn.classList.add('armed');
+    btn.setAttribute('aria-pressed', 'true');
+    label.textContent = 'BETTING';
+    sub.textContent = '2x if right · -1 if wrong';
+  } else {
+    btn.disabled = false;
+    btn.classList.remove('armed');
+    btn.setAttribute('aria-pressed', 'false');
+    label.textContent = 'I KNOW IT';
+    sub.textContent = state.currentQ >= 7 ? `${n} left · last chances` : '2x or -1';
+  }
+
+  $('options-grid').classList.toggle('armed', state.armed && n > 0);
+  $('q-timer-fill').classList.toggle('bet', state.armed && n > 0);
+}
+function renderProgressStrip() {
+  const el = $('progress-strip');
+  el.innerHTML = '';
+  for (let i=0; i<10; i++) {
+    const seg = document.createElement('div');
+    seg.className = 'prog-seg';
+    if (i === state.currentQ) seg.classList.add('current');
+    if (i < state.answers.length) {
+      const a = state.answers[i];
+      seg.classList.add(a.correct ? 'right' : 'wrong');
+      if (a.bet) {
+        seg.classList.add('bet');
+        const g = document.createElement('span');
+        g.className = 'glyph';
+        g.textContent = a.correct ? '✓' : '✕';
+        seg.appendChild(g);
+      }
+    }
+    el.appendChild(seg);
+  }
+}
+function showBetTip() {
+  try { if (localStorage.getItem('knowit_seen_bet_tip')) return; } catch(e){}
+  const tip = $('bet-tip');
+  tip.style.display = 'block';
+  const dismiss = () => {
+    tip.style.display = 'none';
+    try { localStorage.setItem('knowit_seen_bet_tip', '1'); } catch(e){}
+    document.removeEventListener('click', dismiss);
+  };
+  document.addEventListener('click', dismiss);
+  setTimeout(dismiss, 6000);
+}
 
 // ---- Endless HUD ----
 function renderEndlessHUD() {
@@ -1262,6 +1432,8 @@ function startDaily() {
   state.waiting = false;
   state.endlessLives = GAUNTLET_LIVES;
   state.endlessStreak = 0;
+  state.betsLeft = 3;
+  state.armed = false;
   state.duel = parseDuelParam();
   $('header-meta').textContent = `#${getDailyNum()} · Q1/10`;
   $('endless-hud').style.display = 'none';
@@ -1284,6 +1456,8 @@ function startEndless() {
   state.waiting = false;
   state.endlessLives = GAUNTLET_LIVES;
   state.endlessStreak = 0;
+  state.betsLeft = 0;
+  state.armed = false;
   state.duel = null;
   $('header-meta').textContent = `⚡ Streak 0 · Q1`;
   $('endless-hud').style.display = 'flex';
@@ -1297,19 +1471,23 @@ function handleTimeout() {
   if (state.waiting) return;
   const q = state.questions[state.currentQ];
   const time = performance.now() - state.qStartTime;
-  state.answers.push({correct:false, time, category:q.category, q, picked:null});
+  const wasArmed = state.armed && state.betsLeft > 0;
+  state.answers.push({correct:false, time, category:q.category, q, picked:null, bet:false, points:0});
   state.waiting = true;
   stopQTimer();
+  state.armed = false;
 
   const btns = document.querySelectorAll('.option-btn');
   btns.forEach((btn, i) => { if (i === q.correctIndex) btn.classList.add('correct'); else btn.classList.add('dimmed'); });
   if (!state.muted) audio.wrong();
 
   const fb = $('feedback-strip');
-  $('fb-result').textContent = "Time's up!";
+  $('fb-result').textContent = wasArmed ? '✕ Time\'s up! Bet refunded.' : '✕ Time\'s up!';
   $('fb-result').style.color = 'var(--warning)';
   $('fb-insight').textContent = q.didYouKnow;
   fb.className = 'feedback-strip show timeout';
+
+  if (state.mode === 'daily') updateBetUI();
 
   if (state.mode === 'endless') {
     state.endlessLives--;
@@ -1338,23 +1516,47 @@ function handleAnswer(idx) {
   const q = state.questions[state.currentQ];
   const correct = idx === q.correctIndex;
   const time = performance.now() - state.qStartTime;
-  state.answers.push({correct, time, category:q.category, q, picked:idx});
+  const bet = state.armed && state.betsLeft > 0;
+  let points = 0;
+  if (correct) points = bet ? 2 : 1;
+  else if (bet) points = -1;
+  state.answers.push({correct, time, category:q.category, q, picked:idx, bet, points});
+
+  // Bet resolution
+  if (bet) {
+    state.betsLeft--;
+    stats.betsUsed++;
+    if (correct) stats.betsHit++;
+    saveStats();
+  }
+  state.armed = false;
 
   const btns = document.querySelectorAll('.option-btn');
   btns[idx].classList.add(correct ? 'correct' : 'wrong');
+  if (bet) btns[idx].classList.add('bet');
   if (!correct) btns[q.correctIndex].classList.add('correct');
   btns.forEach((btn, i) => { if (i !== idx && i !== q.correctIndex) btn.classList.add('dimmed'); });
 
   if (!state.muted) { correct ? audio.correct() : audio.wrong(); }
+  if (bet) vibrate();
 
   const fb = $('feedback-strip');
-  $('fb-result').textContent = correct ? 'Correct!' : 'Incorrect';
-  $('fb-result').style.color = correct ? 'var(--correct)' : 'var(--wrong)';
+  if (bet) {
+    $('fb-result').textContent = correct ? `✓ KNEW IT. +2` : `✕ NOPE. -1`;
+    $('fb-result').style.color = correct ? 'var(--accent)' : 'var(--wrong)';
+  } else {
+    $('fb-result').textContent = correct ? '✓ Correct!' : '✕ Incorrect';
+    $('fb-result').style.color = correct ? 'var(--correct)' : 'var(--wrong)';
+  }
   $('fb-insight').textContent = q.didYouKnow;
   fb.className = 'feedback-strip show ' + (correct ? 'correct' : 'wrong');
 
   state.waiting = true;
 
+  if (state.mode === 'daily') {
+    updateBetUI();
+    renderProgressStrip();
+  }
   if (state.mode === 'endless') {
     if (!correct) state.endlessLives--;
     else state.endlessStreak++;
@@ -1416,10 +1618,12 @@ function finishGame() {
   if (state.mode === 'daily') {
     $('hero-score').innerHTML = `${correct}<span class="of">/${total}</span>`;
     let title = 'EGO CHECK 💀';
-    if (correct === total) title = 'FLAWLESS ⚡';
+    let titleClass = '';
+    if (correct === total) { title = 'KNOW IT ALL! 🤓'; titleClass = 'aurora perfect-flash'; }
     else if (correct >= 8) title = 'MASTERMIND 🧠';
     else if (correct >= 5) title = 'SOLID RUN 🎯';
     $('hero-title').textContent = title;
+    $('hero-title').className = 'hero-title' + (titleClass ? ' ' + titleClass : '');
     const pct = mockPercentile(correct, total);
     $('hero-sub').textContent = `Total ${fmtTimeSec(totalTimeSec)} • Pace: ${speed.label} (Top ${100-pct}% today)`;
   } else {
@@ -1435,6 +1639,9 @@ function finishGame() {
     categories[a.category].total++;
     if (a.correct) categories[a.category].correct++;
   });
+  const betUsed = state.answers.filter(a=>a.bet).length;
+  const betHit = state.answers.filter(a=>a.bet && a.correct).length;
+  const totalPoints = state.answers.reduce((s,a)=>s+(a.points||0),0);
   const entries = Object.entries(categories);
   const perfectCats = entries.filter(([,d]) => d.correct === d.total).map(([c]) => c);
   const missedCats = entries.filter(([,d]) => d.correct < d.total);
@@ -1446,9 +1653,19 @@ function finishGame() {
     hl += (hl ? '<br>' : '') + `<b>Achilles Heel:</b> ❄️ ${wc} (${wd.correct}/${wd.total})`;
   }
   if (!hl) hl = '<b>Clean run.</b>';
+  // Bets line first (daily only)
+  if (state.mode === 'daily') {
+    let betsLine = '<b>Bets:</b> none placed';
+    if (betUsed > 0) {
+      betsLine = `<b>Bets:</b> ${betHit}/${betUsed} hit · ${totalPoints} pts`;
+      if (betUsed === 3 && betHit === 3) betsLine += ' · SNIPER 🎯';
+      else if (betUsed === 3 && betHit === 0) betsLine += ' · OVERCONFIDENT 🤡';
+    }
+    hl = betsLine + (hl ? '<br>' + hl : '');
+  }
   $('highlights').innerHTML = hl;
 
-  // Visual share grid (5x2) — wrong cells are tappable
+  // Visual share grid (5x2) — wrong cells tappable; bet cells ringed + glyph
   const visualEl = $('share-visual');
   visualEl.innerHTML = '';
   let hasMiss = false;
@@ -1459,6 +1676,13 @@ function finishGame() {
       const a = state.answers[i];
       if (a.correct) cell.classList.add('correct');
       else { cell.classList.add('wrong'); cell.dataset.idx = i; hasMiss = true; }
+      if (a.bet) {
+        cell.classList.add('bet');
+        const g = document.createElement('span');
+        g.className = 'cell-glyph';
+        g.textContent = a.correct ? '✓' : '✕';
+        cell.appendChild(g);
+      }
     } else cell.classList.add('empty');
     visualEl.appendChild(cell);
   }
@@ -1466,10 +1690,16 @@ function finishGame() {
 
   // Share texts — full (with challenge URL) + clean (grid only)
   const dailyNum = getDailyNum();
-  const shareBody = state.answers.map(a => a.correct ? '🟩' : '🟥').join('');
+  const shareBody = state.answers.map(a => {
+    if (a.bet) return a.correct ? '✅' : '❌';
+    return a.correct ? '🟩' : '🟥';
+  }).join('');
   const challengeUrl = getDuelUrl(correct, totalTimeSec);
   if (state.mode === 'daily') {
-    state.shareClean = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} (Avg: ${avgStr}s/Q · ${speed.label})`;
+    let head = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}`;
+    if (betUsed > 0) head += ` · ${betHit}/${betUsed} bets hit`;
+    if (correct === total) head += ' · KNOW IT ALL 🤓';
+    state.shareClean = `${head}\n${shareBody}\n⏱ ${fmtTimeSec(totalTimeSec)} (Avg: ${avgStr}s/Q · ${speed.label})`;
     state.shareFull = `${state.shareClean}\n\nCan you beat my score?\n${challengeUrl}`;
   } else {
     state.shareClean = `KNOWIT Endless ⚡\nStreak: ${state.endlessStreak}\nCorrect: ${correct}/${total}\n⏱ ${fmtTimeSec(totalTimeSec)}`;
@@ -1513,6 +1743,7 @@ function openReview(i) {
   $('rm-question').textContent = a.q.question;
   $('rm-picked').textContent = a.picked === null ? 'No answer (time ran out)' : a.q.options[a.picked];
   $('rm-correct').textContent = a.q.options[a.q.correctIndex];
+  $('rm-bet').textContent = a.bet ? (a.correct ? 'Hit +2' : 'Missed -1') : 'None';
   $('rm-dyk').textContent = a.q.didYouKnow;
   $('review-modal').style.display = 'flex';
 }
@@ -1583,6 +1814,7 @@ document.addEventListener('keydown', e => {
   const key = e.key.toLowerCase();
   if (key >= '1' && key <= '4') { e.preventDefault(); handleAnswer(parseInt(key)-1); }
   else if (key >= 'a' && key <= 'd') { e.preventDefault(); handleAnswer(key.charCodeAt(0)-97); }
+  else if (key === 'k' || key === ' ') { e.preventDefault(); toggleBet(); }
 });
 
 // ---- Buttons ----
@@ -1590,6 +1822,7 @@ $('btn-daily').onclick = ()=>{ audio.click(); startDaily(); };
 $('btn-endless').onclick = ()=>{ audio.click(); startEndless(); };
 $('btn-endless-result').onclick = ()=>{ audio.click(); startEndless(); };
 $('btn-practice').onclick = ()=>{ audio.click(); startDaily(); };
+$('bet-btn').onclick = ()=>{ toggleBet(); };
 
 $('btn-close').onclick = ()=>{
   if (confirm('Quit current game? Progress will be lost.')) { stopQTimer(); showScreen('landing'); renderLanding(); }
