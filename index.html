@@ -4,6 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#09090b">
+<meta name="description" content="KNOWIT — a daily 10-question trivia game. Same set for everyone, once a day. Bet on your answers, beat the clock, and challenge your friends.">
+<link rel="canonical" href="https://yaronbada.github.io/synapse-trivia/">
+<link rel="icon" type="image/png" sizes="64x64" href="https://yaronbada.github.io/synapse-trivia/favicon.png">
+<link rel="apple-touch-icon" href="https://yaronbada.github.io/synapse-trivia/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="KNOWIT">
+<meta property="og:title" content="KNOWIT — Daily 10 Trivia">
+<meta property="og:description" content="10 questions. Once a day. Same set for everyone. Can you beat my score?">
+<meta property="og:image" content="https://yaronbada.github.io/synapse-trivia/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://yaronbada.github.io/synapse-trivia/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="KNOWIT — Daily 10 Trivia">
+<meta name="twitter:description" content="10 questions. Once a day. Same set for everyone. Can you beat my score?">
+<meta name="twitter:image" content="https://yaronbada.github.io/synapse-trivia/og-image.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -246,6 +262,15 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .hero-score .of { color: var(--ink-dim); font-size: 32px; font-weight: 700; }
 .hero-title { font-size: 19px; font-weight: 800; letter-spacing: 0.05em; margin-top: 6px; }
 .hero-sub { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+.streak-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--ink);
+  background: rgba(126,140,232,0.12); border: 1px solid rgba(126,140,232,0.3);
+  padding: 4px 12px; border-radius: 999px; margin-top: 10px;
+}
+.streak-badge svg { width: 14px; height: 14px; color: var(--accent); }
+.streak-badge.broken { opacity: 0.55; filter: grayscale(1); }
+.streak-badge.broken svg { color: var(--ink-faint); }
 
 /* Highlights (replaces pill cloud) */
 .highlights { font-size: 12px; color: var(--ink-faint); line-height: 1.6; max-width: 320px; }
@@ -517,7 +542,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="results-hero">
         <div class="hero-score" id="hero-score">9<span class="of">/10</span></div>
         <div class="hero-title" id="hero-title">MASTERMIND</div>
-        <div class="hero-sub" id="hero-sub">Total 1m 09s • Pace: Deliberate • Top 5% today</div>
+        <div class="hero-sub" id="hero-sub">Total —</div>
+        <div class="streak-badge" id="streak-badge" style="display:none;"></div>
       </div>
 
       <!-- Duel result card (duel runs only) -->
@@ -1772,6 +1798,22 @@ function finishGame() {
     $('hero-title').className = 'hero-title';
     $('hero-title').innerHTML = `${ICONS[eT[1]]}<span>${eT[0]}</span>`;
     $('hero-sub').textContent = `Best Endless: ${stats.bestEndless} • Total ${fmtTimeSec(totalTimeSec)}`;
+  }
+
+  // Streak badge (daily only — celebrate or nudge)
+  {
+    const sb = $('streak-badge');
+    if (state.mode === 'daily' && stats.streak > 0) {
+      sb.innerHTML = `${ICONS.flame}<span>${stats.streak}-day streak</span>`;
+      sb.className = 'streak-badge';
+      sb.style.display = 'inline-flex';
+    } else if (state.mode === 'daily' && stats.maxStreak > 0) {
+      sb.innerHTML = `${ICONS.flame}<span>Streak broken</span>`;
+      sb.className = 'streak-badge broken';
+      sb.style.display = 'inline-flex';
+    } else {
+      sb.style.display = 'none';
+    }
   }
 
   // Highlights (compact — replaces pill cloud)
