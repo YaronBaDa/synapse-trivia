@@ -16,6 +16,7 @@
   --surface: rgba(24, 24, 27, 0.75);
   --surface-2: rgba(17, 17, 20, 0.85);
   --surface-3: rgba(45, 45, 52, 0.55);
+  --surface-solid: #18181b;
   --ink: #f4f4f5;
   --ink-faint: #a1a1aa;
   --ink-dim: #71717a;
@@ -163,26 +164,23 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .option-btn:active { transform: translateY(1px) scale(0.98); }
 .option-btn .option-body {
   position: relative; z-index: 2; display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px; background: transparent;
+  padding: 12px 14px; background: var(--surface-solid);
 }
+.option-btn.swiping:active { transform: none; }
 .option-btn .key-hint {
   width: 28px; height: 28px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);
   display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--ink-faint); flex-shrink: 0;
   font-family: var(--font-mono);
 }
-.option-btn .hold-fill {
-  position: absolute; inset: 0; border-radius: inherit; z-index: 1; pointer-events: none;
-  background: conic-gradient(rgba(126,140,232,0.30) calc(var(--hold-p, 0) * 1deg), transparent 0);
+.option-btn .bet-reveal {
+  position: absolute; left: 0; top: 0; bottom: 0; width: 96px; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  background: var(--accent); color: var(--bg);
   opacity: 0;
 }
-.option-btn.holding .hold-fill { opacity: 1; }
-.option-btn .bet-badge {
-  position: absolute; top: 8px; right: 10px; z-index: 3; pointer-events: none;
-  background: var(--accent); color: var(--bg); font-family: var(--font-mono);
-  font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 3px 8px; border-radius: 999px;
-  opacity: 0; transform: translateY(-4px); transition: opacity .15s, transform .15s;
-}
-.option-btn .bet-badge.show { opacity: 1; transform: translateY(0); }
+.option-btn .bet-reveal svg { width: 18px; height: 18px; }
+.option-btn .bet-reveal .br-label { font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: .1em; }
+.option-btn .bet-reveal .br-sub { font-family: var(--font-mono); font-size: 9px; font-weight: 600; opacity: .85; }
 .option-btn.correct { border-color: var(--correct); }
 .option-btn.correct .option-body { box-shadow: inset 0 0 0 999px rgba(111,168,143,0.16); }
 .option-btn.wrong { border-color: var(--wrong); animation: shake 0.4s ease-in-out; }
@@ -191,12 +189,11 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .option-btn.timeout { border-color: var(--warning); }
 .option-btn.timeout .option-body { box-shadow: inset 0 0 0 999px rgba(255,209,102,0.14); }
 .option-btn.bet { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 0 16px rgba(126,140,232,0.35); }
-.option-btn.locked { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent), 0 0 16px rgba(126,140,232,0.4); }
-.option-btn.nudge .option-body { animation: nudgePulse 0.9s ease; }
-@keyframes nudgePulse {
-  0%, 100% { transform: scale(1); }
-  35% { transform: scale(0.96); }
-  70% { transform: scale(1); }
+.option-btn.nudge .option-body { animation: nudgeRight 0.9s ease; }
+@keyframes nudgeRight {
+  0%, 100% { transform: translateX(0); }
+  35% { transform: translateX(18px); }
+  70% { transform: translateX(0); }
 }
 
 @keyframes shake {
@@ -353,14 +350,14 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .header-pip { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); border: 1px solid var(--accent); box-shadow: 0 0 7px rgba(126,140,232,0.85); }
 .header-pip.spent { background: transparent; border-color: var(--ink-dim); opacity: 0.45; box-shadow: none; }
 
-/* Hold-to-bet day-1 tip */
-.hold-tip {
+/* Swipe-to-bet day-1 tip */
+.swipe-tip {
   flex-shrink: 0; text-align: center; font-size: 12px; color: var(--ink);
   background: var(--surface); border: 1px solid var(--accent); border-radius: var(--radius-sm);
   padding: 6px 12px; margin-bottom: 6px; font-weight: 600;
   display: flex; align-items: center; justify-content: center; gap: 6px;
 }
-.hold-tip svg { width: 14px; height: 14px; color: var(--accent); flex-shrink: 0; }
+.swipe-tip svg { width: 14px; height: 14px; color: var(--accent); flex-shrink: 0; }
 
 /* Progress strip (daily only) */
 .progress-strip { display: flex; gap: 3px; margin-bottom: 8px; flex-shrink: 0; }
@@ -500,8 +497,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="fb-insight" id="fb-insight"></div>
     </div>
 
-    <!-- Hold-to-bet day-1 tip (daily only) -->
-    <div class="hold-tip" id="hold-tip" style="display:none;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg><span>Hold to lock a bet (+2 if correct, -1 if wrong)</span></div>
+    <!-- Swipe-to-bet day-1 tip (daily only) -->
+    <div class="swipe-tip" id="swipe-tip" style="display:none;"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span>Swipe right to bet (+2 if correct, -1 if wrong)</span></div>
 
     <div class="options-grid" id="options-grid"></div>
   </div>
@@ -552,9 +549,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="share-text" id="share-text"></div>
 
       <!-- Actions -->
-      <button class="btn-emerald" id="btn-challenge">Challenge a Friend</button>
+      <button class="btn-emerald" id="btn-share">Share your result</button>
       <button class="btn-secondary" id="btn-endless-result" style="display:none;">Play Endless Mode</button>
-      <button class="btn-secondary" id="btn-copy">Copy Score Grid</button>
       <button class="link-home" id="btn-home">Home Menu</button>
     </div>
   </div>
@@ -1368,9 +1364,9 @@ function renderQuestion() {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'option-btn';
-    btn.innerHTML = `<span class="option-body"><span class="key-hint">${String.fromCharCode(65+idx)}</span><span>${escapeHtml(opt)}</span></span><span class="hold-fill"></span><span class="bet-badge"></span>`;
-    btn.title = 'Hold or Shift+Key to bet';
-    attachHold(btn, idx);
+    btn.innerHTML = `<span class="bet-reveal">${ICONS.lightning}<span class="br-label">BET</span><span class="br-sub">+2 / -1</span></span><span class="option-body"><span class="key-hint">${String.fromCharCode(65+idx)}</span><span>${escapeHtml(opt)}</span></span>`;
+    btn.title = 'Swipe right to bet, or tap to answer';
+    attachSwipe(btn, idx);
     grid.appendChild(btn);
   });
   $('feedback-strip').className = 'feedback-strip';
@@ -1385,16 +1381,16 @@ function renderQuestion() {
     updateBetUI();
     renderProgressStrip();
     let seenTip = false;
-    try { seenTip = !!localStorage.getItem('knowit_seen_hold_tip'); } catch(e){}
+    try { seenTip = !!localStorage.getItem('knowit_seen_swipe_tip'); } catch(e){}
     if (state.currentQ === 0 && !seenTip) {
-      showHoldTip();
+      showSwipeTip();
     } else {
-      $('hold-tip').style.display = 'none';
+      $('swipe-tip').style.display = 'none';
     }
   } else {
     $('header-pips').style.display = 'none';
     $('progress-strip').style.display = 'none';
-    $('hold-tip').style.display = 'none';
+    $('swipe-tip').style.display = 'none';
   }
 
   if (state.timerId) cancelAnimationFrame(state.timerId);
@@ -1415,21 +1411,12 @@ function answerWithBet(idx, bet) {
   }
   handleAnswer(idx);
 }
-function attachHold(btn, idx) {
-  let holdTimer = null, rafId = null, locked = false, suppressClick = false;
-  const fill = btn.querySelector('.hold-fill');
-  const badge = btn.querySelector('.bet-badge');
+function attachSwipe(btn, idx) {
+  let startX = 0, startY = 0, dx = 0, dy = 0, active = false, isHorizontal = false, suppressClick = false;
+  const body = btn.querySelector('.option-body');
+  const reveal = btn.querySelector('.bet-reveal');
+  const THRESHOLD = 56;
 
-  function resetHold() {
-    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
-    locked = false;
-    btn.classList.remove('holding', 'locked');
-    btn.style.setProperty('--hold-p', 0);
-    if (badge) badge.classList.remove('show');
-  }
-
-  // Mouse / desktop click = standard answer (hold-to-bet is keyboard-driven on desktop)
   btn.addEventListener('click', (e) => {
     if (suppressClick) { suppressClick = false; return; }
     if (state.waiting) return;
@@ -1439,37 +1426,56 @@ function attachHold(btn, idx) {
   btn.addEventListener('touchstart', (e) => {
     if (state.waiting) return;
     if (state.mode !== 'daily' || state.betsLeft <= 0) return; // let click handle the tap
-    suppressClick = true;
-    locked = false;
-    btn.classList.add('holding');
-    const start = performance.now();
-    function sweep(now) {
-      const p = Math.min(1, (now - start) / 250);
-      btn.style.setProperty('--hold-p', Math.round(p * 360));
-      if (p < 1 && !locked) rafId = requestAnimationFrame(sweep);
-    }
-    rafId = requestAnimationFrame(sweep);
-    holdTimer = setTimeout(() => {
-      locked = true;
-      btn.classList.add('locked');
-      if (badge) { badge.textContent = '⚡ BET LOCKED (+2 / -1)'; badge.classList.add('show'); }
-      vibrate([10, 25]);
-    }, 250);
+    const t = e.touches[0];
+    startX = t.clientX; startY = t.clientY; dx = 0; dy = 0; active = true; isHorizontal = false;
   }, { passive: true });
 
-  btn.addEventListener('touchend', (e) => {
-    if (!suppressClick) return;
-    // keep suppressClick=true so the synthetic click is swallowed after touch
-    const bet = locked;
-    resetHold();
-    if (state.waiting) return;
-    state.armed = bet;
-    handleAnswer(idx);
+  btn.addEventListener('touchmove', (e) => {
+    if (!active || state.waiting || state.betsLeft <= 0) return;
+    const t = e.touches[0];
+    dx = t.clientX - startX; dy = t.clientY - startY;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    if (!isHorizontal) {
+      // Angle lock: vertical scroll wins; only acknowledge a clear rightward drag
+      if (ady > 25) { active = false; return; }
+      if (adx > 12 && adx > ady * 1.5 && dx > 0) { isHorizontal = true; suppressClick = true; btn.classList.add('swiping'); }
+      else return;
+    }
+    if (dx > 0) e.preventDefault();
+    const amt = Math.max(0, Math.min(dx, 96));
+    body.style.transition = 'none';
+    body.style.transform = `translateX(${amt}px)`;
+    if (reveal) reveal.style.opacity = String(Math.min(1, amt / THRESHOLD));
+  }, { passive: false });
+
+  btn.addEventListener('touchend', () => {
+    if (!active) return;
+    active = false;
+    btn.classList.remove('swiping');
+    if (!isHorizontal) return;
+    if (dx >= THRESHOLD && state.betsLeft > 0 && !state.waiting) {
+      // Commit the bet: snap back, haptic, resolve
+      body.style.transition = 'transform .12s ease';
+      body.style.transform = 'translateX(0)';
+      if (reveal) reveal.style.opacity = '0';
+      vibrate([10, 20]);
+      state.armed = true;
+      handleAnswer(idx);
+    } else {
+      body.style.transition = 'transform .18s ease';
+      body.style.transform = 'translateX(0)';
+      if (reveal) reveal.style.opacity = '0';
+    }
   }, { passive: true });
 
   btn.addEventListener('touchcancel', () => {
-    suppressClick = false;
-    resetHold();
+    active = false;
+    btn.classList.remove('swiping');
+    if (isHorizontal) {
+      body.style.transition = 'transform .18s ease';
+      body.style.transform = 'translateX(0)';
+      if (reveal) reveal.style.opacity = '0';
+    }
   }, { passive: true });
 }
 function updateBetUI() {
@@ -1499,18 +1505,18 @@ function renderProgressStrip() {
     el.appendChild(seg);
   }
 }
-function showHoldTip() {
-  try { if (localStorage.getItem('knowit_seen_hold_tip')) return; } catch(e){}
+function showSwipeTip() {
+  try { if (localStorage.getItem('knowit_seen_swipe_tip')) return; } catch(e){}
   const first = document.querySelectorAll('.option-btn')[0];
   if (first) {
     first.classList.add('nudge');
     setTimeout(()=>{ try { first.classList.remove('nudge'); } catch(e){} }, 1000);
   }
-  const tip = $('hold-tip');
+  const tip = $('swipe-tip');
   tip.style.display = 'flex';
   const dismiss = () => {
     tip.style.display = 'none';
-    try { localStorage.setItem('knowit_seen_hold_tip', '1'); } catch(e){}
+    try { localStorage.setItem('knowit_seen_swipe_tip', '1'); } catch(e){}
     document.removeEventListener('click', dismiss);
     document.removeEventListener('touchstart', dismiss);
   };
@@ -1941,44 +1947,13 @@ function launchConfetti() {
 }
 
 // ---- Input ----
-// Keyboard: quick press = standard, Shift = bet, hold 250ms = bet
-let kbHold = null;
+// Keyboard: press = answer, Shift = bet
 document.addEventListener('keydown', e => {
   if (state.screen !== 'playing' || state.waiting) return;
   const key = e.key.toLowerCase();
-  let idx = -1;
-  if (key >= '1' && key <= '4') idx = parseInt(key) - 1;
-  else if (key >= 'a' && key <= 'd') idx = key.charCodeAt(0) - 97;
-  if (idx < 0) return;
-  e.preventDefault();
-  if (e.repeat) return;
-  if (e.shiftKey) { answerWithBet(idx, true); return; }
-  if (kbHold) return;
-  kbHold = { idx, locked: false };
-  kbHold.timer = setTimeout(() => {
-    if (!kbHold) return;
-    kbHold.locked = true;
-    const btns = document.querySelectorAll('.option-btn');
-    const btn = btns[kbHold.idx];
-    if (btn) {
-      btn.classList.add('locked');
-      const badge = btn.querySelector('.bet-badge');
-      if (badge) { badge.textContent = '⚡ BET LOCKED (+2 / -1)'; badge.classList.add('show'); }
-    }
-    vibrate([10, 25]);
-  }, 250);
-});
-document.addEventListener('keyup', e => {
-  if (!kbHold) return;
-  const key = e.key.toLowerCase();
-  let idx = -1;
-  if (key >= '1' && key <= '4') idx = parseInt(key) - 1;
-  else if (key >= 'a' && key <= 'd') idx = key.charCodeAt(0) - 97;
-  if (idx !== kbHold.idx) return;
-  clearTimeout(kbHold.timer);
-  const bet = kbHold.locked;
-  kbHold = null;
-  answerWithBet(idx, bet);
+  const bet = e.shiftKey;
+  if (key >= '1' && key <= '4') { e.preventDefault(); answerWithBet(parseInt(key)-1, bet); }
+  else if (key >= 'a' && key <= 'd') { e.preventDefault(); answerWithBet(key.charCodeAt(0)-97, bet); }
 });
 
 // ---- Buttons ----
@@ -1990,28 +1965,26 @@ $('btn-practice').onclick = ()=>{ audio.click(); startDaily(); };
 $('btn-close').onclick = ()=>{
   if (confirm('Quit current game? Progress will be lost.')) { stopQTimer(); showScreen('landing'); renderLanding(); }
 };
-$('btn-copy').onclick = ()=>{
-  const btn = $('btn-copy');
-  navigator.clipboard.writeText(state.shareClean || $('share-text').textContent).then(()=>{
-    btn.textContent = 'Copied to Clipboard! ✓';
-    btn.classList.add('btn-copied');
-    setTimeout(()=>{
-      btn.textContent = 'Copy Score Grid';
-      btn.classList.remove('btn-copied');
-    }, 2000);
-  });
-};
-$('btn-challenge').onclick = ()=>{
-  const btn = $('btn-challenge');
-  navigator.clipboard.writeText(state.shareFull || $('share-text').textContent).then(()=>{
-    btn.textContent = 'Copied to Clipboard! ✓';
-    btn.classList.add('btn-copied');
-    setTimeout(()=>{
-      btn.textContent = 'Challenge a Friend';
-      btn.classList.remove('btn-copied');
-    }, 2000);
-  });
-};
+function shareResult(btn) {
+  const text = state.shareFull || state.shareClean || $('share-text').textContent;
+  const reset = () => { btn.textContent = 'Share your result'; btn.classList.remove('btn-copied'); };
+  const copied = () => { btn.textContent = 'Copied! ✓'; btn.classList.add('btn-copied'); setTimeout(reset, 2000); };
+  if (navigator.share) {
+    navigator.share({ title: 'KNOWIT', text }).then(()=>{
+      btn.textContent = 'Shared! ✓'; setTimeout(reset, 1500);
+    }).catch(()=>{});
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(copied).catch(()=>{});
+  } else {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      copied();
+    } catch(e){}
+  }
+}
+$('btn-share').onclick = ()=>{ audio.click(); shareResult($('btn-share')); };
 // Review modal: tap wrong grid cell → open; backdrop/close button → close
 $('share-visual').addEventListener('click', e => {
   const cell = e.target.closest('.share-cell.wrong');
