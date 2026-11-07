@@ -43,6 +43,7 @@
   --accent-incorrect: #F43F5E;
   --accent-bet: #F59E0B;
   --accent-brand: #6366F1;
+  --accent-indigo: #7e8ce8;
 
   /* Soft glow / background-wash tints */
   --accent-correct-tint: rgba(16, 185, 129, 0.14);
@@ -212,14 +213,14 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 .option-btn .bet-reveal svg { width: 18px; height: 18px; }
 .option-btn .bet-reveal .br-label { font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: .1em; }
 .option-btn .bet-reveal .br-sub { font-family: var(--font-mono); font-size: 9px; font-weight: 600; opacity: .85; }
-.option-btn.correct { border-color: var(--accent-correct); }
-.option-btn.correct .option-body { box-shadow: inset 0 0 0 999px var(--accent-correct-tint); }
-.option-btn.wrong { border-color: var(--accent-incorrect); animation: shake 0.4s ease-in-out; }
+.option-btn.correct { border-color: var(--accent-correct); box-shadow: 0 0 0 1px var(--accent-correct); }
+.option-btn.correct .option-body { box-shadow: inset 0 0 0 999px rgba(16,185,129,0.18); }
+.option-btn.wrong { border-color: var(--accent-incorrect); box-shadow: 0 0 0 1px var(--accent-incorrect); animation: shake 0.4s ease-in-out; }
 .option-btn.wrong .option-body { box-shadow: inset 0 0 0 999px var(--accent-incorrect-tint); }
 .option-btn.dimmed { opacity: 0.35; pointer-events: none; }
 .option-btn.timeout { border-color: var(--accent-bet); }
 .option-btn.timeout .option-body { box-shadow: inset 0 0 0 999px var(--accent-bet-tint); }
-.option-btn.bet { border-color: var(--accent-bet); box-shadow: 0 0 0 2px var(--accent-bet), 0 0 16px rgba(245,158,11,0.35); }
+.option-btn.bet { border-color: var(--accent-indigo); box-shadow: 0 0 0 2px var(--accent-indigo), 0 0 16px rgba(126,140,232,0.4); }
 .option-btn.nudge .option-body { animation: nudgeRight 0.9s ease; }
 @keyframes nudgeRight {
   0%, 100% { transform: translateX(0); }
@@ -258,15 +259,17 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
 /* Feedback strip */
 .feedback-strip {
-  text-align: center; padding: 12px; border-radius: var(--radius); margin-bottom: 8px;
-  border: 1px solid var(--border); background: var(--surface); opacity: 0; transform: translateY(6px); transition: opacity .25s, transform .25s;
+  text-align: center; padding: 10px 12px; border-radius: var(--radius); margin-bottom: 8px;
+  border: 1px solid var(--border-subtle); background: var(--bg-surface); opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .2s;
+  height: 80px; overflow: hidden; flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
 }
 .feedback-strip.show { opacity: 1; transform: translateY(0); }
-.feedback-strip.correct { border-color: var(--correct); }
-.feedback-strip.wrong { border-color: var(--wrong); }
-.feedback-strip.timeout { border-color: var(--warning); }
-.feedback-strip .fb-result { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-.feedback-strip .fb-insight { font-size: 13px; color: var(--ink-faint); line-height: 1.45; }
+.feedback-strip.correct { border-color: var(--accent-correct); }
+.feedback-strip.wrong { border-color: var(--accent-incorrect); }
+.feedback-strip.timeout { border-color: var(--accent-bet); }
+.feedback-strip .fb-result { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.feedback-strip .fb-insight { font-size: 13px; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* Share / results */
 .results-body { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 10px; min-height: 0; overflow-y: auto; padding-bottom: 16px; }
@@ -314,6 +317,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
   box-shadow: var(--shadow); transition: transform .12s, filter .12s; font-family: var(--font-sans);
 }
 .btn-emerald:active { transform: scale(0.97); filter: brightness(1.1); }
+.btn-emerald, .btn-secondary { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-emerald svg, .btn-secondary svg { width: 16px; height: 16px; flex-shrink: 0; }
 .link-home {
   background: none; border: none; color: var(--ink-dim); font-size: 13px; font-weight: 600;
   cursor: pointer; padding: 8px; font-family: var(--font-sans);
@@ -384,11 +389,16 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 
 /* Header bet pips */
 .header-status { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
-.header-pips { display: flex; align-items: center; gap: 5px; }
-.bet-token-bolt { display: inline-flex; color: var(--accent-bet); }
+.header-pips {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--bg-surface-subtle); border: 1px solid var(--border-subtle);
+  border-radius: 999px; padding: 3px 9px;
+}
+.bet-token-bolt { display: inline-flex; color: var(--accent-indigo); }
 .bet-token-bolt svg { width: 12px; height: 12px; }
-.header-pip { width: 9px; height: 9px; border-radius: 50%; background: var(--accent-bet); border: 1px solid var(--accent-bet); box-shadow: 0 0 7px rgba(245,158,11,0.85); }
-.header-pip.spent { background: transparent; border-color: var(--ink-dim); opacity: 0.45; box-shadow: none; }
+.header-pip { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-indigo); border: 1px solid var(--accent-indigo); box-shadow: 0 0 6px rgba(126,140,232,0.7); transition: background .2s, box-shadow .2s; }
+.header-pip.spent { background: transparent; border-color: var(--text-secondary); opacity: 0.4; box-shadow: none; animation: pipSpent .35s ease; }
+@keyframes pipSpent { 0% { transform: scale(1.6); opacity: 1; } 100% { transform: scale(1); opacity: 0.4; } }
 
 /* Swipe-to-bet day-1 tip */
 .swipe-tip {
@@ -413,7 +423,7 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
 /* Results grid bet cells + glyphs */
 .share-cell { aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; }
 .share-cell .cell-glyph { color: var(--bg); font-weight: 800; font-size: 14px; line-height: 1; }
-.share-cell.bet { box-shadow: inset 0 0 0 2px var(--accent); }
+.share-cell.bet { box-shadow: inset 0 0 0 2px var(--accent-indigo); }
 
 /* Hero aurora title */
 .hero-title.aurora {
@@ -590,7 +600,8 @@ html, body { height: 100%; margin: 0; font-family: var(--font-sans); background:
       <div class="share-text" id="share-text"></div>
 
       <!-- Actions -->
-      <button class="btn-emerald" id="btn-share">Share your result</button>
+      <button class="btn-emerald" id="btn-challenge">Challenge a Friend</button>
+      <button class="btn-secondary" id="btn-copy">Copy Grid Only</button>
       <button class="btn-secondary" id="btn-endless-result" style="display:none;">Play Endless Mode</button>
       <button class="link-home" id="btn-home">Home Menu</button>
     </div>
@@ -1306,6 +1317,7 @@ const ICONS = {
   dice: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2"/><circle cx="15.5" cy="8.5" r="1.2"/><circle cx="8.5" cy="15.5" r="1.2"/><circle cx="15.5" cy="15.5" r="1.2"/></svg>',
   heart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
   snowflake: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2v20M2 12h20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1"/></svg>',
+  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
 };
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -1843,18 +1855,23 @@ function finishGame() {
   const missedCats = entries.filter(([,d]) => d.correct < d.total);
   missedCats.sort((a,b) => (a[1].correct/a[1].total) - (b[1].correct/b[1].total));
   let hl = '';
-  if (perfectCats.length) hl += `<b>Strengths:</b> ${ICONS.flame} ${perfectCats.join(', ')} (100%)`;
+  // Bets line first (daily only) — 0 bets becomes a discovery hook
+  if (state.mode === 'daily') {
+    hl = betUsed > 0
+      ? `${ICONS.lightning} <b>Bets:</b> ${betHit}/${betUsed} hit · ${totalPoints} pts`
+      : `${ICONS.lightning} <b>0/3 bets placed</b> · Tip: Swipe right on an answer you know to bet +2 / -1!`;
+  }
+  // Mastery (top categories, capped for scannability)
+  if (perfectCats.length) {
+    const top = perfectCats.slice(0, 3).join(', ');
+    hl += (hl ? '<br>' : '') + `${ICONS.flame} <b>Top Categories:</b> ${top} (100%)`;
+  }
+  // Blindspot (single worst category)
   if (missedCats.length) {
     const [wc, wd] = missedCats[0];
-    hl += (hl ? '<br>' : '') + `<b>Achilles Heel:</b> ${ICONS.snowflake} ${wc} (${wd.correct}/${wd.total})`;
+    hl += (hl ? '<br>' : '') + `${ICONS.snowflake} <b>Blindspot:</b> ${wc} (${wd.correct}/${wd.total})`;
   }
-  if (!hl) hl = '<b>Clean run.</b>';
-  // Bets line first (daily only)
-  if (state.mode === 'daily') {
-    let betsLine = '<b>Bets:</b> none placed';
-    if (betUsed > 0) betsLine = `<b>Bets:</b> ${betHit}/${betUsed} hit · ${totalPoints} pts`;
-    hl = betsLine + (hl ? '<br>' + hl : '');
-  }
+  if (!hl) hl = 'Clean run.';
   $('highlights').innerHTML = hl;
 
   // Visual share grid (5x2) — wrong cells tappable; bet cells ringed + glyph
@@ -1868,32 +1885,37 @@ function finishGame() {
       const a = state.answers[i];
       if (a.correct) cell.classList.add('correct');
       else { cell.classList.add('wrong'); cell.dataset.idx = i; hasMiss = true; }
-      if (a.bet) {
-        cell.classList.add('bet');
-        const g = document.createElement('span');
-        g.className = 'cell-glyph';
-        g.textContent = a.correct ? '✓' : '✕';
-        cell.appendChild(g);
-      }
+      const g = document.createElement('span');
+      g.className = 'cell-glyph';
+      g.textContent = a.correct ? '✓' : '✕';
+      cell.appendChild(g);
+      if (a.bet) cell.classList.add('bet');
     } else cell.classList.add('empty');
     visualEl.appendChild(cell);
   }
   $('grid-hint').style.display = hasMiss ? 'block' : 'none';
 
-  // Share texts — full (with challenge URL) + clean (grid only)
+  // Share texts — grid rows split 2x5; blindspot folded into the challenge payload
   const dailyNum = getDailyNum();
   const shareBody = state.answers.map(a => {
     if (a.bet) return a.correct ? '✅' : '❌';
     return a.correct ? '🟩' : '🟥';
   }).join('');
+  const row1 = shareBody.slice(0, 5);
+  const row2 = shareBody.slice(5, 10);
   const challengeUrl = getDuelUrl(correct, totalTimeSec);
-  const timeStr = `${Math.round(totalTimeSec*10)/10}s`;
+  const blindspot = missedCats.length ? missedCats[0][0] : null;
   if (state.mode === 'daily') {
     const head = `KNOWIT Daily #${dailyNum} ⚡ ${correct}/${total}`;
-    state.shareClean = `${head}\n${shareBody}\n⏱ ${timeStr} • ${dailyArch.name}`;
-    state.shareFull = `${state.shareClean}\n\nThink you can beat my time?\n${challengeUrl}`;
+    // Copy Grid Only — clean emoji blocks, no duel link
+    state.shareClean = `${head}\n${row1}\n${row2}`;
+    // Challenge payload — archetype + time, 2-row grid, blindspot, CTA + duel link
+    let full = `${head}\n${dailyArch.name} (${fmtTimeSec(totalTimeSec)})\n\n${row1}\n${row2}`;
+    if (blindspot) full += `\n\nBlindspot: ${blindspot} ❄️`;
+    full += `\nCan you beat my score?\n${challengeUrl}`;
+    state.shareFull = full;
   } else {
-    state.shareClean = `KNOWIT Endless ⚡\nStreak: ${state.endlessStreak}\nCorrect: ${correct}/${total}\n⏱ ${timeStr}`;
+    state.shareClean = `KNOWIT Endless ⚡\nStreak: ${state.endlessStreak}\nCorrect: ${correct}/${total}\n${row1}\n${row2}`;
     state.shareFull = `${state.shareClean}\n\nThink you can beat my streak?\n${challengeUrl}`;
   }
   $('share-text').textContent = state.shareFull;
@@ -2022,26 +2044,45 @@ $('btn-practice').onclick = ()=>{ audio.click(); startDaily(); };
 $('btn-close').onclick = ()=>{
   if (confirm('Quit current game? Progress will be lost.')) { stopQTimer(); showScreen('landing'); renderLanding(); }
 };
-function shareResult(btn) {
-  const text = state.shareFull || state.shareClean || $('share-text').textContent;
-  const reset = () => { btn.textContent = 'Share your result'; btn.classList.remove('btn-copied'); };
-  const copied = () => { btn.textContent = 'Copied! ✓'; btn.classList.add('btn-copied'); setTimeout(reset, 2000); };
-  if (navigator.share) {
-    navigator.share({ title: 'KNOWIT', text }).then(()=>{
-      btn.textContent = 'Shared! ✓'; setTimeout(reset, 1500);
-    }).catch(()=>{});
-  } else if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).then(copied).catch(()=>{});
+function setBtnLabel(btn, txt) {
+  const l = btn.querySelector('.btn-label');
+  if (l) l.textContent = txt; else btn.textContent = txt;
+}
+function copyText(text, btn, label) {
+  const done = () => { setBtnLabel(btn, 'Copied! ✓'); btn.classList.add('btn-copied'); setTimeout(()=>{ setBtnLabel(btn, label); btn.classList.remove('btn-copied'); }, 1800); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(()=>{});
   } else {
     try {
       const ta = document.createElement('textarea');
       ta.value = text; document.body.appendChild(ta); ta.select();
       document.execCommand('copy'); document.body.removeChild(ta);
-      copied();
+      done();
     } catch(e){}
   }
 }
-$('btn-share').onclick = ()=>{ audio.click(); shareResult($('btn-share')); };
+// Challenge a Friend — duel payload (native share sheet when available)
+$('btn-challenge').onclick = ()=>{
+  audio.click();
+  const btn = $('btn-challenge');
+  const text = state.shareFull || state.shareClean || $('share-text').textContent;
+  if (navigator.share) {
+    navigator.share({ title: 'KNOWIT', text }).then(()=>{
+      setBtnLabel(btn, 'Shared! ✓'); setTimeout(()=>setBtnLabel(btn, 'Challenge a Friend'), 1500);
+    }).catch(()=>{});
+  } else {
+    copyText(text, btn, 'Challenge a Friend');
+  }
+};
+// Copy Grid Only — clean emoji blocks for Reddit/Discord/group chats
+$('btn-copy').onclick = ()=>{
+  audio.click();
+  copyText(state.shareClean || $('share-text').textContent, $('btn-copy'), 'Copy Grid Only');
+};
+// Inject inline SVG icons into action buttons (monochrome, matches core UI)
+$('btn-challenge').innerHTML = `${ICONS.swords}<span class="btn-label">Challenge a Friend</span>`;
+$('btn-copy').innerHTML = `${ICONS.copy}<span class="btn-label">Copy Grid Only</span>`;
+$('btn-endless-result').innerHTML = `${ICONS.lightning}<span class="btn-label">Play Endless Mode</span>`;
 // Review modal: tap wrong grid cell → open; backdrop/close button → close
 $('share-visual').addEventListener('click', e => {
   const cell = e.target.closest('.share-cell.wrong');
